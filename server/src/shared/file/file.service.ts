@@ -12,7 +12,7 @@ export class FileService {
       try {
          const data = await this.cloudinary.uploader.upload(file, {
             ...options,
-            folder: 'her-homes',
+            folder: 'TradeHub',
          });
 
          return { url: data.secure_url, public_id: data.public_id };

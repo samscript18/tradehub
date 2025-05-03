@@ -4,8 +4,7 @@ export enum Gender {
 }
 
 export enum RoleNames {
-   APPLICANT = 'applicant',
-   DEVELOPER = 'developer',
-   INSTITUTION = 'institution',
+   CUSTOMER = 'customer',
+   MERCHANT = 'merchant',
    ADMIN = 'admin',
 }

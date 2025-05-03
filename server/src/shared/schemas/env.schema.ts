@@ -10,4 +10,9 @@ export const envSchema = Joi.object({
    CLOUDINARY_CLOUD_NAME: Joi.string().required(),
    CLOUDINARY_API_SECRET: Joi.string().required(),
    CLOUDINARY_API_KEY: Joi.string().required(),
+   GOOGLE_CLIENT_ID: Joi.string().required(),
+   GOOGLE_CLIENT_SECRET: Joi.string().required(),
+   GOOGLE_INIT_URL: Joi.string().required(),
+   GOOGLE_CALLBACK_URL: Joi.string().required(),
+   ALLOWED_ORIGINS: Joi.string().required(),
 });

@@ -13,20 +13,18 @@ import {
 import { ApiBody, ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import {
-   // OnBoardAdminDto,
-   OnBoardDeveloperDto,
-   OnBoardApplicantDto,
+   OnBoardAdminDto,
+   OnBoardMerchantDto,
+   OnBoardCustomerDto,
 } from './dto/register.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignInDto } from './dto/sign-in.dto';
-import { Auth, IsPublic } from 'src/shared/decorators/auth.decorators';
+import { IsPublic } from 'src/shared/decorators/auth.decorators';
 import { Request, Response } from 'express';
 import { GoogleOAuthGuard } from './guards/google-oauth.guard';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { TokenService } from '../token/token.service';
-import { TokenTypes } from '../token/enums';
 import { UtilService } from 'src/shared/services/utils.service';
 import { GoogleUser } from './interfaces';
 
@@ -40,20 +38,20 @@ export class AuthController {
       private readonly tokenService: TokenService
    ) { }
 
-   @Post('/signup/applicant')
+   @Post('/signup/customer')
    @IsPublic()
-   @ApiOperation({ summary: 'Onboard applicant' })
-   async onBoardApplicant(@Body() onBoardApplicantDto: OnBoardApplicantDto) {
-      const data = await this.authService.onBoardApplicant(onBoardApplicantDto);
+   @ApiOperation({ summary: 'Onboard Customer' })
+   async onBoardCustomer(@Body() onBoardCustomerDto: OnBoardCustomerDto) {
+      const data = await this.authService.onBoardCustomer(onBoardCustomerDto);
 
       return data;
    }
 
-   @Post('/signup/developer')
+   @Post('/signup/merchant')
    @IsPublic()
-   @ApiOperation({ summary: 'Onboard developer' })
-   async onBoardDeveloper(@Body() onBoardDeveloperDto: OnBoardDeveloperDto) {
-      const data = await this.authService.onBoardDeveloper(onBoardDeveloperDto);
+   @ApiOperation({ summary: 'Onboard Merchant' })
+   async onBoardMerchant(@Body() onBoardMerchantDto: OnBoardMerchantDto) {
+      const data = await this.authService.onBoardMerchant(onBoardMerchantDto);
 
       return data;
    }

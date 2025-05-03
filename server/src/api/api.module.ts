@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
-import { ApplicantModule } from './applicant/applicant.module';
-import { DeveloperModule } from './developer/developer.module';
-import { PropertyListingModule } from './listing/listing.module';
+import { CustomerModule } from './customer/customer.module';
+import { MerchantModule } from './merchant/merchant.module';
 import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
 
@@ -13,9 +12,8 @@ import { UserModule } from './user/user.module';
       AuthModule,
       TokenModule,
       UserModule,
-      ApplicantModule,
-      DeveloperModule,
-      PropertyListingModule,
+      CustomerModule,
+      MerchantModule,
    ]
 })
 export class ApiModule { }

@@ -1,20 +1,18 @@
-import Footer from "@/components/Layout/Footer";
-import Navbar from "@/components/Layout/Navbar";
-import SmoothScroll from "@/lib/providers/SmoothScroll";
+import Footer from '@/components/Layout/Footer';
+import Navbar from '@/components/Layout/Navbar';
 
 interface LayoutProps {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
-  return (
-    <>
-      <SmoothScroll />
-      <Navbar />
-      {children}
-      <Footer />
-    </>
-  );
+	return (
+		<>
+			<Navbar />
+			{children}
+			<Footer />
+		</>
+	);
 };
 
 export default Layout;

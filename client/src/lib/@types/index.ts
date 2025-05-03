@@ -47,7 +47,7 @@ export interface BankDetails {
 
 export interface Order {
   cart: { product: string; quantity: number }[];
-  customer: {
+  Customer: {
     firstName: string;
     lastName: string;
     phoneNumber: string;

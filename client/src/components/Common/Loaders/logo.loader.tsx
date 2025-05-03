@@ -1,6 +1,6 @@
 "use client";
 
-import { SiNanostores } from "react-icons/si";
+import { SiSinglestore } from "react-icons/si";
 
 interface Props {
   type?: "full" | "small";
@@ -31,8 +31,8 @@ export const Logo = ({ color }: { color?: "white" | "black" }) => {
           : "text-primary"
       } flex items-center gap-1 text-2xl`}
     >
-      <SiNanostores />
-      <span className="font-bold">Stockly</span>
+      <SiSinglestore />
+      <span className="font-bold">TradeHub</span>
     </div>
   );
 };

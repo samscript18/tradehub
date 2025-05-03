@@ -1,7 +1,6 @@
 import { MinLength } from 'class-validator';
-import { EmploymentStatus } from 'src/api/applicant/enums';
 import { Gender, RoleNames } from 'src/api/user/enums';
-import { IsDate, IsEmail, IsEnum, IsNumber, IsString } from 'src/shared/decorators';
+import { IsDate, IsEmail, IsEnum, IsString } from 'src/shared/decorators';
 
 export class RegisterDto {
    @IsEmail(false)
@@ -18,7 +17,7 @@ export class RegisterDto {
    role: RoleNames;
 }
 
-export class OnBoardApplicantDto extends RegisterDto {
+export class OnBoardCustomerDto extends RegisterDto {
    @IsString(false)
    firstName: string;
 
@@ -30,35 +29,20 @@ export class OnBoardApplicantDto extends RegisterDto {
 
    @IsDate(false)
    dateOfBirth: Date;
-
-   @IsNumber(false)
-   annualIncome: number;
-
-   @IsEnum(EmploymentStatus, false)
-   employmentStatus: EmploymentStatus;
-
-   @IsString(false)
-   location: string;
 }
 
-export class OnBoardDeveloperDto extends RegisterDto {
+export class OnBoardMerchantDto extends RegisterDto {
    @IsString(false)
-   companyName: string;
+   businessName: string;
 
    @IsString(false)
-   companyLogo: string;
+   businessLogo: string;
 
    @IsString(false)
-   companyDescription: string;
-
-   @IsNumber(false)
-   yearsOfExperience: number;
+   businessDescription: string;
 
    @IsString(true)
    website?: string;
-
-   @IsString(true)
-   portfolio?: string;
 }
 
 export class OnBoardAdminDto extends RegisterDto {

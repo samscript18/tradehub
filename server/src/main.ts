@@ -44,11 +44,11 @@ async function bootstrap() {
    app.useGlobalGuards(authGuard);
 
    const swaggerConfig = new DocumentBuilder()
-      .setTitle('Her Homes 🏡')
-      .setDescription('API Documentation of a real estate property management and financing platform designed to connect property developers, mortgage applicants, and mortgage/financing institutions in a seamless digital ecosystem. It aims to simplify property discovery, streamline financing applications, and empower developers with powerful management tools.')
+      .setTitle('Her Homes 🏬')
+      .setDescription('API Documentation of a real estate property management and financing platform designed to connect property Merchants, mortgage Customers, and mortgage/financing institutions in a seamless digital ecosystem. It aims to simplify property discovery, streamline financing applications, and empower Merchants with powerful management tools.')
       .setVersion('1.0.0')
       .addCookieAuth()
-      .addServer('https://her-homes-dev.onrender.com')
+      .addServer('https://tradehub-be-dev.onrender.com')
       .addServer('http://localhost:4000')
       .build();
 

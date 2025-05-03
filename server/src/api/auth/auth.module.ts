@@ -9,8 +9,8 @@ import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthGuard } from './guards/auth.guard';
-import { ApplicantModule } from '../applicant/applicant.module';
-import { DeveloperModule } from '../developer/developer.module';
+import { CustomerModule } from '../customer/customer.module';
+import { MerchantModule } from '../merchant/merchant.module';
 import { GoogleOAuthStrategy } from './strategies/google-oauth.strategy';
 
 
@@ -43,8 +43,8 @@ import { GoogleOAuthStrategy } from './strategies/google-oauth.strategy';
       TokenModule,
       SharedModule,
       UserModule,
-      ApplicantModule,
-      DeveloperModule
+      CustomerModule,
+      MerchantModule
    ],
    providers: [AuthService, AuthGuard, GoogleOAuthStrategy],
    controllers: [AuthController],

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { RegisterType } from "@/lib/@types/auth";
 import Image from "next/image";
@@ -16,7 +15,6 @@ import {
   signUp,
   verifyEmail,
 } from "@/lib/services/auth.service";
-import { useOnboardingStore } from "@/lib/store/onboarding.store";
 import { LuShoppingBag } from "react-icons/lu";
 
 const MAX_STEPS = 4;
@@ -64,7 +62,6 @@ const Register = () => {
       mutationKey: ["setupPassword"],
     });
 
-  const { setOnboardingData, data } = useOnboardingStore();
 
   const submit: SubmitHandler<RegisterType> = async (data) => {
     signUpMutate(data, {
@@ -85,7 +82,7 @@ const Register = () => {
           toast.success("Email confirmed successfully");
           setCodeConfirmed(true);
 
-          setOnboardingData({ data });
+          // setOnboardingData({ data });
           setStep((prev) => prev + 1);
         },
         onError: (error: any) => {
@@ -112,7 +109,8 @@ const Register = () => {
     }
 
     setupPasswordMutate(
-      { password, token: `${data?.accessToken}` },
+      // { password, token: `${data?.accessToken}` },
+      { password, token:`` },
       {
         onSuccess: () => {
           toast.success("Password created successfully");

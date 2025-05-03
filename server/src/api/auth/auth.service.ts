@@ -10,7 +10,7 @@ import { Jwt, JwtDocument } from './schema/jwt.schema';
 import { Model } from 'mongoose';
 import { UserService } from '../user/user.service';
 import {
-   OnBoardApplicantDto, OnBoardDeveloperDto,
+   OnBoardCustomerDto, OnBoardMerchantDto,
    OnBoardAdminDto,
    RegisterDto,
 } from './dto/register.dto';
@@ -26,11 +26,11 @@ import { UserDocument } from '../user/schema/user.schema';
 import { JwtService } from '@nestjs/jwt';
 import { JwtType } from './enums/jwt.enum';
 import { RoleNames } from '../user/enums';
-import { ApplicantService } from '../applicant/applicant.service';
-import { DeveloperService } from '../developer/developer.service';
+import { CustomerService } from '../customer/customer.service';
+import { MerchantService } from '../merchant/merchant.service';
 import { FileService } from 'src/shared/file/file.service';
-import { ApplicantDocument } from '../applicant/schema/applicant.schema';
-import { DeveloperDocument } from '../developer/schema/developer.schema';
+import { CustomerDocument } from '../customer/schema/customer.schema';
+import { MerchantDocument } from '../merchant/schema/merchant.schema';
 
 @Injectable()
 export class AuthService {
@@ -43,8 +43,8 @@ export class AuthService {
       private readonly mailService: MailService,
       private readonly configService: ConfigService,
       private readonly jwtService: JwtService,
-      private readonly applicantService: ApplicantService,
-      private readonly developerService: DeveloperService,
+      private readonly CustomerService: CustomerService,
+      private readonly MerchantService: MerchantService,
    ) { }
 
    private async auth(user: UserDocument) {
@@ -77,7 +77,7 @@ export class AuthService {
       };
    }
 
-   async signUp(signUpDto: RegisterDto, { role, applicantFirstName, developerCompanyName }: { role: string, applicantFirstName?: string, developerCompanyName?: string }): Promise<UserDocument> {
+   async signUp(signUpDto: RegisterDto, { role, CustomerFirstName, MerchantbusinessName }: { role: string, CustomerFirstName?: string, MerchantbusinessName?: string }): Promise<UserDocument> {
       const userExists = await this.userService.getUser({
          $or: [
             {
@@ -109,10 +109,10 @@ export class AuthService {
 
       await this.mailService.sendMail({
          to: user.email,
-         subject: 'Her-Homes: Account Verification',
+         subject: 'TradeHub: Account Verification',
          template: 'account-verification',
          context: {
-            firstName: role === RoleNames.APPLICANT ? applicantFirstName : developerCompanyName,
+            firstName: role === RoleNames.CUSTOMER ? CustomerFirstName : MerchantbusinessName,
             link,
          },
       });
@@ -120,11 +120,11 @@ export class AuthService {
       return user;
    }
 
-   async onBoardApplicant(onBoardApplicantDto: OnBoardApplicantDto) {
-      onBoardApplicantDto.role = RoleNames.APPLICANT;
-      const user = await this.signUp(onBoardApplicantDto, { role: RoleNames.APPLICANT, applicantFirstName: onBoardApplicantDto.firstName });
+   async onBoardCustomer(onBoardCustomerDto: OnBoardCustomerDto) {
+      onBoardCustomerDto.role = RoleNames.CUSTOMER;
+      const user = await this.signUp(onBoardCustomerDto, { role: RoleNames.CUSTOMER, CustomerFirstName: onBoardCustomerDto.firstName });
 
-      await this.applicantService.createApplicant({ ...onBoardApplicantDto, user: user._id });
+      await this.CustomerService.createCustomer({ ...onBoardCustomerDto, user: user._id });
 
       return {
          success: true,
@@ -132,15 +132,15 @@ export class AuthService {
       };
    }
 
-   async onBoardDeveloper(onBoardDeveloperDto: OnBoardDeveloperDto) {
-      onBoardDeveloperDto.role = RoleNames.DEVELOPER;
-      const user = await this.signUp(onBoardDeveloperDto, { role: RoleNames.DEVELOPER, developerCompanyName: onBoardDeveloperDto.companyName });
+   async onBoardMerchant(onBoardMerchantDto: OnBoardMerchantDto) {
+      onBoardMerchantDto.role = RoleNames.MERCHANT;
+      const user = await this.signUp(onBoardMerchantDto, { role: RoleNames.MERCHANT, MerchantbusinessName: onBoardMerchantDto.businessName });
 
-      const { url } = await this.fileService.uploadResource(onBoardDeveloperDto.companyLogo, { resource_type: 'image' });
-      onBoardDeveloperDto.companyLogo = url;
+      const { url } = await this.fileService.uploadResource(onBoardMerchantDto.businessLogo, { resource_type: 'image' });
+      onBoardMerchantDto.businessLogo = url;
 
-      await this.developerService.createDeveloper({
-         ...onBoardDeveloperDto,
+      await this.MerchantService.createMerchant({
+         ...onBoardMerchantDto,
          user: user._id,
       });
 
@@ -176,17 +176,17 @@ export class AuthService {
 
    async requestEmailVerificationLink(email: string) {
       const user = await this.userService.getUser({ email });
-      let applicant: ApplicantDocument, developer: DeveloperDocument;
+      let Customer: CustomerDocument, Merchant: MerchantDocument;
 
       if (!user)
          throw new NotFoundException("User with this email doesn't exist");
       if (user.emailVerified)
          throw new NotFoundException('This account is already verified');
 
-      if (user.role === RoleNames.APPLICANT) {
-         applicant = await this.applicantService.getApplicant({ user: user._id });
-      } else if (user.role === RoleNames.DEVELOPER) {
-         developer = await this.developerService.getDeveloper({ user: user._id });
+      if (user.role === RoleNames.CUSTOMER) {
+         Customer = await this.CustomerService.getCustomer({ user: user._id });
+      } else if (user.role === RoleNames.MERCHANT) {
+         Merchant = await this.MerchantService.getMerchant({ user: user._id });
       } else { console.log('admin') }
 
       const token = await this.tokenService.findOrCreateToken({
@@ -199,10 +199,10 @@ export class AuthService {
 
       await this.mailService.sendMail({
          to: user.email,
-         subject: 'Her-Homes: Account Verification',
+         subject: 'TradeHub: Account Verification',
          template: 'account-verification',
          context: {
-            firstName: user.role === RoleNames.APPLICANT ? applicant.firstName : developer.companyName,
+            firstName: user.role === RoleNames.CUSTOMER ? Customer.firstName : Merchant.businessName,
             link,
          },
       });
@@ -215,15 +215,15 @@ export class AuthService {
 
    async forgotPassword(email: string) {
       const user = await this.userService.getUser({ email });
-      let applicant: ApplicantDocument, developer: DeveloperDocument;
+      let Customer: CustomerDocument, Merchant: MerchantDocument;
 
-      if (user.role === RoleNames.APPLICANT) {
-         applicant = await this.applicantService.getApplicant({ user: user._id });
-      } else if (user.role === RoleNames.DEVELOPER) {
-         developer = await this.developerService.getDeveloper({ user: user._id });
+      if (user.role === RoleNames.CUSTOMER) {
+         Customer = await this.CustomerService.getCustomer({ user: user._id });
+      } else if (user.role === RoleNames.MERCHANT) {
+         Merchant = await this.MerchantService.getMerchant({ user: user._id });
       } else { console.log('admin') }
 
-      if (user && (applicant || developer)) {
+      if (user && (Customer || Merchant)) {
          const token = await this.tokenService.findOrCreateToken({
             email,
             type: TokenTypes.passwordReset,
@@ -234,10 +234,10 @@ export class AuthService {
 
          await this.mailService.sendMail({
             to: user.email,
-            subject: 'Her-Homes: Password Reset Request',
+            subject: 'TradeHub: Password Reset Request',
             template: 'forgot-password',
             context: {
-               firstName: user.role === RoleNames.APPLICANT ? applicant.firstName : developer.companyName,
+               firstName: user.role === RoleNames.CUSTOMER ? Customer.firstName : Merchant.businessName,
                link,
             },
          });
@@ -362,32 +362,32 @@ export class AuthService {
       };
    }
 
-   async onBoardAdmin(onBoardAdminDto: OnBoardAdminDto) {
-      onBoardAdminDto.role = RoleNames.ADMIN;
-      onBoardAdminDto.password = await this.utilService.hashPassword(
-         onBoardAdminDto.password,
-      );
+   // async onBoardAdmin(onBoardAdminDto: OnBoardAdminDto) {
+   //    onBoardAdminDto.role = RoleNames.ADMIN;
+   //    onBoardAdminDto.password = await this.utilService.hashPassword(
+   //       onBoardAdminDto.password,
+   //    );
 
-      const data = await this.userService.createUser({
-         ...onBoardAdminDto,
-         emailVerified: true,
-      });
+   //    const data = await this.userService.createUser({
+   //       ...onBoardAdminDto,
+   //       emailVerified: true,
+   //    });
 
-      return {
-         success: true,
-         message: 'admin created',
-      };
-   }
+   //    return {
+   //       success: true,
+   //       message: 'admin created',
+   //    };
+   // }
 
    async googleSignIn(googleUser: { email: string, firstName: string, lastName: string, profilePicture: string, role: string }) {
       const user = await this.userService.findOrCreateUser({ email: googleUser.email }, { email: googleUser.email, profilePicture: googleUser.profilePicture, role: googleUser.role, emailVerified: true });
 
-      let existingUser: ApplicantDocument | DeveloperDocument;
-      if (googleUser.role === RoleNames.APPLICANT) {
-         existingUser = await this.applicantService.findOrCreateApplicant({ user: user._id }, { user: user._id, firstName: googleUser.firstName, lastName: googleUser.lastName })
-      } else if (googleUser.role === RoleNames.DEVELOPER) {
-         existingUser = await this.developerService.findOrCreateDeveloper({ user: user._id }, {
-            user: user._id, companyName: `${googleUser.firstName} ${googleUser.lastName}`, companyLogo: googleUser.profilePicture
+      let existingUser: CustomerDocument | MerchantDocument;
+      if (googleUser.role === RoleNames.CUSTOMER) {
+         existingUser = await this.CustomerService.findOrCreateCustomer({ user: user._id }, { user: user._id, firstName: googleUser.firstName, lastName: googleUser.lastName })
+      } else if (googleUser.role === RoleNames.MERCHANT) {
+         existingUser = await this.MerchantService.findOrCreateMerchant({ user: user._id }, {
+            user: user._id, businessName: `${googleUser.firstName} ${googleUser.lastName}`, businessLogo: googleUser.profilePicture
          });
       } else {
          throw new Error('Invalid role');

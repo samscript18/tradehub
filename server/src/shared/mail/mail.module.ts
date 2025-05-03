@@ -21,7 +21,7 @@ import { join } from 'path';
                },
 
                defaults: {
-                  from: 'No Reply <noreply@Her-Homes.com>',
+                  from: 'No Reply <noreply@TradeHub.com>',
                },
 
                template: {
