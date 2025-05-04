@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-export interface ApiResponse<T = any, M = any> {
+export interface ApiResponse<T, M = undefined> {
   status: boolean;
   msg: string;
   data: T;
@@ -22,11 +22,7 @@ export type Address = {
   zip_code: string;
 };
 
-export interface ApiResponse<T> {
-  status: boolean;
-  msg: string;
-  data: T;
-}
+// Removed duplicate declaration of ApiResponse
 
 export interface User {
   _id: string;

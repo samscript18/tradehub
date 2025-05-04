@@ -1,6 +1,7 @@
-import { ApiResponse } from "../@types";
-import { LoginResponse, RegisterType } from "../@types/auth";
+import { LoginResponse, RegisterType } from "@/types/auth";
 import { authApi, publicApi } from "../configs/axios-instance";
+import { errorHandler } from "../utils/error";
+import { ApiResponse } from "@/types";
 
 export const login = async (body: { email: string; password: string }) => {
   try {
@@ -10,8 +11,8 @@ export const login = async (body: { email: string; password: string }) => {
     );
 
     return data.data;
-  } catch (err: any) {
-    throw new Error(err?.response?.data?.msg || "Something went wrong");
+  } catch (err) {
+    errorHandler(err || "Unable to login");
   }
 };
 
@@ -25,16 +26,16 @@ export const getRefreshToken = async (refreshToken: string) => {
     >("/auth/refresh", { refreshToken });
 
     return data.data;
-  } catch (err: any) {
-    throw new Error(err?.response?.data?.msg || "Something went wrong");
+  } catch (err) {
+    errorHandler(err || "Unable to refresh token");
   }
 };
 
 export const signUp = async (body: RegisterType) => {
   try {
     await publicApi.post("/auth/sign-up/store", body);
-  } catch (err: any) {
-    throw new Error(err?.response?.data?.msg || "Something went wrong");
+  } catch (err) {
+    errorHandler(err || "Unable to sign up");
   }
 };
 
@@ -50,8 +51,8 @@ export const setupPassword = async (body: {
         headers: { Authorization: `Bearer ${body.token}` },
       }
     );
-  } catch (err: any) {
-    throw new Error(err?.response?.data?.msg || "Something went wrong");
+  } catch (err) {
+    errorHandler(err || "Unable to set password");
   }
 };
 
@@ -63,23 +64,23 @@ export const verifyEmail = async (body: { email: string; token: string }) => {
     );
 
     return data.data;
-  } catch (err: any) {
-    throw new Error(err?.response?.data?.msg || "Something went wrong");
+  } catch (err) {
+    errorHandler(err || "Unable to verify email");
   }
 };
 
 export const resendOtp = async (email: string) => {
   try {
     await publicApi.post("/auth/verify-email/resend-otp", email);
-  } catch (err: any) {
-    throw new Error(err?.response?.data?.msg || "Something went wrong");
+  } catch (err) {
+    errorHandler(err || "Unable to resend OTP");
   }
 };
 
 export const signOut = async () => {
   try {
     await authApi.get("/auth/sign-out");
-  } catch (error: any) {
-    throw new Error(error?.response?.data?.msg || "Something went wrong");
+  } catch (error) {
+    errorHandler(error || "Unable to sign out");
   }
 };

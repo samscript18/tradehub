@@ -1,5 +1,6 @@
 import { authApi } from '../configs/axios-instance';
-import { ApiResponse, User} from '../@types';
+import { ApiResponse, User } from '@/types';
+import { errorHandler } from '../utils/error';
 
 export const getUserInfo = async () => {
   try {
@@ -7,8 +8,7 @@ export const getUserInfo = async () => {
       data: { data },
     } = await authApi.get<ApiResponse<User>>(`/user`);
     return data;
-  } catch (err: any) {
-    console.log(err);
-    // throw new Error(err?.response.data.msg || 'Something went wrong');
+  } catch (err) {
+    errorHandler(err || 'Unable to fetch user info');
   }
 };

@@ -1,4 +1,3 @@
-import { useModal } from '@/lib/providers/ModalProvider';
 import { motion, Variants } from 'framer-motion';
 import { FC, useEffect, useRef } from 'react';
 
@@ -44,8 +43,7 @@ const Modal: FC<ModalProps> = ({
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        // @ts-ignore
-        onClose;
+        onClose();
       }
     };
 

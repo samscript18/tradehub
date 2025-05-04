@@ -1,12 +1,10 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
-import { SiNanostores, SiSinglestore } from 'react-icons/si';
+import {  SiSinglestore } from 'react-icons/si';
 import { AnimatePresence, motion } from 'framer-motion';
 import { navLinks } from '@/lib/data';
 import { fadeToBottomVariant } from '@/lib/data/variants';
 import { useRouter } from 'next/navigation';
-import { FiChevronDown } from 'react-icons/fi';
 import { signOut, useSession } from 'next-auth/react';
 import { FaOpencart } from 'react-icons/fa';
 import { BiSearchAlt } from 'react-icons/bi';
@@ -27,7 +25,6 @@ interface Props {
 }
 
 const Navbar = ({ showBanner }: Props) => {
-	const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 	const router = useRouter();
 
 	const { data: session } = useSession();
@@ -38,6 +35,8 @@ const Navbar = ({ showBanner }: Props) => {
 	const { showModal } = useModal();
 
 	const { showSidebar } = useSidebar();
+
+	console.log(showSidebar);
 
 	// const { items } = useCartStore();
 

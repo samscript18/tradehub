@@ -1,8 +1,9 @@
-import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getRefreshToken, login } from "../services/auth.service";
+import type { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 
-const authOptions: AuthOptions = {
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -49,8 +50,12 @@ const authOptions: AuthOptions = {
         new Date(session.accessTokenExpiresAt).getTime() < new Date().getTime()
       ) {
         const data = await getRefreshToken(session.refreshToken);
-        session.accessToken = data.accessToken;
-        session.accessTokenExpiresAt = data.accessTokenExpiresAt;
+        if (data) {
+          session.accessToken = data.accessToken;
+          session.accessTokenExpiresAt = data.accessTokenExpiresAt;
+        } else {
+          console.warn("Unable to refresh token");
+        }
       }
 
       return session;
@@ -63,4 +68,4 @@ const authOptions: AuthOptions = {
   },
 };
 
-export default authOptions;
+export default NextAuth(authOptions);

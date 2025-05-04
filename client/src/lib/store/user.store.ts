@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { User } from '../@types';
+import { User } from '@/types';
 import { persist } from 'zustand/middleware';
 
 interface UserStoreState {
@@ -8,14 +8,14 @@ interface UserStoreState {
 
 interface UserStoreAction {
   setUser(body: User): void;
-  updateUserField(key: keyof User, value: any): void;
+  updateUserField(key: keyof User, value: User[keyof User]): void;
 }
 
 type UserStore = UserStoreState & UserStoreAction;
 
 const useUserStore = create<UserStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: undefined,
 
       setUser: (user) => set((state) => ({ ...state, user })),

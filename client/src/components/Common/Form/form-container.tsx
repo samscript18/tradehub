@@ -1,7 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
 import React, { FC, ReactNode } from "react";
-import { BiArrowBack } from "react-icons/bi";
 import BackButton from "../Button/back-button";
 
 interface Props {
@@ -17,7 +15,6 @@ const FormContainer: FC<Props> = ({
   children,
   showBackButton = true,
 }) => {
-  const router = useRouter();
 
   return (
     <section

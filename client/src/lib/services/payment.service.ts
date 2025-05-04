@@ -1,5 +1,6 @@
-import { ApiResponse } from '../@types';
+import { ApiResponse } from '@/types';
 import { authApi, publicApi } from '../configs/axios-instance';
+import { errorHandler } from '../utils/error';
 
 export const getBanks = async () => {
   try {
@@ -9,8 +10,8 @@ export const getBanks = async () => {
       ApiResponse<{ bank_name: string; bank_code: string }[]>
     >('payment/banks');
     return data;
-  } catch (err: any) {
-    throw new Error(err?.response?.data?.msg || 'Fetching banks failed');
+  } catch (err) {
+    errorHandler(err || 'Unable to fetch banks');
   }
 };
 
@@ -34,8 +35,8 @@ export const lookupAccount = async (body: {
     >('/payment/lookup-account', body);
 
     return data;
-  } catch (err: any) {
-    throw new Error(err?.response?.data?.msg || 'Account lookup failed');
+  } catch (err) {
+    errorHandler(err || 'Account lookup failed');
   }
 };
 
@@ -44,7 +45,7 @@ export const withdraw = async (amount: number) => {
     const response = await authApi.post('/payment/withdraw', { amount });
 
     return response?.data;
-  } catch (err: any) {
-    throw new Error(err?.response?.data?.msg || 'Account lookup failed');
+  } catch (err) {
+    errorHandler(err || 'Unable to withdraw funds');
   }
 };

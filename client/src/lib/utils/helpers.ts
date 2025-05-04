@@ -42,8 +42,8 @@ export const copyToClipboard = async (
   try {
     await navigator.clipboard.writeText(content);
     toast.success(msg);
-  } catch (error: any) {
-    toast.error(error || "Unable to copy to clipboard");
+  } catch (error) {
+    toast.error((error instanceof Error ? error.message : String(error)) || "Unable to copy to clipboard");
   }
 };
 

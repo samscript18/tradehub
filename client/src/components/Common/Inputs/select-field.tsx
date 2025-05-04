@@ -6,20 +6,22 @@ import { cn } from '@/lib/utils/cn';
 import { fadeToBottomVariant, fadeToTopVariant } from '@/lib/data/variants';
 export type Option = { value: string; label: string | ReactNode };
 
-type Props = {
+interface SelectFieldProps {
   label: string;
   options: Option[];
   id?: string;
   loading?: boolean;
   placeholder?: string;
-  onValueChange: (value: any) => void;
+  onValueChange: (value: string) => void;
   data?: Option | null;
   dropUp?: boolean;
   containerProps?: React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLDivElement>,
     HTMLDivElement
   >;
-};
+}
+
+type Props = SelectFieldProps;
 
 const SelectField: FC<Props> = ({
   options,
@@ -94,7 +96,7 @@ export const OptionComp: FC<OptionProps> = ({
   updateData,
   dropUp,
 }) => {
-  const [stateOptions, setStateOptions] = useState(options);
+  const [stateOptions] = useState(options);
 
   return (
     <motion.div
