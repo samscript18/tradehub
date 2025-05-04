@@ -4,7 +4,7 @@ export const navLinks = [
 	{ title: 'Home', href: '/' },
 	{
 		title: 'About',
-		href: '/about',
+		href: '/#about-us',
 	},
 	{
 		title: 'How It Works',

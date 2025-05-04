@@ -5,20 +5,25 @@ import { useSession } from 'next-auth/react';
 import React, { FC, ReactNode, useEffect } from 'react';
 import useUserStore from '../store/user.store';
 import { getUserInfo } from '../services/user.service';
+import { usePathname } from 'next/navigation';
 
 const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
 	const { status, data: session } = useSession();
 	const { setUser } = useUserStore();
+	const pathname = usePathname();
+	const publicRoutes = ['/'];
+	const isPublic = publicRoutes.includes(pathname);
 
 	useEffect(() => {
-		if (status === 'authenticated' && session?.user) {
-			getUserInfo().then((user) => {
-				if (user) setUser(user);
-			});
+		if (!isPublic && session?.user) {
+			console.log('get user');
+			// getUserInfo().then((user) => {
+			// 	if (user) setUser(user);
+			// });
 		}
-	}, [status, session, setUser]);
+	}, [session, setUser, isPublic]);
 
-	if (status === 'loading') return <LogoLoader />;
+	if (!isPublic && status === 'loading') return <LogoLoader />;
 
 	return <div>{children}</div>;
 };

@@ -46,7 +46,6 @@ const Providers = ({ children }: Props) => {
 
           <Toaster />
 
-          {/* <SmoothScroll /> */}
           <ReactQueryDevtools client={queryClient} />
         </QueryClientProvider>
       </AuthProvider>

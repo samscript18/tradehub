@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import {  SiSinglestore } from 'react-icons/si';
+import { SiSinglestore } from 'react-icons/si';
 import { AnimatePresence, motion } from 'framer-motion';
 import { navLinks } from '@/lib/data';
 import { fadeToBottomVariant } from '@/lib/data/variants';
@@ -28,7 +28,7 @@ const Navbar = ({ showBanner }: Props) => {
 	const router = useRouter();
 
 	const { data: session } = useSession();
-	const { user } = useUserInfo();
+	const data = useUserInfo();
 
 	const { isOpen, dropdownRef, toggleDropdown } = useDropDown();
 
@@ -102,14 +102,14 @@ const Navbar = ({ showBanner }: Props) => {
 										<div className="text-center space-y-1">
 											<div className="size-16 mx-auto rounded-full relative overflow-hidden">
 												<Image
-													src={user?.profilePicture || '/images/avatar.png'}
+													src={data?.user?.profilePicture || '/images/avatar.png'}
 													alt="user"
 													width={100}
 													height={100}
 													className="absolute top-0 left-0 w-full h-full object-cover"
 												/>
 											</div>
-											<p className="text-xs text-gray-500">{user?.email}</p>
+											<p className="text-xs text-gray-500">{data?.user?.email}</p>
 										</div>
 
 										<div className="flex items-center justify-center gap-2">
