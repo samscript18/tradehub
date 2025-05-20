@@ -1,86 +1,88 @@
-import Link from "next/link";
+import Link from 'next/link';
+import Logo from '../common/logo';
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from 'react-icons/fa';
 
 export default function Footer() {
-  return (
-    <footer className="bg-black text-gray-300 px-6 py-12 sm:px-12 lg:px-24">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-        <div>
-          <h3 className="text-white text-xl font-semibold mb-4">
-            Digi<span className="text-primary">fest</span>
-          </h3>
-          <p className="text-sm leading-6">
-            		TradeHub is a web-based e-commerce platform that connects local merchants and vendors to buyers, offering seamless payments, product listings, and delivery services.
+	return (
+		<footer className="bg-black text-gray-300 px-4 py-12 sm:px-8 lg:px-12">
+			<div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+				<div>
+					<Logo />
+					<p className="text-sm leading-6 mt-4">Empowering local commerce through technology</p>
+				</div>
 
-          </p>
-        </div>
+				<div>
+					<h4 className="text-white font-semibold mb-3">Quick Links</h4>
+					<ul className="space-y-2 text-sm">
+						<li>
+							<Link href="/#about-us" className="hover:underline hover:text-primary duration-300">
+								About Us
+							</Link>
+						</li>
+						<li>
+							<Link href="/#contact-us" className="hover:underline hover:text-primary duration-300">
+								Contact
+							</Link>
+						</li>
+						<li>
+							<Link href="/sign-up" className="hover:underline hover:text-primary duration-300">
+								Merchant Signup
+							</Link>
+						</li>
+					</ul>
+				</div>
 
-        <div>
-          <h4 className="text-white font-semibold mb-3">Resources</h4>
-          <ul className="space-y-2 text-sm">
-            <li>
-              <Link href="/materials" className="hover:underline">
-                All Materials
-              </Link>
-            </li>
-            <li>
-              <Link href="/categories" className="hover:underline">
-                By Department
-              </Link>
-            </li>
-            <li>
-              <Link href="/upload" className="hover:underline">
-                Upload Notes
-              </Link>
-            </li>
-          </ul>
-        </div>
+				<div>
+					<h4 className="text-white font-semibold mb-3">Legal</h4>
+					<ul className="space-y-2 text-sm">
+						<li>
+							<Link href="#" className="hover:underline hover:text-primary duration-300">
+								Terms of Service
+							</Link>
+						</li>
+						<li>
+							<Link href="#" className="hover:underline hover:text-primary duration-300">
+								Privacy Policy
+							</Link>
+						</li>
+						<li>
+							<Link href="#" className="hover:underline hover:text-primary duration-300">
+								Cookie Policy
+							</Link>
+						</li>
+					</ul>
+				</div>
 
-        <div>
-          <h4 className="text-white font-semibold mb-3">About</h4>
-          <ul className="space-y-2 text-sm">
-            <li>
-              <Link href="/about" className="hover:underline">
-                Our Story
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="hover:underline">
-                Contact
-              </Link>
-            </li>
-            <li>
-              <Link href="/faq" className="hover:underline">
-                FAQs
-              </Link>
-            </li>
-          </ul>
-        </div>
+				<div>
+					<h4 className="text-white font-semibold mb-3">Connect</h4>
+					<ul className="text-sm flex gap-4 mt-4">
+						<li className="bg-primary p-1.5 rounded-md">
+							<a href="#" className="hover:underline hover:text-secondary duration-300">
+								<FaFacebookF className="text-white" />
+							</a>
+						</li>
+						<li className="bg-primary p-1.5 rounded-md">
+							<a href="#" className="hover:underline hover:text-secondary duration-300">
+								<FaInstagram className="text-white" />
+							</a>
+						</li>
+						<li className="bg-primary p-1.5 rounded-md">
+							<a href="#" className="hover:underline hover:text-secondary duration-300">
+								<FaTwitter className="text-white" />
+							</a>
+						</li>
+						<li className="bg-primary p-1.5 rounded-md">
+							<a href="#" className="hover:underline hover:text-secondary duration-300">
+								<FaLinkedinIn className="text-white" />
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
 
-        <div>
-          <h4 className="text-white font-semibold mb-3">Follow Us</h4>
-          <ul className="space-y-2 text-sm">
-            <li>
-              <a href="#" className="hover:underline">
-                Instagram
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">
-                X (Twitter)
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">
-                LinkedIn
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="mt-12 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
-        &copy; {new Date().getFullYear()} UniMaterial. All rights reserved.
-      </div>
-    </footer>
-  );
+			<div className="mt-12 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
+				&copy; {new Date().getFullYear()} TradeHub. All rights reserved.
+			</div>
+		</footer>
+	);
 }

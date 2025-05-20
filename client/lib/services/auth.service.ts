@@ -54,3 +54,12 @@ export const getUser = async () => {
     throw error;
   }
 };
+
+export const signOut = async () => {
+  try {
+    await authApi.get('/auth/sign-out');
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+    throw error;
+  }
+};

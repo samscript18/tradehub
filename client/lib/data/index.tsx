@@ -11,11 +11,15 @@ export const navLinks: NavGroup[] = [
     link: '/',
   },
   {
-    name: 'About',
-    link: '',
+    name: 'About Us',
+    link: '/#about-us',
   },
   {
-    name: 'Documents',
-    link: '/search',
+    name: 'Features',
+    link: '/#features',
+  },
+  {
+    name: 'Contact',
+    link: '/#contact',
   },
 ];

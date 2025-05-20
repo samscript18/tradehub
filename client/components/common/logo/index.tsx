@@ -1,17 +1,12 @@
 import Link from 'next/link';
-import React, { FC } from 'react';
+import React from 'react';
 import { SiSinglestore } from 'react-icons/si';
 
-interface Props {
-	width?: number;
-	height?: number;
-}
-
-const Logo: FC<Props> = () => {
+const Logo = () => {
 	return (
-		<Link href={'/'} className="text-primary flex items-center gap-1">
-			<SiSinglestore />
-			<span>TradeHub</span>
+		<Link href={'/'} className="flex items-center gap-1">
+			<SiSinglestore className="text-primary" size={25}/>
+			<span className="font-bold text-xl">Trade<span className='text-primary'>Hub</span></span>
 		</Link>
 	);
 };

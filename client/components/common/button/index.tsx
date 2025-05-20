@@ -65,7 +65,7 @@ const Button: FC<Props> = (props) => {
 
 	switch (variant) {
 		case 'filled':
-			mainClass += 'bg-primary text-white hover:bg-primary/80 text-center ';
+			mainClass += 'bg-primary text-white hover:bg-primary/50 text-center ';
 			break;
 		case 'accent':
 			mainClass +=
@@ -73,7 +73,7 @@ const Button: FC<Props> = (props) => {
 			break;
 		case 'outline':
 			mainClass +=
-				'bg-transparent border border-primary hover:bg-primary/5 text-primary disabled:border-zinc-500/50 ';
+				'bg-transparent border border-primary hover:bg-primary/10 text-primary disabled:border-zinc-500/50 ';
 			break;
 		case 'destructive':
 			mainClass +=
