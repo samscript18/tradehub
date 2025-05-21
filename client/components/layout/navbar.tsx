@@ -56,7 +56,7 @@ const Navbar = () => {
 							<Link
 								key={link.name}
 								href={link.link}
-								className="text-sm font-semibold text-white hover:text-primary hover:underline duration-500">
+								className="text-sm font-medium text-white hover:text-primary hover:underline duration-500">
 								{link.icon}
 								<span>{link.name}</span>
 							</Link>
@@ -80,7 +80,7 @@ const Navbar = () => {
 							<div className="flex items-center gap-3">
 								<UserCircle />
 
-								<p className="text-[.9rem] font-semibold">
+								<p className="text-[.9rem] font-medium">
 									{user?.firstName} {user?.lastName}
 								</p>
 							</div>
@@ -91,7 +91,7 @@ const Navbar = () => {
 									isPending && 'animate-pulse'
 								)}
 								onClick={() => mutateAsync()}>
-								<p className="text-[.9rem] font-semibold">{isPending ? 'Signing Out' : 'Sign Out'}</p>
+								<p className="text-[.9rem] font-medium">{isPending ? 'Signing Out' : 'Sign Out'}</p>
 								{isPending && <Loader className="animate-spin" />}
 							</div>
 						</div>
@@ -124,7 +124,7 @@ const Navbar = () => {
 										<Link
 											key={link.name}
 											href={link.link}
-											className="block rounded-lg px-3 py-2 text-base font-semibold text-white hover:text-primary hover:underline duration-500">
+											className="block rounded-lg px-3 py-2 text-base font-medium text-white hover:text-primary hover:underline duration-500">
 											{link.icon}
 											<span>{link.name}</span>
 										</Link>
@@ -148,7 +148,7 @@ const Navbar = () => {
 										<div className="flex items-center gap-3">
 											<UserCircle />
 
-											<p className="text-[.9rem] font-semibold">
+											<p className="text-[.9rem] font-medium">
 												{user?.firstName} {user?.lastName}
 											</p>
 										</div>
@@ -160,7 +160,7 @@ const Navbar = () => {
 											)}
 											onClick={() => mutateAsync()}>
 											{isPending && <Loader className="animate-spin" />}
-											<p className="text-[.9rem] font-semibold">{isPending ? 'Signing Out' : 'Sign Out'}</p>
+											<p className="text-[.9rem] font-medium">{isPending ? 'Signing Out' : 'Sign Out'}</p>
 										</div>
 									</>
 								)}
