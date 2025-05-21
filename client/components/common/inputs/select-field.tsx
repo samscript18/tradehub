@@ -23,7 +23,7 @@ const labelVariants: Record<string, Variant> = {
 
 type Option = {
 	label: string | ReactNode;
-	value: any;
+	value: string | number;
 	id: string;
 };
 

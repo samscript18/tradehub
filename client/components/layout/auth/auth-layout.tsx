@@ -12,7 +12,7 @@ const AuthLayout: FC<Props> = ({ children }) => {
 			<div className="w-full h-full flex justify-between items-center gap-x-8 rounded-xl md:border-2 border-gray-200 max-md:flex-col">
 				<div className="w-full h-full bg-gray-100  pt-5 md:pt-20 pb-10 p-8 flex flex-col">
 					<Link href={'/'}>
-						<Logo width={200} />
+						<Logo />
 					</Link>
 					<h1 className="text-xl md:text-4xl font-bold mt-8 mb-4">Documents warehouse</h1>
 					<p className="text-gray-400 text-lg max-md:text-md">

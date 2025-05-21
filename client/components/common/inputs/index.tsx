@@ -10,7 +10,7 @@ import { MdClose } from 'react-icons/md';
 
 type Option = {
   label: string | ReactNode;
-  value: any;
+  value: string | number;
   id: string;
 };
 
