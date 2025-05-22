@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 	try {
 		const mailOptions = {
 			from: `${email}`,
-			to: 'support@iabcodesltd.com',
+			to: process.env.MAILER_USER,
 			subject: 'Contact Form Submission',
 			html: ContactSubmissionEmailTemplate({ name, email, message }),
 		};
