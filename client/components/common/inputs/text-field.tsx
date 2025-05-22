@@ -52,7 +52,7 @@ export default function TextField({
 						{...LabelProps}
 						htmlFor={InputProps?.id}
 						className={cn(
-							`font-normal absolute top-0 left-0 text-primary`,
+							`font-normal absolute top-0 left-0 text-primary text-[13px]`,
 							LabelProps?.className,
 							helperText && '!text-red-500'
 						)}
@@ -70,7 +70,7 @@ export default function TextField({
 						onFocus={focusLabel}
 						onBlur={() => setLabelFocused(false)}
 						className={cn(
-							'w-full h-[150px] resize-none py-[.5rem] outline-none border-b border-b-gray-600 focus:border-b-2 focus:border-b-primary transition duration-300 placeholder:text-[.9rem]',
+							'w-full h-[150px] resize-none py-[.5rem] outline-none border-b border-b-gray-600 focus:border-b-2 focus:border-b-primary transition duration-300 placeholder:text-[13px]',
 							labelFocused && 'border-b-primary',
 							helperText && 'focus:!border-b-red-500',
 							InputProps?.className
@@ -82,7 +82,7 @@ export default function TextField({
 						onFocus={focusLabel}
 						onBlur={() => setLabelFocused(false)}
 						className={cn(
-							'w-full py-[.5rem] outline-none border-b border-b-gray-600 focus:border-b-2 focus:border-b-primary transition duration-300 placeholder:text-[.9rem]',
+							'w-full py-[.5rem] outline-none border-b border-b-gray-600 focus:border-b-2 focus:border-b-primary transition duration-300 placeholder:text-[13px]',
 							labelFocused && 'border-b-primary',
 							helperText && 'focus:!border-b-red-500',
 							InputProps?.className

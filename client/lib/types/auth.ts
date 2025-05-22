@@ -24,3 +24,9 @@ export type SignUp = {
   phoneNumber: string;
   password: string;
 };
+
+export type ContactUs = {
+  name: string;
+  email: string;
+  message: string;
+}

@@ -55,7 +55,7 @@ const Button: FC<Props> = (props) => {
 		role,
 		...rest
 	} = props;
-	let mainClass = `rounded-${rounded} font-semibold text-center duration-300 cursor-pointer ${
+	let mainClass = `rounded-${rounded} font-medium text-center duration-300 cursor-pointer ${
 		loading
 			? '!rounded-full !mx-auto '
 			: fullWidth

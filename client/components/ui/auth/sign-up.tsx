@@ -31,7 +31,6 @@ const SignUpPage = () => {
 	});
 
 	const submit = (e: SignUp) => {
-		console.log(e);
 		_signUp(e);
 	};
 

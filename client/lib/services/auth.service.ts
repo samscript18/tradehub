@@ -1,7 +1,7 @@
 import { AxiosErrorShape, errorHandler } from '../config/axios-error';
-import { authApi, publicApi } from '../config/axios-instance';
+import { appApi, authApi, publicApi } from '../config/axios-instance';
 import { ApiResponse } from '../types';
-import { LoginType, ResetPassword, SignUp, User } from '../types/auth';
+import { ContactUs, LoginType, ResetPassword, SignUp, User } from '../types/auth';
 
 export const loginUser = async (data: LoginType) => {
   try {
@@ -61,5 +61,15 @@ export const signOut = async () => {
   } catch (error) {
     errorHandler(error as AxiosErrorShape | string);
     throw error;
+  }
+};
+
+export const contactUs = async (data: ContactUs) => {
+  try {
+    await appApi.post('/contact', {
+      ...data
+    });
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
   }
 };

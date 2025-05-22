@@ -1,8 +1,9 @@
 import { avatar1, avatar2, avatar3 } from '@/public/images';
-import { FaCreditCard, FaSearch } from 'react-icons/fa';
-import { FaCartShopping, FaTruck } from 'react-icons/fa6';
+import { FaCreditCard, FaSearch, FaShieldAlt, FaShoppingBag, FaStore } from 'react-icons/fa';
+import { FaCartShopping, FaTruck, FaUsers } from 'react-icons/fa6';
 import { FiGlobe, FiTool } from 'react-icons/fi';
 import { MdCreditCard, MdOutlineLocationOn } from 'react-icons/md';
+import { TbMessages } from 'react-icons/tb';
 
 interface NavGroup {
 	name: string;
@@ -108,5 +109,56 @@ export const Stories = [
 		country: 'Osun State',
 		rating: 5,
 		comment: 'The local delivery service is fantastic! Everything arrives fresh and on time.',
+	},
+];
+
+export const AboutData = [
+	{
+		id: 1,
+		icon: <FaUsers size={20} className="text-white" />,
+		name: 'Community-First Commerce',
+		description:
+			'We believe in building strong local economies through meaningful connections between neighbors and local businesses.',
+	},
+	{
+		id: 2,
+		icon: <FaShieldAlt size={20} className="text-white" />,
+		name: 'Secure, Seamless Transaction',
+		description:
+			'Your safety and peace of mind are our top priorities. Every transaction is protected with industry-leading security measures.',
+	},
+	{
+		id: 3,
+		icon: <FaStore size={20} className="text-white" />,
+		name: 'Empowering Small Businesses',
+		description:
+			'We provide the tools and platform local merchants need to thrive in the digital age while maintaining their unique character.',
+	},
+];
+
+export const AboutInfo = [
+	{
+		id: 1,
+		icon: <FaUsers size={20} className="text-white" />,
+		title: 'Active Users',
+		value: '50+',
+	},
+	{
+		id: 2,
+		icon: <FaStore size={20} className="text-white" />,
+		title: 'Local Merchants',
+		value: '20+',
+	},
+	{
+		id: 3,
+		icon: <FaShoppingBag size={20} className="text-white" />,
+		title: 'Monthly Orders',
+		value: '35+',
+	},
+	{
+		id: 4,
+		icon: <TbMessages size={20} className="text-white" />,
+		title: 'Satisfaction Rate',
+		value: '95%',
 	},
 ];

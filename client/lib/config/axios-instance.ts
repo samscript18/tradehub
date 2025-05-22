@@ -1,5 +1,9 @@
 import axios, { AxiosInstance } from 'axios';
-import { API_URL } from '../constants/env';
+import { API_URL, APP_URL } from '../constants/env';
+
+export const appApi: AxiosInstance = axios.create({
+  baseURL: APP_URL,
+});
 
 export const publicApi: AxiosInstance = axios.create({
   baseURL: API_URL,

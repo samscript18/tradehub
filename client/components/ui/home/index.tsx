@@ -5,6 +5,8 @@ import Process from './process';
 import Features from './features';
 import Stories from './stories';
 import CTA from './cta';
+import AboutUs from './about-us';
+import ContactUs from './contact-us';
 
 const HomePage = () => {
 	return (
@@ -14,9 +16,11 @@ const HomePage = () => {
 				<Hero />
 			</div>
 			<Process />
-			<Features />
+			<AboutUs />
 			<Stories />
+			<Features />
 			<CTA />
+			<ContactUs />
 			<Footer />
 		</main>
 	);
