@@ -162,3 +162,26 @@ export const AboutInfo = [
 		value: '95%',
 	},
 ];
+
+export const storeCategories: {
+	id: string;
+	value: string;
+	label: string;
+	icon: string;
+}[] = [
+	{ id: '1', value: 'electronics', label: 'Electronics', icon: '📱' },
+	{ id: '2', value: 'clothing', label: 'Clothing & Fashion', icon: '👕' },
+	{ id: '3', value: 'food-beverages', label: 'Food & Beverages', icon: '🍕' },
+	{ id: '4', value: 'books', label: 'Books & Media', icon: '📚' },
+	{ id: '5', value: 'home-garden', label: 'Home & Garden', icon: '🏠' },
+	{ id: '6', value: 'sports', label: 'Sports & Outdoors', icon: '⚽' },
+	{ id: '7', value: 'beauty', label: 'Beauty & Personal Care', icon: '💄' },
+	{ id: '8', value: 'toys', label: 'Toys & Games', icon: '🧸' },
+	{ id: '9', value: 'automotive', label: 'Automotive', icon: '🚗' },
+	{ id: '10', value: 'health', label: 'Health & Wellness', icon: '💊' },
+	{ id: '11', value: 'jewelry', label: 'Jewelry & Accessories', icon: '💎' },
+	{ id: '12', value: 'pet-supplies', label: 'Pet Supplies', icon: '🐕' },
+	{ id: '13', value: 'office', label: 'Office & Business', icon: '💼' },
+	{ id: '14', value: 'crafts', label: 'Arts & Crafts', icon: '🎨' },
+	{ id: '15', value: 'music', label: 'Music & Instruments', icon: '🎵' },
+];

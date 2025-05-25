@@ -1,6 +1,7 @@
 export interface LoginType {
-  email: string;
+  credential: string;
   password: string;
+  rememberMe?: boolean;
 }
 
 export type User = {
@@ -13,17 +14,23 @@ export type User = {
 export type ResetPassword = {
   password: string;
   token: string;
-  email: string;
+  credential: string;
   confirmPassword: string;
 };
 
 export type SignUp = {
-  firstName: string;
-  lastName: string;
   email: string;
   phoneNumber: string;
   password: string;
-};
+  role: 'buyer' | 'merchant',
+  firstName?: string;
+  lastName?: string;
+  storeName?: string;
+  storeDescription?: string;
+  storeAddress?: string;
+  storeCategory?: string[];
+}
+
 
 export type ContactUs = {
   name: string;

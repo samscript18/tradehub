@@ -126,7 +126,7 @@ export function PasswordTextField({ InputProps, ...props }: Props) {
 			}}
 			inputSuffix={
 				<span
-					className={cn('text-[1.2rem] cursor-pointer text-gray-600')}
+					className={cn('text-sm cursor-pointer text-gray-600')}
 					onClick={() => setPasswordView(passwordView === 'hide' ? 'show' : 'hide')}>
 					{passwordView === 'show' ? <FaRegEye /> : <FaRegEyeSlash />}
 				</span>

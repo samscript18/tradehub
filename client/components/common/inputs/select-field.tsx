@@ -29,7 +29,7 @@ type Option = {
 
 interface Props {
 	data?: Option[];
-	value?: string;
+	value?: string | string[];
 	onClear?(): void;
 	onSelect?(option: Option): void;
 	onSearch?(search?: string): Option[];
@@ -103,22 +103,22 @@ const SelectField: FC<Props> = ({
 						)}
 					</AnimatePresence>
 
-          <input
-            onFocus={focusLabel}
-            onBlur={() => (setLabelFocused(false), setIsOpen(false))}
-            className="bg-white outline-none border-none placeholder:text-[.9rem] text-[.9rem] text-[#444] flex-1 w-full"
-            placeholder={
-              value ||
-              (!labelFocused && label ? label : placeholder) ||
-              'Select...'
-            }
-            value={search}
-            onChange={(e) => {
-              setIsOpen(true);
-              setSearch(e.target.value);
-              focusLabel();
-            }}
-          />
+					<input
+						onFocus={focusLabel}
+						onBlur={() => (setLabelFocused(false), setIsOpen(false))}
+						className="bg-white outline-none border-none placeholder:text-[.9rem] text-[.9rem] text-[#444] flex-1 w-full"
+						placeholder={
+							typeof value === 'string'
+								? value || (!labelFocused && label ? label : placeholder) || 'Select...'
+								: `${value?.length} categories selected`
+						}
+						value={search}
+						onChange={(e) => {
+							setIsOpen(true);
+							setSearch(e.target.value);
+							focusLabel();
+						}}
+					/>
 
 					{(value || search) && (
 						<span

@@ -1,6 +1,8 @@
 'use client';
 import Button from '@/components/common/button';
+import { Checkbox } from '@/components/common/inputs/checkbox';
 import TextField, { PasswordTextField } from '@/components/common/inputs/text-field';
+import Logo from '@/components/common/logo';
 import WavingHand from '@/components/common/waving-hand';
 import AuthLayout from '@/components/layout/auth/auth-layout';
 import { loginUser } from '@/lib/services/auth.service';
@@ -11,6 +13,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { FaGoogle } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 import { toast } from 'sonner';
 
 const LoginPage = () => {
@@ -20,7 +24,11 @@ const LoginPage = () => {
 		handleSubmit,
 		register,
 		formState: { errors },
+		watch,
+		setValue,
 	} = useForm<LoginType>();
+
+	const rememberMe = watch('rememberMe');
 
 	const { mutateAsync: _signIn, isPending: _signingIn } = useMutation({
 		mutationKey: ['auth', 'sign-in'],
@@ -40,26 +48,28 @@ const LoginPage = () => {
 	return (
 		<AuthLayout>
 			<>
-				<h1 className="text-xl md:text-[2.5rem] font-bold">
-					Hi, FUNAABite <WavingHand />
+				<Logo className="" />
+				<h1 className="text-xl md:text-3xl font-bold my-4">
+					Welcome to TradeHub <WavingHand />
 				</h1>
 				<p className="text-sm text-gray-400">
-					Login to get full and personalized access to documents on digifest.
+					Connect with trusted local sellers. Support your community while shopping conveniently.
 				</p>
 
-				<form className="mt-16 space-y-8" onSubmit={handleSubmit(submit)}>
+				<form className="mt-8 space-y-8" onSubmit={handleSubmit(submit)}>
 					<TextField
 						label="Email address/Phone Number"
 						InputProps={{
 							placeholder: 'e.g johndoe@gmail.com',
-							...register('email', {
+							...register('credential', {
 								required: {
 									value: true,
 									message: 'This field is required',
 								},
 							}),
+							className: 'text-sm',
 						}}
-						helperText={errors?.email?.message}
+						helperText={errors?.credential?.message}
 					/>
 
 					<PasswordTextField
@@ -71,27 +81,61 @@ const LoginPage = () => {
 									message: 'This field is required',
 								},
 							}),
+							className: 'text-sm',
 						}}
 						helperText={errors?.password?.message}
 					/>
 
+					<div className="flex justify-between items-center">
+						<div className="flex justify-start gap-2 items-center">
+							<Checkbox
+								checked={rememberMe}
+								onCheckedChange={(checked) => {
+									setValue('rememberMe', checked as boolean);
+								}}
+								id="remember-me"
+								className="accent-primary cursor-pointer"
+							/>
+							<label htmlFor="remember-me" className="text-sm">
+								Remember me
+							</label>
+						</div>
+						<Link href="/forgot-password" className="max-w-fit ml-auto text-sm text-primary mt-3">
+							Forgot Password?
+						</Link>
+					</div>
+
 					<Button loading={_signingIn} fullWidth variant="filled" size="medium" className="mt-8">
-						<>Submit</>
+						<>Log In</>
 					</Button>
 				</form>
-
-				<div className="flex items-center space-between gap-8">
-					<p className="max-w-fit text-[.9rem] mt-3">
-						Do not have an account?{' '}
-						<Link href="/sign-up" className="text-primary">
-							Sign up
-						</Link>
-					</p>
-
-					<Link href="/forgot-password" className="max-w-fit ml-auto text-[.9rem] text-primary mt-3">
-						Forgot Password?
-					</Link>
+				<div className="flex flex-col justify-center items-center">
+					<p className="text-sm text-gray-400 mt-3">or</p>
+					<div className="w-full flex gap-12 justify-center items-center mt-3">
+						<Button
+							fullWidth
+							variant="outline"
+							icon={<FaGoogle />}
+							iconPosition="left"
+							className="flex justify-center items-center">
+							Google
+						</Button>
+						<Button
+							fullWidth
+							variant="outline"
+							icon={<FaXTwitter />}
+							iconPosition="left"
+							className="flex justify-center items-center">
+							X
+						</Button>
+					</div>
 				</div>
+				<p className="max-w-fit mx-auto text-sm mt-4">
+					New to TradeHub?{' '}
+					<Link href="/sign-up" className="text-primary">
+						Create an account
+					</Link>
+				</p>
 			</>
 		</AuthLayout>
 	);

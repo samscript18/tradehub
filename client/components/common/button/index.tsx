@@ -125,9 +125,9 @@ const Button: FC<Props> = (props) => {
 				</span>
 			) : (
 				<>
-					{iconPosition === 'left' && icon}
-					<span className="flex-shrink-0">{children}</span>
-					{iconPosition === 'right' && icon}
+					{iconPosition === 'left' && <div className="flex items-center">{icon}</div>}
+					<span className={`flex-shrink-0 ${icon && 'mt-0.5'}`}>{children}</span>
+					{iconPosition === 'right' && <div className="flex items-center">{icon}</div>}
 				</>
 			)}
 		</motion.button>
