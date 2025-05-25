@@ -14,7 +14,7 @@ export type User = {
 export type ResetPassword = {
   password: string;
   token: string;
-  credential: string;
+  email: string;
   confirmPassword: string;
 };
 
