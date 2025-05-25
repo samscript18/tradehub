@@ -8,9 +8,9 @@ interface Props {
 
 const AuthLayout: FC<Props> = ({ children }) => {
 	return (
-		<main className="flex flex-col items-center max-h-screen">
+		<main className="flex flex-col items-center md:max-h-screen">
 			<div className="w-full max-h-screen flex justify-between items-center gap-x-8 rounded-xl max-md:flex-col md:overflow-y-hidden">
-				<div className="w-full min-h-screen bg-[#111827] p-8 flex flex-col">
+				<div className="w-full h-auto md:min-h-screen bg-[#111827] p-8 flex flex-col">
 					<div className="mx-auto">
 						<Image src={authImg} alt="auth-img" width={450} height={450} className="object-cover rounded-md" />
 						<h1 className="text-xl md:text-3xl font-semibold mt-4 mb-2 text-center">Connect. Trade. Thrive</h1>
@@ -20,7 +20,7 @@ const AuthLayout: FC<Props> = ({ children }) => {
 					</div>
 				</div>
 
-				<div className="w-full max-h-screen p-8 flex flex-col overflow-y-scroll">{children}</div>
+				<div className="w-full md:max-h-screen py-8 px-4 md:p-8 flex flex-col md:overflow-y-scroll">{children}</div>
 			</div>
 		</main>
 	);

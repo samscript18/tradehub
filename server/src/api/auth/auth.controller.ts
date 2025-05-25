@@ -27,6 +27,7 @@ import { ConfigService } from '@nestjs/config';
 import { TokenService } from '../token/token.service';
 import { UtilService } from 'src/shared/services/utils.service';
 import { GoogleUser } from './interfaces';
+import { CredentialValidationPipe } from 'src/core/pipes';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -34,11 +35,9 @@ export class AuthController {
    constructor(
       private readonly authService: AuthService,
       private readonly configService: ConfigService,
-      private readonly utilService: UtilService,
-      private readonly tokenService: TokenService
    ) { }
 
-   @Post('/signup/customer')
+   @Post('/sign-up/customer')
    @IsPublic()
    @ApiOperation({ summary: 'Onboard Customer' })
    async onBoardCustomer(@Body() onBoardCustomerDto: OnBoardCustomerDto) {
@@ -47,7 +46,7 @@ export class AuthController {
       return data;
    }
 
-   @Post('/signup/merchant')
+   @Post('/sign-up/merchant')
    @IsPublic()
    @ApiOperation({ summary: 'Onboard Merchant' })
    async onBoardMerchant(@Body() onBoardMerchantDto: OnBoardMerchantDto) {
@@ -126,16 +125,17 @@ export class AuthController {
       return data;
    }
 
-   @Post('/signin')
+   @Post('/sign-in')
    @IsPublic()
    @HttpCode(HttpStatus.OK)
    @ApiOperation({ summary: 'Sign in' })
-   async signIn(@Body() signInDto: SignInDto, @Res() res: Response) {
-      const data = await this.authService.signIn(signInDto);
+   async signIn(@Body(CredentialValidationPipe) signInDto: SignInDto, @Res() res: Response) {
+      const { credential, credentialType, password, rememberMe } = signInDto;
+      const data = await this.authService.signIn({ credential, credentialType, password, rememberMe });
       const access_token = data.data.meta.accessToken;
       const refresh_token = data.data.meta.refreshToken;
       res.cookie('access_token', access_token, {
-         maxAge: 3600000,
+         maxAge: rememberMe ? 86400000 : 3600000,
          httpOnly: true,
          secure: true,
          sameSite: 'none',
@@ -181,12 +181,14 @@ export class AuthController {
 
    @Get('init-google')
    @IsPublic()
-   async googleAuthInit(@Res() res: Response, @Query('role') role: string) {
-      res.cookie('user_role', role, {
-         httpOnly: true,
-         secure: true,
-         sameSite: 'lax',
-      });
+   async googleAuthInit(@Res() res: Response, @Query('role') role?: string) {
+      if (role) {
+         res.cookie('user_role', role, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'lax',
+         });
+      }
 
       res.redirect(this.configService.get<string>('GOOGLE_INIT_URL'));
    }
@@ -203,7 +205,7 @@ export class AuthController {
    @IsPublic()
    @UseGuards(GoogleOAuthGuard)
    async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-      const role = req.cookies['user_role'];
+      const role = req.cookies['user_role'] || '';
       const token = await this.authService.googleSignIn({ ...req.user as GoogleUser, role });
 
       res.clearCookie('user_role');

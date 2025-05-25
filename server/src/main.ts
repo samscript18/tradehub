@@ -44,8 +44,8 @@ async function bootstrap() {
    app.useGlobalGuards(authGuard);
 
    const swaggerConfig = new DocumentBuilder()
-      .setTitle('Her Homes 🏬')
-      .setDescription('API Documentation of a real estate property management and financing platform designed to connect property Merchants, mortgage Customers, and mortgage/financing institutions in a seamless digital ecosystem. It aims to simplify property discovery, streamline financing applications, and empower Merchants with powerful management tools.')
+      .setTitle('TradeHub API🏬')
+      .setDescription('Welcome to the TradeHub API, your gateway to building powerful integrations with our dynamic e-commerce platform. This API enables developers to seamlessly interact with TradeHub’s ecosystem—supporting buyers, merchants, products, orders, payments, authentication, and more.')
       .setVersion('1.0.0')
       .addCookieAuth()
       .addServer('https://tradehub-be-dev.onrender.com')

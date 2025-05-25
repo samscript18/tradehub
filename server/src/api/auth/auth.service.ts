@@ -47,10 +47,10 @@ export class AuthService {
       private readonly MerchantService: MerchantService,
    ) { }
 
-   private async auth(user: UserDocument) {
-      const ONE_HOUR = 1000 * 60 * 60;
+   private async auth(user: UserDocument, rememberMe?: boolean) {
+      const expiryTime = { ONE_HOUR: 1000 * 60 * 60, ONE_DAY: 1000 * 60 * 60 * 24 };
       const accessToken = await this.jwtService.signAsync(user, {
-         expiresIn: '1h',
+         expiresIn: rememberMe ? '1d' : '1h',
       });
       const refreshToken = await this.jwtService.signAsync(user, {
          expiresIn: '7d',
@@ -72,12 +72,12 @@ export class AuthService {
          meta: {
             accessToken,
             refreshToken,
-            lifeSpan: ONE_HOUR,
+            lifeSpan: rememberMe ? expiryTime.ONE_DAY : expiryTime.ONE_HOUR,
          },
       };
    }
 
-   async signUp(signUpDto: RegisterDto, { role, CustomerFirstName, MerchantbusinessName }: { role: string, CustomerFirstName?: string, MerchantbusinessName?: string }): Promise<UserDocument> {
+   async signUp(signUpDto: RegisterDto, { role, CustomerFirstName, MerchantStoreName }: { role: string, CustomerFirstName?: string, MerchantStoreName?: string }): Promise<UserDocument> {
       const userExists = await this.userService.getUser({
          $or: [
             {
@@ -112,7 +112,7 @@ export class AuthService {
          subject: 'TradeHub: Account Verification',
          template: 'account-verification',
          context: {
-            firstName: role === RoleNames.CUSTOMER ? CustomerFirstName : MerchantbusinessName,
+            firstName: role === RoleNames.CUSTOMER ? CustomerFirstName : MerchantStoreName,
             link,
          },
       });
@@ -134,10 +134,7 @@ export class AuthService {
 
    async onBoardMerchant(onBoardMerchantDto: OnBoardMerchantDto) {
       onBoardMerchantDto.role = RoleNames.MERCHANT;
-      const user = await this.signUp(onBoardMerchantDto, { role: RoleNames.MERCHANT, MerchantbusinessName: onBoardMerchantDto.businessName });
-
-      const { url } = await this.fileService.uploadResource(onBoardMerchantDto.businessLogo, { resource_type: 'image' });
-      onBoardMerchantDto.businessLogo = url;
+      const user = await this.signUp(onBoardMerchantDto, { role: RoleNames.MERCHANT, MerchantStoreName: onBoardMerchantDto.storeName });
 
       await this.MerchantService.createMerchant({
          ...onBoardMerchantDto,
@@ -202,7 +199,7 @@ export class AuthService {
          subject: 'TradeHub: Account Verification',
          template: 'account-verification',
          context: {
-            firstName: user.role === RoleNames.CUSTOMER ? Customer.firstName : Merchant.businessName,
+            firstName: user.role === RoleNames.CUSTOMER ? Customer.firstName : Merchant.storeName,
             link,
          },
       });
@@ -237,7 +234,7 @@ export class AuthService {
             subject: 'TradeHub: Password Reset Request',
             template: 'forgot-password',
             context: {
-               firstName: user.role === RoleNames.CUSTOMER ? Customer.firstName : Merchant.businessName,
+               firstName: user.role === RoleNames.CUSTOMER ? Customer.firstName : Merchant.storeName,
                link,
             },
          });
@@ -280,11 +277,11 @@ export class AuthService {
    async signIn(signInDto: SignInDto) {
       let user: UserDocument;
 
-      if (signInDto.email) {
-         user = await this.userService.getUser({ email: signInDto.email });
-      } else if (signInDto.phoneNumber) {
+      if (signInDto.credentialType === 'email') {
+         user = await this.userService.getUser({ email: signInDto.credential });
+      } else if (signInDto.credentialType === 'phone') {
          user = await this.userService.getUser({
-            phoneNumber: signInDto.phoneNumber,
+            phoneNumber: signInDto.credential,
          });
       }
 
@@ -299,7 +296,7 @@ export class AuthService {
       if (!user.emailVerified)
          throw new BadRequestException('Email not verified');
 
-      const data = await this.auth(this.utilService.excludePassword(user));
+      const data = await this.auth(this.utilService.excludePassword(user), signInDto.rememberMe);
 
       return {
          success: true,

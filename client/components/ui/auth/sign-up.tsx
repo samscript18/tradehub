@@ -15,7 +15,7 @@ import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { FieldErrorsImpl, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { FaStore } from 'react-icons/fa';
 import { MdShoppingBag } from 'react-icons/md';
 import { toast } from 'sonner';
@@ -78,7 +78,8 @@ const SignUpPage = () => {
 				  }),
 		};
 		console.log(rest);
-		// await _signUp(rest);
+		return;
+		await _signUp(rest);
 	};
 
 	useEffect(() => {
@@ -131,7 +132,7 @@ const SignUpPage = () => {
 					})}
 				</div>
 
-				<form onSubmit={handleSubmit(submit)} className="mt-4 md:mt-8 space-y-8 grid grid-cols-1  gap-6">
+				<form onSubmit={handleSubmit(submit)} className="mt-8 space-y-8 grid grid-cols-1  gap-6">
 					{role === RoleNames.Buyer ? (
 						<>
 							<TextField

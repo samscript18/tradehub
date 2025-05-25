@@ -12,13 +12,19 @@ export class Merchant {
    user: UserDocument;
 
    @Prop()
-   businessName: string;
+   storeName: string;
 
    @Prop()
-   businessLogo: string;
+   storeLogo: string;
 
    @Prop()
-   businessDescription: string;
+   storeDescription: string;
+
+   @Prop()
+   storeAddress: string;
+
+   @Prop({ type: [String], default: [] })
+   storeCategory: string[];
 
    @Prop()
    website?: string;

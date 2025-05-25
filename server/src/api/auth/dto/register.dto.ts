@@ -1,4 +1,4 @@
-import { MinLength } from 'class-validator';
+import { IsArray, MinLength } from 'class-validator';
 import { Gender, RoleNames } from 'src/api/user/enums';
 import { IsDate, IsEmail, IsEnum, IsString } from 'src/shared/decorators';
 
@@ -24,22 +24,25 @@ export class OnBoardCustomerDto extends RegisterDto {
    @IsString(false)
    lastName: string;
 
-   @IsEnum(Gender, false)
+   @IsEnum(Gender, true)
    gender: Gender;
 
-   @IsDate(false)
+   @IsDate(true)
    dateOfBirth: Date;
 }
 
 export class OnBoardMerchantDto extends RegisterDto {
    @IsString(false)
-   businessName: string;
+   storeName: string;
 
    @IsString(false)
-   businessLogo: string;
+   storeAddress: string;
 
    @IsString(false)
-   businessDescription: string;
+   storeDescription: string;
+
+   @IsArray()
+   storeCategory: string[];
 
    @IsString(true)
    website?: string;
