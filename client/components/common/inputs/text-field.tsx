@@ -75,6 +75,7 @@ export default function TextField({
 							helperText && 'focus:!border-b-red-500',
 							InputProps?.className
 						)}
+						placeholder={labelFocused ? InputProps?.placeholder : label}
 					/>
 				) : (
 					<input

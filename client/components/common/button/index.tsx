@@ -36,6 +36,7 @@ type Props = {
 	disabled?: boolean;
 	fullWidth?: boolean;
 	loading?: boolean;
+	loaderSize?: boolean;
 	onClick?: () => void;
 } & Omit<HTMLMotionProps<'button'>, 'onClick'>;
 
@@ -49,6 +50,7 @@ const Button: FC<Props> = (props) => {
 		size = 'small',
 		disabled = false,
 		loading = false,
+		loaderSize = false,
 		iconPosition = 'right',
 		rounded = 'md',
 		fullWidth = false,
@@ -121,7 +123,7 @@ const Button: FC<Props> = (props) => {
 			{...rest}>
 			{loading ? (
 				<span>
-					<BiLoaderAlt size={30} className="text-white animate-spin" />
+					<BiLoaderAlt size={loaderSize ? 20 : 30} className="text-white animate-spin" />
 				</span>
 			) : (
 				<>

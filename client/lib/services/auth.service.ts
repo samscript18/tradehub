@@ -1,5 +1,6 @@
 import { AxiosErrorShape, errorHandler } from '../config/axios-error';
 import { appApi, authApi, publicApi } from '../config/axios-instance';
+import { API_URL } from '../constants/env';
 import { ApiResponse } from '../types';
 import { ContactUs, LoginType, ResetPassword, SignUp, User } from '../types/auth';
 
@@ -32,9 +33,19 @@ export const resetPassword = async (body: ResetPassword) => {
   }
 };
 
-export const signUpUser = async (data: SignUp) => {
+export const signUpCustomer = async (data: SignUp) => {
   try {
-    await publicApi.post('/auth/sign-up', {
+    await publicApi.post('/auth/sign-up/customer', {
+      ...data
+    });
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+  }
+};
+
+export const signUpMerchant = async (data: SignUp) => {
+  try {
+    await publicApi.post('/auth/sign-up/merchant', {
       ...data
     });
   } catch (error) {
@@ -72,4 +83,8 @@ export const contactUs = async (data: ContactUs) => {
   } catch (error) {
     errorHandler(error as AxiosErrorShape | string);
   }
+};
+
+export const googleSignIn = async (role?: 'customer' | 'merchant') => {
+  window.location.href = `${API_URL}${role ? `/auth/init-google?role=${role}` : '/auth/init-google'}`;
 };

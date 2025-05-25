@@ -252,22 +252,22 @@ const MultiSelectField: FC<Props> = ({
 		}
 	}, [data]);
 
-useEffect(() => {
-	if (search) {
-		if (onSearch) {
-			const filteredOptions = onSearch(search);
-			setOptions(filteredOptions);
+	useEffect(() => {
+		if (search) {
+			if (onSearch) {
+				const filteredOptions = onSearch(search);
+				setOptions(filteredOptions);
+			} else {
+				const filtered = data.filter((option) => {
+					const label = typeof option.label === 'string' ? option.label : '';
+					return label.toLowerCase().includes(search.toLowerCase());
+				});
+				setOptions(filtered);
+			}
 		} else {
-			const filtered = data.filter((option) => {
-				const label = typeof option.label === 'string' ? option.label : '';
-				return label.toLowerCase().includes(search.toLowerCase());
-			});
-			setOptions(filtered);
+			setOptions(data);
 		}
-	} else {
-		setOptions(data);
-	}
-}, [search, data, onSearch]);
+	}, [search, data, onSearch]);
 
 	const handleSelect = (option: Option) => {
 		let newSelected: Option[];
@@ -298,7 +298,7 @@ useEffect(() => {
 						{label && (
 							<motion.label
 								className={cn(
-									'font-normal absolute top-0 left-0 text-gray-400 text-sm',
+									'font-normal absolute top-0 left-0 text-primary text-sm',
 									helperText && '!text-red-500'
 								)}
 								variants={labelVariants}

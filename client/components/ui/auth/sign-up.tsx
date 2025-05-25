@@ -1,30 +1,32 @@
 'use client';
 import Button from '@/components/common/button';
 import TextField, { PasswordTextField } from '@/components/common/inputs/text-field';
+import Logo from '@/components/common/logo';
 import { Option } from '@/components/common/select-fields/multi-select-field';
 import MultiSelectField from '@/components/common/select-fields/multi-select-field';
 import WavingHand from '@/components/common/waving-hand';
 import AuthLayout from '@/components/layout/auth/auth-layout';
 import { storeCategories } from '@/lib/data';
 import { RoleNames } from '@/lib/enums';
-import { signUpUser } from '@/lib/services/auth.service';
+import { googleSignIn, signUpCustomer, signUpMerchant } from '@/lib/services/auth.service';
 import { SignUp } from '@/lib/types/auth';
 import { REGEX } from '@/lib/utils/regex';
-import { toastError } from '@/lib/utils/toast';
+import { toastError, toastSuccess } from '@/lib/utils/toast';
 import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FaStore } from 'react-icons/fa';
+import { FaGoogle, FaStore } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 import { MdShoppingBag } from 'react-icons/md';
-import { toast } from 'sonner';
 
 const SignUpPage = () => {
 	const router = useRouter();
 	const [currentIndex, setCurrentIndex] = useState<number>(0);
 	const [confirmPassword, setConfirmPassword] = useState<string>();
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+	const [isPending, setIsPending] = useState<boolean>(false);
 
 	const {
 		handleSubmit,
@@ -34,17 +36,34 @@ const SignUpPage = () => {
 		reset,
 		setValue,
 	} = useForm<SignUp>({
-		defaultValues: { role: RoleNames.Buyer },
+		defaultValues: { role: RoleNames.Customer },
 	});
 	const password = watch('password');
 	const role = watch('role');
 
-	const { mutateAsync: _signUp, isPending: _loading } = useMutation({
-		mutationKey: ['auth', 'sign-up'],
-		mutationFn: signUpUser,
+	const { mutateAsync: _signUpCustomer, isPending: _customerSignUpPending } = useMutation({
+		mutationKey: ['auth', 'sign-up', 'customer'],
+		mutationFn: signUpCustomer,
 		onSuccess() {
-			toast.success('Signed up successfully');
-			router.push('/search');
+			toastSuccess('Signed up successfully');
+			router.push('/customer/dashboard');
+		},
+	});
+
+	const { mutateAsync: _signUpMerchant, isPending: _merchantSignUpPending } = useMutation({
+		mutationKey: ['auth', 'sign-up', 'merchant'],
+		mutationFn: signUpMerchant,
+		onSuccess() {
+			toastSuccess('Signed up successfully');
+			router.push('/merchant/dashboard');
+		},
+	});
+
+	const { mutate: _googleSignIn } = useMutation({
+		mutationKey: ['auth', 'google-sign-in'],
+		mutationFn: (role: 'customer' | 'merchant') => googleSignIn(role),
+		onError: () => {
+			toastError('Google sign in failed');
 		},
 	});
 
@@ -63,11 +82,11 @@ const SignUpPage = () => {
 			email: e.email,
 			password: e.password,
 			phoneNumber: e.phoneNumber,
-			...(role === RoleNames.Buyer
+			...(role === RoleNames.Customer
 				? {
 						firstName: e.firstName,
 						lastName: e.lastName,
-						role: RoleNames.Buyer as RoleNames.Buyer,
+						role: RoleNames.Customer as RoleNames.Customer,
 				  }
 				: {
 						storeName: e.storeName,
@@ -77,17 +96,15 @@ const SignUpPage = () => {
 						role: RoleNames.Merchant as RoleNames.Merchant,
 				  }),
 		};
-		console.log(rest);
-		return;
-		await _signUp(rest);
+		role === RoleNames.Customer ? await _signUpCustomer(rest) : await _signUpMerchant(rest);
 	};
 
 	useEffect(() => {
-		const currentRole = currentIndex === 0 ? RoleNames.Buyer : RoleNames.Merchant;
+		const currentRole = currentIndex === 0 ? RoleNames.Customer : RoleNames.Merchant;
 		setValue('role', currentRole);
 		if (role && role !== currentRole) {
 			reset(
-				currentRole === RoleNames.Buyer
+				currentRole === RoleNames.Customer
 					? { role: currentRole, firstName: '', lastName: '', email: '', phoneNumber: '', password: '' }
 					: {
 							role: currentRole,
@@ -108,22 +125,23 @@ const SignUpPage = () => {
 	return (
 		<AuthLayout>
 			<>
-				<h1 className="text-xl md:text-3xl font-bold">
+				<Logo />
+				<h1 className="text-xl md:text-3xl my-4 font-bold">
 					Welcome to TradeHub <WavingHand />
 				</h1>
-				<p className="text-sm text-gray-400 mt-4">
+				<p className="text-sm text-gray-400">
 					Create your TradeHub account to enjoy full, personalized access to features, content, and tools
 					tailored just for you.
 				</p>
 
 				<div className="flex justify-between items-center bg-[#111827] p-1 rounded-full mt-6 transition-all duration-1000">
-					{['Shop as Buyer', 'Sell as Merchant'].map((item, index) => {
+					{['Shop as Customer', 'Sell as Merchant'].map((item, index) => {
 						return (
 							<div
 								onClick={() => setCurrentIndex(index)}
 								key={item}
-								className={`w-full flex justify-center gap-2 items-center p-2.5 text-sm font-medium cursor-pointer ${
-									currentIndex === index && 'bg-primary rounded-full'
+								className={`w-full flex justify-center gap-2 items-center p-2.5 text-xs md:text-sm font-medium cursor-pointer ${
+									currentIndex === index && 'bg-primary rounded-full shadow-xl'
 								}`}>
 								{index === 0 ? <MdShoppingBag size={21} /> : <FaStore size={21} />}
 								{item}
@@ -133,7 +151,7 @@ const SignUpPage = () => {
 				</div>
 
 				<form onSubmit={handleSubmit(submit)} className="mt-8 space-y-8 grid grid-cols-1  gap-6">
-					{role === RoleNames.Buyer ? (
+					{role === RoleNames.Customer ? (
 						<>
 							<TextField
 								label="First Name"
@@ -274,6 +292,7 @@ const SignUpPage = () => {
 									className: 'text-sm',
 								}}
 								helperText={errors?.storeDescription?.message}
+								multiline
 							/>
 
 							<TextField
@@ -387,10 +406,44 @@ const SignUpPage = () => {
 						</>
 					)}
 
-					<Button fullWidth variant="filled" size="medium" className="col-span-2" loading={_loading}>
+					<Button
+						fullWidth
+						variant="filled"
+						size="medium"
+						className="col-span-2"
+						loading={_customerSignUpPending || _merchantSignUpPending}>
 						Sign Up
 					</Button>
 				</form>
+
+				<div className="flex flex-col justify-center items-center">
+					<p className="text-sm text-gray-400 mt-3">or</p>
+					<div className="w-full flex gap-12 justify-center items-center mt-3">
+						<Button
+							onClick={() => {
+								setIsPending(true);
+								_googleSignIn(role);
+								setIsPending(false);
+							}}
+							fullWidth
+							variant="outline"
+							icon={<FaGoogle />}
+							iconPosition="left"
+							loading={isPending}
+							loaderSize
+							className="flex justify-center items-center">
+							Google
+						</Button>
+						<Button
+							fullWidth
+							variant="outline"
+							icon={<FaXTwitter />}
+							iconPosition="left"
+							className="flex justify-center items-center">
+							X
+						</Button>
+					</div>
+				</div>
 
 				<p className="max-w-fit mx-auto text-[.9rem] mt-3">
 					Alright have an account?{' '}

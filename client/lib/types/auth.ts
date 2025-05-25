@@ -22,7 +22,7 @@ export type SignUp = {
   email: string;
   phoneNumber: string;
   password: string;
-  role: 'buyer' | 'merchant',
+  role: 'customer' | 'merchant',
   firstName?: string;
   lastName?: string;
   storeName?: string;

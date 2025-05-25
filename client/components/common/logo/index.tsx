@@ -4,7 +4,7 @@ import React from 'react';
 import { SiSinglestore } from 'react-icons/si';
 
 interface Props {
-	className: string;
+	className?: string;
 }
 
 const Logo = ({ className }: Props) => {

@@ -7,10 +7,18 @@ export interface ApiResponse<T, M = undefined> {
 
 export interface User {
   _id: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
+  gender?: 'male' | 'female';
+  dateOfBirth?: string;
+  profilePicture?: string;
   email: string;
   phoneNumber: string;
+  storeName?: string;
+  storeAddress?: string;
+  storeLogo?: string;
+  storeDescription?: string;
+  storeCategories: string[];
 }
 
 export type Document = {

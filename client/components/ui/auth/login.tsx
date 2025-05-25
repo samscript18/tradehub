@@ -5,17 +5,17 @@ import TextField, { PasswordTextField } from '@/components/common/inputs/text-fi
 import Logo from '@/components/common/logo';
 import WavingHand from '@/components/common/waving-hand';
 import AuthLayout from '@/components/layout/auth/auth-layout';
-import { loginUser } from '@/lib/services/auth.service';
+import { googleSignIn, loginUser } from '@/lib/services/auth.service';
 import { useAuth } from '@/lib/store/auth.store';
 import { LoginType } from '@/lib/types/auth';
+import { toastError, toastSuccess } from '@/lib/utils/toast';
 import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaGoogle } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import { toast } from 'sonner';
 
 const LoginPage = () => {
 	const router = useRouter();
@@ -30,12 +30,22 @@ const LoginPage = () => {
 
 	const rememberMe = watch('rememberMe');
 
+	const [isPending, setIsPending] = useState<boolean>(false);
+
 	const { mutateAsync: _signIn, isPending: _signingIn } = useMutation({
 		mutationKey: ['auth', 'sign-in'],
 		mutationFn: loginUser,
 		onSuccess() {
-			toast.success('Signed in successfully');
+			toastSuccess('Signed in successfully');
 			router.push('/search');
+		},
+	});
+
+	const { mutate: _googleSignIn } = useMutation({
+		mutationKey: ['auth', 'google-sign-in'],
+		mutationFn: () => googleSignIn(),
+		onError: () => {
+			toastError('Google sign in failed');
 		},
 	});
 
@@ -48,7 +58,7 @@ const LoginPage = () => {
 	return (
 		<AuthLayout>
 			<>
-				<Logo className="" />
+				<Logo />
 				<h1 className="text-xl md:text-3xl font-bold my-4">
 					Welcome to TradeHub <WavingHand />
 				</h1>
@@ -113,10 +123,17 @@ const LoginPage = () => {
 					<p className="text-sm text-gray-400 mt-3">or</p>
 					<div className="w-full flex gap-12 justify-center items-center mt-3">
 						<Button
+							onClick={async () => {
+								setIsPending(true);
+								_googleSignIn();
+								setIsPending(false);
+							}}
 							fullWidth
 							variant="outline"
 							icon={<FaGoogle />}
 							iconPosition="left"
+							loading={isPending}
+							loaderSize
 							className="flex justify-center items-center">
 							Google
 						</Button>
