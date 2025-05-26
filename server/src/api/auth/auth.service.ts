@@ -380,9 +380,9 @@ export class AuthService {
       const user = await this.userService.findOrCreateUser({ email: googleUser.email }, { email: googleUser.email, profilePicture: googleUser.profilePicture, role: googleUser.role, emailVerified: true });
 
       let existingUser: CustomerDocument | MerchantDocument;
-      if (googleUser.role === RoleNames.CUSTOMER) {
+      if (user.role === RoleNames.CUSTOMER) {
          existingUser = await this.CustomerService.findOrCreateCustomer({ user: user._id }, { user: user._id, firstName: googleUser.firstName, lastName: googleUser.lastName })
-      } else if (googleUser.role === RoleNames.MERCHANT) {
+      } else if (user.role === RoleNames.MERCHANT) {
          existingUser = await this.MerchantService.findOrCreateMerchant({ user: user._id }, {
             user: user._id, businessName: `${googleUser.firstName} ${googleUser.lastName}`, businessLogo: googleUser.profilePicture
          });

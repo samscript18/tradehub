@@ -24,8 +24,6 @@ import { IsPublic } from 'src/shared/decorators/auth.decorators';
 import { Request, Response } from 'express';
 import { GoogleOAuthGuard } from './guards/google-oauth.guard';
 import { ConfigService } from '@nestjs/config';
-import { TokenService } from '../token/token.service';
-import { UtilService } from 'src/shared/services/utils.service';
 import { GoogleUser } from './interfaces';
 import { CredentialValidationPipe } from 'src/core/pipes';
 
@@ -205,7 +203,7 @@ export class AuthController {
    @IsPublic()
    @UseGuards(GoogleOAuthGuard)
    async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-      const role = req.cookies['user_role'] || '';
+      const role = req.cookies['user_role'];
       const token = await this.authService.googleSignIn({ ...req.user as GoogleUser, role });
 
       res.clearCookie('user_role');
