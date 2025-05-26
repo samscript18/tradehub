@@ -93,8 +93,7 @@ const Navbar = () => {
 								<Link
 									href={link.link}
 									className="text-sm font-medium text-white hover:text-primary hover:underline duration-500">
-									{link.icon}
-									<span>{link.name}</span>
+									{link.name}
 								</Link>
 							</motion.div>
 						);
@@ -203,12 +202,14 @@ const Navbar = () => {
 													},
 												},
 											}}>
-											<Link
-												href={link.link}
+											<div
+												onClick={() => {
+													router.push(link.link);
+													setMenuOpen(false);
+												}}
 												className="block rounded-lg px-3 py-2 text-base font-medium text-white hover:text-primary hover:underline duration-500">
-												{link.icon}
-												<span>{link.name}</span>
-											</Link>
+												{link.name}
+											</div>
 										</motion.div>
 									);
 								})}

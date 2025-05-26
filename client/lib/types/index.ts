@@ -1,8 +1,8 @@
-export interface ApiResponse<T, M = undefined> {
+export interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
-  meta?: M;
+  // meta?: M;
 }
 
 export interface User {
@@ -19,6 +19,7 @@ export interface User {
   storeLogo?: string;
   storeDescription?: string;
   storeCategories: string[];
+  role: 'customer' | 'merchant';
 }
 
 export type Document = {

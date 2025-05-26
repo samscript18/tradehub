@@ -14,7 +14,7 @@ import { REGEX } from '@/lib/utils/regex';
 import { toastError, toastSuccess } from '@/lib/utils/toast';
 import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaGoogle, FaStore } from 'react-icons/fa';
@@ -23,6 +23,7 @@ import { MdShoppingBag } from 'react-icons/md';
 
 const SignUpPage = () => {
 	const router = useRouter();
+	const defaultRole = useSearchParams().get('role') as RoleNames.Customer | RoleNames.Merchant;
 	const [currentIndex, setCurrentIndex] = useState<number>(0);
 	const [confirmPassword, setConfirmPassword] = useState<string>();
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -36,7 +37,7 @@ const SignUpPage = () => {
 		reset,
 		setValue,
 	} = useForm<SignUp>({
-		defaultValues: { role: RoleNames.Customer },
+		defaultValues: { role: defaultRole ? defaultRole : RoleNames.Customer },
 	});
 	const password = watch('password');
 	const role = watch('role');
@@ -122,6 +123,13 @@ const SignUpPage = () => {
 		}
 	}, [currentIndex, setValue, reset, role]);
 
+	useEffect(() => {
+		if (defaultRole) {
+			setValue('role', defaultRole);
+			setCurrentIndex(1);
+		}
+	}, [defaultRole, setValue]);
+
 	return (
 		<AuthLayout>
 			<>
@@ -134,8 +142,24 @@ const SignUpPage = () => {
 					tailored just for you.
 				</p>
 
-				<div className="flex justify-between items-center bg-[#111827] p-1 rounded-full mt-6 transition-all duration-1000">
+				<div className="hidden md:flex justify-between items-center bg-[#111827] p-1 rounded-full mt-6 transition-all duration-1000">
 					{['Shop as Customer', 'Sell as Merchant'].map((item, index) => {
+						return (
+							<div
+								onClick={() => setCurrentIndex(index)}
+								key={item}
+								className={`w-full flex justify-center gap-2 items-center p-2.5 text-xs md:text-sm font-medium cursor-pointer ${
+									currentIndex === index && 'bg-primary rounded-full shadow-xl'
+								}`}>
+								{index === 0 ? <MdShoppingBag size={21} /> : <FaStore size={21} />}
+								{item}
+							</div>
+						);
+					})}
+				</div>
+
+				<div className="flex md:hidden justify-between items-center bg-[#111827] p-1 rounded-full mt-6 transition-all duration-1000">
+					{['Customer', 'Merchant'].map((item: string, index) => {
 						return (
 							<div
 								onClick={() => setCurrentIndex(index)}

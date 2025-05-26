@@ -4,12 +4,6 @@ export interface LoginType {
   rememberMe?: boolean;
 }
 
-export type User = {
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  email: string;
-};
 
 export type ResetPassword = {
   password: string;

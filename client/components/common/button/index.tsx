@@ -51,7 +51,7 @@ const Button: FC<Props> = (props) => {
 		disabled = false,
 		loading = false,
 		loaderSize = false,
-		iconPosition = 'right',
+		iconPosition,
 		rounded = 'md',
 		fullWidth = false,
 		role,
@@ -67,7 +67,7 @@ const Button: FC<Props> = (props) => {
 
 	switch (variant) {
 		case 'filled':
-			mainClass += 'bg-primary text-white hover:bg-primary/50 text-center ';
+			mainClass += 'bg-primary text-white hover:bg-primary/50 text-center';
 			break;
 		case 'accent':
 			mainClass +=

@@ -1,14 +1,12 @@
 import { AxiosErrorShape, errorHandler } from '../config/axios-error';
 import { appApi, authApi, publicApi } from '../config/axios-instance';
 import { API_URL } from '../constants/env';
-import { ApiResponse } from '../types';
-import { ContactUs, LoginType, ResetPassword, SignUp, User } from '../types/auth';
+import { ApiResponse, User } from '../types';
+import { ContactUs, LoginType, ResetPassword, SignUp } from '../types/auth';
 
 export const loginUser = async (data: LoginType) => {
   try {
-    const response = await publicApi.post<
-      ApiResponse<{ access_token: string }>
-    >('/auth/sign-in', data);
+    const response = await publicApi.post<ApiResponse<{ user: User, meta: { access_token: string, refresh_token: string, lifeSpan: number } }>>('/auth/sign-in', data);
 
     return response.data.data;
   } catch (error) {
@@ -88,3 +86,14 @@ export const contactUs = async (data: ContactUs) => {
 export const googleSignIn = async (role?: 'customer' | 'merchant') => {
   window.location.href = `${API_URL}${role ? `/auth/init-google?role=${role}` : '/auth/init-google'}`;
 };
+
+export const signInWithAccessToken = async (data: { access_token: string }) => {
+  const response = await publicApi.post<ApiResponse<{ user: User, meta: { access_token: string, refresh_token: string, lifeSpan: number } }>>('/auth/token-sign-in', {
+    access_token: data.access_token,
+  });
+  if (response?.data.data.meta.refresh_token) {
+    localStorage.setItem("refresh_token", response.data.data.meta.refresh_token);
+  }
+
+  return response?.data.data;
+}

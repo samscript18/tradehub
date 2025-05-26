@@ -1,17 +1,18 @@
 import { create } from 'zustand';
-import { User } from '../types/auth';
 import { persist } from 'zustand/middleware';
 import { getUser } from '../services/auth.service';
+import { User } from '../types';
 
 type AuthStoreState = {
   user?: User | undefined;
   accessToken?: string;
+  refreshToken?: string;
 };
 
 type AuthStoreActions = {
   fetchUser(): void;
   resetUser(): void;
-  setToken(accessToken: string): void;
+  setToken(accessToken: string, refreshToken: string): void;
 };
 
 type AuthStore = AuthStoreState & AuthStoreActions;
@@ -31,11 +32,12 @@ export const useAuth = create<AuthStore>()(
           set({ user: undefined });
         }
       },
-      setToken(accessToken) {
+      setToken(accessToken, refreshToken) {
         set({ accessToken });
+        set({ refreshToken })
       },
       resetUser() {
-        set({ user: undefined, accessToken: undefined });
+        set({ user: undefined, accessToken: undefined, refreshToken: undefined });
       },
     }),
     {

@@ -35,9 +35,13 @@ const LoginPage = () => {
 	const { mutateAsync: _signIn, isPending: _signingIn } = useMutation({
 		mutationKey: ['auth', 'sign-in'],
 		mutationFn: loginUser,
-		onSuccess() {
+		onSuccess(data) {
 			toastSuccess('Signed in successfully');
-			router.push('/search');
+			if (data.user.role === 'customer') {
+				router.push('/customer/dashboard');
+			} else {
+				router.push('/merchant/dashboard');
+			}
 		},
 	});
 
@@ -51,7 +55,7 @@ const LoginPage = () => {
 
 	const submit = async (e: LoginType) => {
 		const data = await _signIn(e);
-		setToken(data?.access_token as string);
+		setToken(data?.meta.access_token as string, data?.meta.refresh_token as string);
 		fetchUser();
 	};
 
