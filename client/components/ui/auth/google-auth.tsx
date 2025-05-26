@@ -9,7 +9,8 @@ import { useEffect } from 'react';
 
 const GoogleAuthPage = () => {
 	const { push } = useRouter();
-	const access_token = useSearchParams().get('access_token');
+	const token = useSearchParams().get('token');
+	const email = useSearchParams().get('email');
 	const { mutateAsync: _signIn } = useMutation({
 		mutationKey: ['auth', 'token-sign-in'],
 		mutationFn: signInWithAccessToken,
@@ -25,14 +26,14 @@ const GoogleAuthPage = () => {
 
 	useEffect(() => {
 		const storeToken = async () => {
-			if (access_token) {
-				await _signIn({ access_token });
+			if (token && email) {
+				await _signIn({ token, email });
 			} else {
 				push('/login');
 			}
 		};
 		storeToken();
-	}, [push, access_token, _signIn]);
+	}, [push, token, email, _signIn]);
 
 	return (
 		<div className="flex justify-center items-center h-screen">

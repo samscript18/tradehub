@@ -87,10 +87,8 @@ export const googleSignIn = async (role?: 'customer' | 'merchant') => {
   window.location.href = `${API_URL}${role ? `/auth/init-google?role=${role}` : '/auth/init-google'}`;
 };
 
-export const signInWithAccessToken = async (data: { access_token: string }) => {
-  const response = await publicApi.post<ApiResponse<{ user: User, meta: { access_token: string, refresh_token: string, lifeSpan: number } }>>('/auth/token-sign-in', {
-    access_token: data.access_token,
-  });
+export const signInWithAccessToken = async (data: { token: string, email: string }) => {
+  const response = await publicApi.post<ApiResponse<{ user: User, meta: { access_token: string, refresh_token: string, lifeSpan: number } }>>('/auth/token-sign-in', data);
   if (response?.data.data.meta.refresh_token) {
     localStorage.setItem("refresh_token", response.data.data.meta.refresh_token);
   }
