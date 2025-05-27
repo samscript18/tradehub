@@ -384,16 +384,18 @@ export class AuthService {
          existingUser = await this.CustomerService.findOrCreateCustomer({ user: user._id }, { user: user._id, firstName: googleUser.firstName, lastName: googleUser.lastName })
       } else if (user.role === RoleNames.MERCHANT) {
          existingUser = await this.MerchantService.findOrCreateMerchant({ user: user._id }, {
-            user: user._id, businessName: `${googleUser.firstName} ${googleUser.lastName}`, businessLogo: googleUser.profilePicture
+            user: user._id, storeName: `${googleUser.firstName} ${googleUser.lastName}`, storeLogo: googleUser.profilePicture, storeDescription: '', storeCategory: []
          });
       } else {
          throw new Error('Invalid role');
       }
 
-      return await this.tokenService.findOrCreateToken({
+      const token = await this.tokenService.findOrCreateToken({
          email: user.email || existingUser.user?.email,
          value: this.utilService.generateToken(),
          type: TokenTypes.accountVerification,
       });
+
+      return token;
    }
 }

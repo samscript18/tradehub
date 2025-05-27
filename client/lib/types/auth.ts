@@ -21,7 +21,13 @@ export type SignUp = {
   lastName?: string;
   storeName?: string;
   storeDescription?: string;
-  storeAddress?: string;
+  address?: {
+    country: string;
+    state: string;
+    city: string;
+    streetAddress: string;
+    zipcode?: string;
+  };
   storeCategory?: string[];
 }
 

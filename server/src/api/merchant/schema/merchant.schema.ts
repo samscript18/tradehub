@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { User, UserDocument } from 'src/api/user/schema/user.schema';
 import { schemaOptions } from 'src/shared/constants/db.const';
+import { Address, AddressSchema } from './address.schema';
 
 @Schema(schemaOptions)
 export class Merchant {
@@ -20,8 +21,14 @@ export class Merchant {
    @Prop()
    storeDescription: string;
 
-   @Prop()
-   storeAddress: string;
+   @Prop({
+      type: AddressSchema,
+      required: false, default: null
+   })
+   defaultAddress: Address;
+
+   @Prop({ type: [AddressSchema], default: [] })
+   addresses: Address[];
 
    @Prop({ type: [String], default: [] })
    storeCategory: string[];

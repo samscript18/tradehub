@@ -4,6 +4,7 @@ import TextField, { PasswordTextField } from '@/components/common/inputs/text-fi
 import Logo from '@/components/common/logo';
 import { Option } from '@/components/common/select-fields/multi-select-field';
 import MultiSelectField from '@/components/common/select-fields/multi-select-field';
+import SelectCountry from '@/components/common/select-fields/select-country';
 import WavingHand from '@/components/common/waving-hand';
 import AuthLayout from '@/components/layout/auth/auth-layout';
 import { storeCategories } from '@/lib/data';
@@ -87,16 +88,21 @@ const SignUpPage = () => {
 				? {
 						firstName: e.firstName,
 						lastName: e.lastName,
+						defaultAddress: e.address,
+						addresses: [e.address],
 						role: RoleNames.Customer as RoleNames.Customer,
 				  }
 				: {
 						storeName: e.storeName,
 						storeDescription: e.storeDescription,
-						storeAddress: e.storeAddress,
+						defaultAddress: e.address,
+						addresses: [e.address],
 						storeCategory: selectedCategories,
 						role: RoleNames.Merchant as RoleNames.Merchant,
 				  }),
 		};
+		console.log(rest);
+		return;
 		role === RoleNames.Customer ? await _signUpCustomer(rest) : await _signUpMerchant(rest);
 	};
 
@@ -111,7 +117,13 @@ const SignUpPage = () => {
 							role: currentRole,
 							storeName: '',
 							storeDescription: '',
-							storeAddress: '',
+							address: {
+								country: '',
+								state: '',
+								city: '',
+								streetAddress: '',
+								zipcode: '',
+							},
 							email: '',
 							phoneNumber: '',
 							password: '',
@@ -283,6 +295,48 @@ const SignUpPage = () => {
 								}}
 								helperText={password && password !== confirmPassword ? 'Passwords do not match' : undefined}
 							/>
+
+							<TextField
+								label="Street Address"
+								className="col-span-2"
+								InputProps={{
+									placeholder: 'e.g your street address',
+									...register('address.streetAddress', {
+										required: {
+											value: true,
+											message: 'This field is required',
+										},
+									}),
+									className: 'text-sm',
+								}}
+								helperText={errors?.address?.streetAddress?.message}
+							/>
+
+							<SelectCountry
+								onLocationSelect={(location) => {
+									console.log(location);
+									setValue('address.country', location.country);
+									setValue('address.state', location.state);
+									setValue('address.city', location.city);
+								}}
+							/>
+
+							<TextField
+								label="Zip Code"
+								className="col-span-2"
+								InputProps={{
+									type: 'tel',
+									placeholder: 'e.g your store address',
+									...register('address.zipcode', {
+										required: {
+											value: true,
+											message: 'This field is required',
+										},
+									}),
+									className: 'text-sm',
+								}}
+								helperText={errors?.address?.zipcode?.message}
+							/>
 						</>
 					) : (
 						<>
@@ -320,11 +374,11 @@ const SignUpPage = () => {
 							/>
 
 							<TextField
-								label="Store Address"
+								label="Street Address"
 								className="col-span-2"
 								InputProps={{
-									placeholder: 'e.g your store address',
-									...register('storeAddress', {
+									placeholder: 'e.g your street address',
+									...register('address.streetAddress', {
 										required: {
 											value: true,
 											message: 'This field is required',
@@ -332,7 +386,34 @@ const SignUpPage = () => {
 									}),
 									className: 'text-sm',
 								}}
-								helperText={errors?.storeAddress?.message}
+								helperText={errors?.address?.streetAddress?.message}
+							/>
+
+							<SelectCountry
+								onLocationSelect={(location) => {
+									console.log(location);
+									setValue('address.country', location.country);
+									setValue('address.state', location.state);
+									setValue('address.city', location.city);
+								}}
+								className="col-span-2"
+							/>
+
+							<TextField
+								label="Zip Code"
+								className="col-span-2"
+								InputProps={{
+									type: 'tel',
+									placeholder: 'e.g your store address',
+									...register('address.zipcode', {
+										required: {
+											value: true,
+											message: 'This field is required',
+										},
+									}),
+									className: 'text-sm',
+								}}
+								helperText={errors?.address?.zipcode?.message}
 							/>
 
 							<div className="space-y-4 col-span-2">
