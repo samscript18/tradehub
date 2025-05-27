@@ -19,7 +19,7 @@ import { FaXTwitter } from 'react-icons/fa6';
 
 const LoginPage = () => {
 	const router = useRouter();
-	const { fetchUser, setToken } = useAuth();
+	const { setToken } = useAuth();
 	const {
 		handleSubmit,
 		register,
@@ -37,6 +37,8 @@ const LoginPage = () => {
 		mutationFn: loginUser,
 		onSuccess(data) {
 			toastSuccess('Signed in successfully');
+			console.log(data);
+			setToken(data?.meta.accessToken as string, data?.meta.refreshToken as string);
 			if (data.user.role === 'customer') {
 				router.push('/customer/dashboard');
 			} else {
@@ -54,9 +56,7 @@ const LoginPage = () => {
 	});
 
 	const submit = async (e: LoginType) => {
-		const data = await _signIn(e);
-		setToken(data?.meta.access_token as string, data?.meta.refresh_token as string);
-		fetchUser();
+		await _signIn(e);
 	};
 
 	return (

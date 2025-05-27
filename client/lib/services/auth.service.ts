@@ -6,7 +6,7 @@ import { ContactUs, LoginType, ResetPassword, SignUp } from '../types/auth';
 
 export const loginUser = async (data: LoginType) => {
   try {
-    const response = await publicApi.post<ApiResponse<{ user: User, meta: { access_token: string, refresh_token: string, lifeSpan: number } }>>('/auth/sign-in', data);
+    const response = await publicApi.post<ApiResponse<{ user: User, meta: { accessToken: string, refreshToken: string, lifeSpan: number } }>>('/auth/sign-in', data);
 
     return response.data.data;
   } catch (error) {
@@ -91,9 +91,9 @@ export const googleSignIn = async (role?: 'customer' | 'merchant') => {
 };
 
 // export const signInWithAccessToken = async (data: { token: string, email: string }) => {
-//   const response = await publicApi.post<ApiResponse<{ user: User, meta: { access_token: string, refresh_token: string, lifeSpan: number } }>>('/auth/token-sign-in', data);
-//   if (response?.data.data.meta.refresh_token) {
-//     localStorage.setItem("refresh_token", response.data.data.meta.refresh_token);
+//   const response = await publicApi.post<ApiResponse<{ user: User, meta: { accessToken: string, refreshToken: string, lifeSpan: number } }>>('/auth/token-sign-in', data);
+//   if (response?.data.data.meta.refreshToken) {
+//     localStorage.setItem("refreshToken", response.data.data.meta.refreshToken);
 //   }
 
 //   return response?.data.data;

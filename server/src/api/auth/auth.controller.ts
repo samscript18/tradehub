@@ -128,7 +128,7 @@ export class AuthController {
    @IsPublic()
    @HttpCode(HttpStatus.OK)
    @ApiOperation({ summary: 'Sign in' })
-   async signIn(@Body(CredentialValidationPipe) signInDto: SignInDto, @Res() res: Response) {
+   async signIn(@Body(CredentialValidationPipe) signInDto: SignInDto, @Res({ passthrough: true }) res: Response) {
       const { credential, credentialType, password, rememberMe } = signInDto;
       const data = await this.authService.signIn({ credential, credentialType, password, rememberMe });
       const access_token = data.data.meta.accessToken;
@@ -138,6 +138,7 @@ export class AuthController {
          httpOnly: true,
          secure: true,
          sameSite: 'none',
+         path: '/'
       });
 
       res.cookie('refresh_token', refresh_token, {
@@ -145,9 +146,10 @@ export class AuthController {
          httpOnly: true,
          secure: true,
          sameSite: 'none',
+         path: '/'
       });
 
-      res.json(data);
+      return data;
    }
 
    // @IsPublic()
@@ -217,6 +219,7 @@ export class AuthController {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
+            path: '/'
          });
 
          res.cookie('refresh_token', data.data.meta.refreshToken, {
@@ -224,6 +227,7 @@ export class AuthController {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
+            path: '/'
          });
 
          return res.redirect(

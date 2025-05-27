@@ -13,7 +13,11 @@ export const publicApi: AxiosInstance = axios.create({
 
 export const authApi: AxiosInstance = axios.create({
   baseURL: API_URL,
-  withCredentials: true
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  }
 });
 
 authApi.interceptors.request.use(
