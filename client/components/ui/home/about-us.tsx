@@ -53,7 +53,7 @@ const AboutUs = () => {
 								hidden: { opacity: 0, y: 30 },
 								visible: { opacity: 1, y: 0 },
 							}}
-							className="text-sm tracking-wide leading-6">
+							className="text-sm tracking-wider leading-6">
 							TradeHub is revolutionizing local commerce by creating meaningful connections between neighborhood
 							merchants and nearby buyers. We&#39;re building a digital marketplace that preserves the personal
 							touch of local shopping while providing modern convenience. We are your neighborhood&#39;s digital

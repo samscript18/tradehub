@@ -151,7 +151,7 @@ const LoginPage = () => {
 						</Button>
 					</div>
 				</div>
-				<p className="max-w-fit mx-auto text-sm mt-4">
+				<p className="max-w-fit mx-auto text-sm mt-6">
 					New to TradeHub?{' '}
 					<Link href="/sign-up" className="text-primary">
 						Create an account

@@ -547,7 +547,7 @@ const SignUpPage = () => {
 					</div>
 				</div>
 
-				<p className="max-w-fit mx-auto text-[.9rem] mt-3">
+				<p className="max-w-fit mx-auto text-[.9rem] mt-6">
 					Alright have an account?{' '}
 					<Link href="/login" className="text-primary">
 						Log in

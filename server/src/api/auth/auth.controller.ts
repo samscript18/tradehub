@@ -131,9 +131,8 @@ export class AuthController {
    async signIn(@Body(CredentialValidationPipe) signInDto: SignInDto, @Res({ passthrough: true }) res: Response) {
       const { credential, credentialType, password, rememberMe } = signInDto;
       const data = await this.authService.signIn({ credential, credentialType, password, rememberMe });
-      const access_token = data.data.meta.accessToken;
-      const refresh_token = data.data.meta.refreshToken;
-      res.cookie('access_token', access_token, {
+
+      res.cookie('access_token', data.data.meta.accessToken, {
          maxAge: rememberMe ? 86400000 : 3600000,
          httpOnly: true,
          secure: true,
@@ -141,7 +140,7 @@ export class AuthController {
          path: '/'
       });
 
-      res.cookie('refresh_token', refresh_token, {
+      res.cookie('refresh_token', data.data.meta.refreshToken, {
          maxAge: 604800000,
          httpOnly: true,
          secure: true,
