@@ -22,25 +22,25 @@ export class MerchantService {
    }
 
    async createMerchant<T>(data: T) {
-      const Merchant = await this._MerchantModel.create(data);
+      const merchant = await this._MerchantModel.create(data);
 
-      return Merchant;
+      return merchant;
    }
 
    async findOrCreateMerchant<T>(filter: FilterQuery<MerchantDocument>, data: T) {
-      let Merchant = await this.populate(this._MerchantModel.findOne(filter));
+      let merchant = await this.populate(this._MerchantModel.findOne(filter));
 
-      if (!Merchant) {
-         Merchant = await this._MerchantModel.create(data);
+      if (!merchant) {
+         merchant = await this._MerchantModel.create(data);
       }
 
-      return Merchant;
+      return merchant;
    }
 
    async getMerchant(filter: FilterQuery<MerchantDocument>) {
-      const Merchant = await this.populate(this._MerchantModel.findOne(filter));
+      const merchant = await this.populate(this._MerchantModel.findOne(filter));
 
-      return Merchant;
+      return merchant;
    }
 
    async getMerchants(filter: FilterQuery<MerchantDocument>, paginationQuery: PaginationQuery) {

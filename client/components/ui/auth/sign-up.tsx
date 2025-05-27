@@ -48,7 +48,7 @@ const SignUpPage = () => {
 		mutationFn: signUpCustomer,
 		onSuccess() {
 			toastSuccess('Signed up successfully');
-			router.push('/customer/dashboard');
+			router.push('/login');
 		},
 	});
 
@@ -57,7 +57,7 @@ const SignUpPage = () => {
 		mutationFn: signUpMerchant,
 		onSuccess() {
 			toastSuccess('Signed up successfully');
-			router.push('/merchant/dashboard');
+			router.push('/login');
 		},
 	});
 
@@ -89,14 +89,12 @@ const SignUpPage = () => {
 						firstName: e.firstName,
 						lastName: e.lastName,
 						defaultAddress: e.address,
-						addresses: [e.address],
 						role: RoleNames.Customer as RoleNames.Customer,
 				  }
 				: {
 						storeName: e.storeName,
 						storeDescription: e.storeDescription,
 						defaultAddress: e.address,
-						addresses: [e.address],
 						storeCategory: selectedCategories,
 						role: RoleNames.Merchant as RoleNames.Merchant,
 				  }),

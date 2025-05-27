@@ -26,6 +26,7 @@ import { GoogleOAuthGuard } from './guards/google-oauth.guard';
 import { ConfigService } from '@nestjs/config';
 import { GoogleUser } from './interfaces';
 import { CredentialValidationPipe } from 'src/core/pipes';
+import { RoleNames } from '../user/enums';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -146,36 +147,36 @@ export class AuthController {
          sameSite: 'none',
       });
 
-      return data;
+      res.json(data);
    }
 
-   @IsPublic()
-   @HttpCode(HttpStatus.OK)
-   @Post('token-sign-in')
-   @ApiOperation({ summary: 'Sign in with token' })
-   async signInWithToken(
-      @Res() res: Response,
-      @Body() verifyEmailDto: VerifyEmailDto,
-   ) {
-      const data = await this.authService.signInWithToken(verifyEmailDto);
-      const access_token = data.data.meta.accessToken;
-      const refresh_token = data.data.meta.refreshToken;
-      res.cookie('access_token', access_token, {
-         maxAge: 3600000,
-         httpOnly: true,
-         secure: true,
-         sameSite: 'none',
-      });
+   // @IsPublic()
+   // @HttpCode(HttpStatus.OK)
+   // @Post('token-sign-in')
+   // @ApiOperation({ summary: 'Sign in with token' })
+   // async signInWithToken(
+   //    @Res() res: Response,
+   //    @Body() verifyEmailDto: VerifyEmailDto,
+   // ) {
+   //    const data = await this.authService.signInWithToken(verifyEmailDto);
+   //    const access_token = data.data.meta.accessToken;
+   //    const refresh_token = data.data.meta.refreshToken;
+   //    res.cookie('access_token', access_token, {
+   //       maxAge: 3600000,
+   //       httpOnly: true,
+   //       secure: true,
+   //       sameSite: 'none',
+   //    });
 
-      res.cookie('refresh_token', refresh_token, {
-         maxAge: 604800000,
-         httpOnly: true,
-         secure: true,
-         sameSite: 'none',
-      });
+   //    res.cookie('refresh_token', refresh_token, {
+   //       maxAge: 604800000,
+   //       httpOnly: true,
+   //       secure: true,
+   //       sameSite: 'none',
+   //    });
 
-      return data;
-   }
+   //    return data;
+   // }
 
    @Get('init-google')
    @IsPublic()
@@ -203,13 +204,35 @@ export class AuthController {
    @IsPublic()
    @UseGuards(GoogleOAuthGuard)
    async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
-      const role = req.cookies['user_role'];
-      const token = await this.authService.googleSignIn({ ...req.user as GoogleUser, role });
+      try {
+         const role = req.cookies['user_role'] || RoleNames.CUSTOMER;
+         const data = await this.authService.googleSignIn({ ...req.user as GoogleUser, role });
 
-      res.clearCookie('user_role');
+         // Clear the role cookie
+         res.clearCookie('user_role');
 
-      res.redirect(
-         `${this.configService.get<string>('FRONTEND_URL')}/google-auth/callback?email=${token.email}&token=${token.value}`,
-      );
+         // Set auth cookies
+         res.cookie('access_token', data.data.meta.accessToken, {
+            maxAge: 86400000,
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+         });
+
+         res.cookie('refresh_token', data.data.meta.refreshToken, {
+            maxAge: 604800000,
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+         });
+
+         return res.redirect(
+            `${this.configService.get<string>('FRONTEND_URL')}/${data.data.user.role}/dashboard?auth=success`
+         );
+      } catch (error) {
+         return res.redirect(
+            `${this.configService.get<string>('FRONTEND_URL')}/login?error=google-auth-failed`
+         );
+      }
    }
 }

@@ -20,6 +20,7 @@ export const requestForgotPasswordLink = async (credential: string) => {
     await publicApi.post('/auth/forgot-password', { credential });
   } catch (error) {
     errorHandler(error as AxiosErrorShape | string);
+    throw error;
   }
 };
 
@@ -28,6 +29,7 @@ export const resetPassword = async (body: ResetPassword) => {
     await publicApi.post('/auth/reset-password', body);
   } catch (error) {
     errorHandler(error as AxiosErrorShape | string);
+    throw error;
   }
 };
 
@@ -38,6 +40,7 @@ export const signUpCustomer = async (data: SignUp) => {
     });
   } catch (error) {
     errorHandler(error as AxiosErrorShape | string);
+    throw error;
   }
 };
 
@@ -48,14 +51,13 @@ export const signUpMerchant = async (data: SignUp) => {
     });
   } catch (error) {
     errorHandler(error as AxiosErrorShape | string);
+    throw error;
   }
 };
 
 export const getUser = async () => {
   try {
     const response = await authApi.get<ApiResponse<User>>('/user');
-
-    console.log(response);
 
     return response?.data?.data;
   } catch (error) {
@@ -80,6 +82,7 @@ export const contactUs = async (data: ContactUs) => {
     });
   } catch (error) {
     errorHandler(error as AxiosErrorShape | string);
+    throw error;
   }
 };
 
@@ -87,11 +90,11 @@ export const googleSignIn = async (role?: 'customer' | 'merchant') => {
   window.location.href = `${API_URL}${role ? `/auth/init-google?role=${role}` : '/auth/init-google'}`;
 };
 
-export const signInWithAccessToken = async (data: { token: string, email: string }) => {
-  const response = await publicApi.post<ApiResponse<{ user: User, meta: { access_token: string, refresh_token: string, lifeSpan: number } }>>('/auth/token-sign-in', data);
-  if (response?.data.data.meta.refresh_token) {
-    localStorage.setItem("refresh_token", response.data.data.meta.refresh_token);
-  }
+// export const signInWithAccessToken = async (data: { token: string, email: string }) => {
+//   const response = await publicApi.post<ApiResponse<{ user: User, meta: { access_token: string, refresh_token: string, lifeSpan: number } }>>('/auth/token-sign-in', data);
+//   if (response?.data.data.meta.refresh_token) {
+//     localStorage.setItem("refresh_token", response.data.data.meta.refresh_token);
+//   }
 
-  return response?.data.data;
-}
+//   return response?.data.data;
+// }

@@ -124,7 +124,7 @@ export class AuthService {
       onBoardCustomerDto.role = RoleNames.CUSTOMER;
       const user = await this.signUp(onBoardCustomerDto, { role: RoleNames.CUSTOMER, CustomerFirstName: onBoardCustomerDto.firstName });
 
-      await this.CustomerService.createCustomer({ ...onBoardCustomerDto, user: user._id });
+      await this.CustomerService.createCustomer({ ...onBoardCustomerDto, addresses: [onBoardCustomerDto.defaultAddress], user: user._id });
 
       return {
          success: true,
@@ -137,7 +137,7 @@ export class AuthService {
       const user = await this.signUp(onBoardMerchantDto, { role: RoleNames.MERCHANT, MerchantStoreName: onBoardMerchantDto.storeName });
 
       await this.MerchantService.createMerchant({
-         ...onBoardMerchantDto,
+         ...onBoardMerchantDto, addresses: [onBoardMerchantDto.defaultAddress],
          user: user._id,
       });
 
@@ -305,21 +305,21 @@ export class AuthService {
       };
    }
 
-   async signInWithToken(verifyEmailDto: VerifyEmailDto) {
-      await this.verifyEmail(verifyEmailDto);
-      const user: UserDocument = await this.userService.getUser({ email: verifyEmailDto.email });
-      if (!user) {
-         throw new NotFoundException('User does not exist');
-      }
+   // async signInWithToken(verifyEmailDto: VerifyEmailDto) {
+   //    await this.verifyEmail(verifyEmailDto);
+   //    const user: UserDocument = await this.userService.getUser({ email: verifyEmailDto.email });
+   //    if (!user) {
+   //       throw new NotFoundException('User does not exist');
+   //    }
 
-      const data = await this.auth(this.utilService.excludePassword(user));
+   //    const data = await this.auth(this.utilService.excludePassword(user));
 
-      return {
-         success: true,
-         message: 'sign in successful',
-         data,
-      };
-   }
+   //    return {
+   //       success: true,
+   //       message: 'sign in successful',
+   //       data,
+   //    };
+   // }
 
    async refreshSession(refreshToken: string) {
       const verifiedToken = await this.jwtService.verifyAsync(refreshToken);
@@ -390,12 +390,12 @@ export class AuthService {
          throw new Error('Invalid role');
       }
 
-      const token = await this.tokenService.findOrCreateToken({
-         email: user.email || existingUser.user?.email,
-         value: this.utilService.generateToken(),
-         type: TokenTypes.accountVerification,
-      });
+      const data = await this.auth(this.utilService.excludePassword(user));
 
-      return token;
+      return {
+         success: true,
+         message: 'sign in successful',
+         data,
+      };
    }
 }

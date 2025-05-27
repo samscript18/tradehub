@@ -30,6 +30,9 @@ export class OnBoardCustomerDto extends RegisterDto {
 
    @IsDate(true)
    dateOfBirth: Date;
+
+   @IsObject()
+   defaultAddress?: Address;
 }
 
 export class OnBoardMerchantDto extends RegisterDto {
@@ -37,7 +40,7 @@ export class OnBoardMerchantDto extends RegisterDto {
    storeName: string;
 
    @IsObject()
-   address?: Address;
+   defaultAddress?: Address;
 
    @IsString(false)
    storeDescription: string;

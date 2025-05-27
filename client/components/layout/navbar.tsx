@@ -111,10 +111,10 @@ const Navbar = () => {
 								visible: { opacity: 1, y: 0 },
 							}}
 							className="w-[70%] flex gap-8">
-							<Button fullWidth variant="outline" onClick={() => router.push('/login')}>
+							<Button fullWidth variant="outline" className='' onClick={() => router.push('/login')}>
 								Log in
 							</Button>
-							<Button fullWidth variant="filled" onClick={() => router.push('/sign-up')}>
+							<Button fullWidth variant="filled" className='' onClick={() => router.push('/sign-up')}>
 								Sign up
 							</Button>
 						</motion.div>
