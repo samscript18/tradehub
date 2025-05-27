@@ -5,3 +5,11 @@ export interface GoogleUser {
   profilePicture: string;
   role?: string;
 }
+
+export interface Address {
+  country: string;
+  state: string;
+  city: string;
+  zipcode: string;
+  streetAddress: string;
+}

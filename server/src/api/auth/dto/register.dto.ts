@@ -1,6 +1,7 @@
-import { IsArray, MinLength } from 'class-validator';
+import { IsArray, IsObject, MinLength } from 'class-validator';
 import { Gender, RoleNames } from 'src/api/user/enums';
 import { IsDate, IsEmail, IsEnum, IsString } from 'src/shared/decorators';
+import { Address } from '../interfaces';
 
 export class RegisterDto {
    @IsEmail(false)
@@ -35,14 +36,14 @@ export class OnBoardMerchantDto extends RegisterDto {
    @IsString(false)
    storeName: string;
 
-   @IsString(false)
-   storeAddress: string;
+   @IsObject()
+   address?: Address;
 
    @IsString(false)
    storeDescription: string;
 
    @IsArray()
-   storeCategory: string[];
+   storeCategory?: string[];
 
    @IsString(true)
    website?: string;

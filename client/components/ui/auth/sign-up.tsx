@@ -101,8 +101,6 @@ const SignUpPage = () => {
 						role: RoleNames.Merchant as RoleNames.Merchant,
 				  }),
 		};
-		console.log(rest);
-		return;
 		role === RoleNames.Customer ? await _signUpCustomer(rest) : await _signUpMerchant(rest);
 	};
 
@@ -319,6 +317,7 @@ const SignUpPage = () => {
 									setValue('address.state', location.state);
 									setValue('address.city', location.city);
 								}}
+								className="col-span-2"
 							/>
 
 							<TextField
