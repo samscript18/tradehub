@@ -1,6 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import { API_URL, APP_URL } from '../constants/env';
 import { AxiosErrorShape, errorHandler } from './axios-error';
+import Cookies from 'js-cookie';
+import { useAuth } from '../store/auth.store';
 
 export const appApi: AxiosInstance = axios.create({
   baseURL: APP_URL,
@@ -26,8 +28,6 @@ authApi.interceptors.request.use(
       ? JSON.parse(sessionStorage.getItem('user-store')!)?.state?.accessToken
       : undefined;
 
-    console.log(accessToken)
-
     if (accessToken) {
       req.headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -40,19 +40,24 @@ authApi.interceptors.request.use(
 authApi.interceptors.response.use(
   (response) => response,
   async (error) => {
+    const { resetUser } = useAuth()
     if (error.response?.status === 401) {
       try {
-        const refreshToken = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('refresh_token='))
-          ?.split('=')[1];
+        const refreshToken = Cookies.get('refresh_token') || sessionStorage.getItem('refresh_token');
 
         if (refreshToken) {
-          await publicApi.post('/auth/session/refresh', { refreshToken });
-          // Retry the original request
+          const response = await publicApi.post('/auth/session/refresh', { refreshToken });
+
+          if (response.data?.data?.accessToken) {
+            Cookies.set('access_token', response.data.accessToken);
+            sessionStorage.setItem('access_token', response.data.accessToken);
+          }
           return authApi(error.config);
         }
       } catch (error) {
+        resetUser()
+        Cookies.remove('access_token');
+        Cookies.remove('refresh_token');
         errorHandler(error as AxiosErrorShape | string)
         window.location.href = '/login';
       }

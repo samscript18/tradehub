@@ -310,7 +310,6 @@ const SignUpPage = () => {
 
 							<SelectCountry
 								onLocationSelect={(location) => {
-									console.log(location);
 									setValue('address.country', location.country);
 									setValue('address.state', location.state);
 									setValue('address.city', location.city);
@@ -388,7 +387,6 @@ const SignUpPage = () => {
 
 							<SelectCountry
 								onLocationSelect={(location) => {
-									console.log(location);
 									setValue('address.country', location.country);
 									setValue('address.state', location.state);
 									setValue('address.city', location.city);

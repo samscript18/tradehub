@@ -37,7 +37,6 @@ const LoginPage = () => {
 		mutationFn: loginUser,
 		onSuccess(data) {
 			toastSuccess('Signed in successfully');
-			console.log(data);
 			setToken(data?.meta.accessToken as string, data?.meta.refreshToken as string);
 			if (data.user.role === 'customer') {
 				router.push('/customer/dashboard');
