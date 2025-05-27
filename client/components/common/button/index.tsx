@@ -57,7 +57,7 @@ const Button: FC<Props> = (props) => {
 		role,
 		...rest
 	} = props;
-	let mainClass = `rounded-${rounded} font-medium text-center duration-300 cursor-pointer ${
+	let mainClass = `rounded-${rounded} font-medium text-center duration-300 cursor-pointer border ${
 		loading
 			? '!rounded-full !mx-auto '
 			: fullWidth
@@ -67,23 +67,23 @@ const Button: FC<Props> = (props) => {
 
 	switch (variant) {
 		case 'filled':
-			mainClass += 'bg-primary text-white hover:bg-primary/50 text-center';
+			mainClass += 'bg-primary border-primary text-white hover:bg-primary/50 text-center';
 			break;
 		case 'accent':
 			mainClass +=
-				'bg-accent text-white hover:bg-accent/80 text-center border border-primary text-black ';
+				'bg-accent text-white hover:bg-accent/80 text-center border-primary text-black ';
 			break;
 		case 'outline':
 			mainClass +=
-				'bg-transparent border border-primary hover:bg-primary/10 text-primary disabled:border-zinc-500/50 ';
+				'bg-transparent border-primary hover:bg-primary/10 text-primary disabled:border-zinc-500/50 ';
 			break;
 		case 'destructive':
 			mainClass +=
-				'bg-transparent border border-red-500/50 hover:border-red-500 hover:bg-red-500 disabled:hover:bg-transparent hover:text-black disabled:hover:text-red-500 text-red-500 disabled:border-red-500/50 ';
+				'bg-transparent border-red-500/50 hover:border-red-500 hover:bg-red-500 disabled:hover:bg-transparent hover:text-black disabled:hover:text-red-500 text-red-500 disabled:border-red-500/50 ';
 			break;
 		case 'success':
 			mainClass +=
-				'bg-transparent border border-green-500/50 hover:border-green-500 hover:bg-green-500 disabled:hover:bg-transparent hover:text-black disabled:hover:text-green-500 text-green-500 disabled:border-green-500/50 ';
+				'bg-transparent border-green-500/50 hover:border-green-500 hover:bg-green-500 disabled:hover:bg-transparent hover:text-black disabled:hover:text-green-500 text-green-500 disabled:border-green-500/50 ';
 			break;
 		case 'black':
 			mainClass += 'hover:bg-primary/80 bg-primary text-primary ';

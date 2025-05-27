@@ -54,14 +54,14 @@ const Hero = () => {
 					<Button
 						fullWidth
 						variant="filled"
-						className="hidden! md:block!"
+						className="hidden! md:block! px-2"
 						onClick={() => router.push('/sign-up?role=merchant')}>
 						Become a Merchant
 					</Button>
 					<Button
 						fullWidth
 						variant="filled"
-						className="md:hidden! block!"
+						className="md:hidden! block! px-2"
 						onClick={() => router.push('/sign-up?role=merchant')}>
 						Sell as Merchant
 					</Button>

@@ -44,7 +44,7 @@ const CTA = () => {
 					}}>
 					<Button
 						variant="filled"
-						className="bg-white border border-white text-primary hover:text-white"
+						className="bg-white border border-white text-primary hover:text-white px-4"
 						onClick={() => router.push('/sign-up')}>
 						Get Started
 					</Button>

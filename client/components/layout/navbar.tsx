@@ -111,10 +111,10 @@ const Navbar = () => {
 								visible: { opacity: 1, y: 0 },
 							}}
 							className="w-[70%] flex gap-8">
-							<Button fullWidth variant="outline" className='' onClick={() => router.push('/login')}>
+							<Button fullWidth variant="outline" className="w-full" onClick={() => router.push('/login')}>
 								Log in
 							</Button>
-							<Button fullWidth variant="filled" className='' onClick={() => router.push('/sign-up')}>
+							<Button fullWidth variant="filled" className="px-4 w-full" onClick={() => router.push('/sign-up')}>
 								Sign up
 							</Button>
 						</motion.div>
@@ -217,7 +217,7 @@ const Navbar = () => {
 							<div className="py-6 mt-8">
 								{!user && (
 									<motion.div
-										className="w-full flex gap-8"
+										className="w-full flex gap-4"
 										initial="hidden"
 										whileInView="visible"
 										viewport={{ once: true, amount: 0.5 }}
@@ -229,7 +229,7 @@ const Navbar = () => {
 										<Button fullWidth variant="outline" onClick={() => router.push('/login')}>
 											Log in
 										</Button>
-										<Button fullWidth variant="filled" onClick={() => router.push('/sign-up')}>
+										<Button fullWidth variant="filled" className="px-4" onClick={() => router.push('/sign-up')}>
 											Sign up
 										</Button>
 									</motion.div>
