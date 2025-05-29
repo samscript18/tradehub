@@ -230,7 +230,7 @@ export class AuthController {
          });
 
          return res.redirect(
-            `${this.configService.get<string>('FRONTEND_URL')}/${data.data.user.role}/dashboard?auth=success`
+            `${this.configService.get<string>('FRONTEND_URL')}/${data.data.user.role}/${data.data.user.role === 'customer' ? 'home' : 'dashboard'}?auth=success`
          );
       } catch (error) {
          return res.redirect(

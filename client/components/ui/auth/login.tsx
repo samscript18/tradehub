@@ -39,7 +39,7 @@ const LoginPage = () => {
 			toastSuccess('Signed in successfully');
 			setToken(data?.meta.accessToken as string, data?.meta.refreshToken as string);
 			if (data.user.role === 'customer') {
-				router.push('/customer/dashboard');
+				router.push('/customer/home');
 			} else {
 				router.push('/merchant/dashboard');
 			}

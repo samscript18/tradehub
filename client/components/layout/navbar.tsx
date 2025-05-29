@@ -30,7 +30,7 @@ const Navbar = () => {
 
 	return (
 		<header className="absolute inset-x-0 top-0 z-50">
-			<nav className="flex items-center justify-between p-6 lg:px-12" aria-label="Global">
+			<nav className="flex items-center justify-between py-6 px-4 md:p-6 lg:px-12" aria-label="Global">
 				<div className="flex lg:flex-1">
 					<motion.div
 						initial="hidden"

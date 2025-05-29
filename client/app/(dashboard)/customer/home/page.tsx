@@ -1,6 +1,6 @@
 const page = () => {
   return (
-    <div>customer dashboard page</div>
+    <div>home page</div>
   )
 }
 export default page

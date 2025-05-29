@@ -5,14 +5,15 @@ import { SiSinglestore } from 'react-icons/si';
 
 interface Props {
 	className?: string;
+	color?: string;
 }
 
-const Logo = ({ className }: Props) => {
+const Logo = ({ className, color }: Props) => {
 	return (
 		<Link href={'/'} className={cn('flex items-center gap-1', className)}>
-			<SiSinglestore className="text-primary" size={25} />
+			<SiSinglestore className={`${color ? color : 'text-primary'}`} size={25} />
 			<span className="font-bold text-xl">
-				Trade<span className="text-primary">Hub</span>
+				Trade<span className={`${color ? color : 'text-primary'}`}>Hub</span>
 			</span>
 		</Link>
 	);

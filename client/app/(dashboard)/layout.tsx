@@ -4,6 +4,10 @@ import { useAuth } from '@/lib/store/auth.store';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import SessionCheckLoader from '@/components/common/loaders/session-check';
+import CustomerDashboardSidebar from '@/components/layout/(dashboard)/customer/sidebar';
+import CustomerDashboardNavbar from '@/components/layout/(dashboard)/customer/navbar';
+import MerchantDashboardSidebar from '@/components/layout/(dashboard)/merchant/sidebar';
+import MerchantDashboardNavbar from '@/components/layout/(dashboard)/merchant/navbar';
 
 const DashboardLayout = ({
 	children,
@@ -11,7 +15,7 @@ const DashboardLayout = ({
 	children: React.ReactNode;
 }>) => {
 	const [isPending, setIsPending] = useState<boolean>(true);
-	const { fetchUser, setToken } = useAuth();
+	const { user, fetchUser, setToken } = useAuth();
 	useEffect(() => {
 		setIsPending(true);
 		const access_token = Cookies.get('access_token');
@@ -23,6 +27,28 @@ const DashboardLayout = ({
 		setIsPending(false);
 	}, []);
 
-	return <>{isPending ? <SessionCheckLoader /> : <div>{children}</div>}</>;
+	if (isPending) return <SessionCheckLoader />;
+
+	return (
+		<>
+			{user?.role === 'customer' ? (
+				<main className="flex min-h-screen">
+					<CustomerDashboardSidebar />
+					<div className="w-full flex-1 bg-[#B0B0B0]/10 max-h-screen h-screen flex flex-col">
+						<CustomerDashboardNavbar />
+						<div className="flex-1 overflow-y-scroll px-4 md:px-6 pb-6">{children}</div>
+					</div>
+				</main>
+			) : (
+				<main className="flex min-h-screen">
+					<MerchantDashboardSidebar />
+					<div className="w-full flex-1 bg-[#B0B0B0]/10 max-h-screen h-screen flex flex-col">
+						<MerchantDashboardNavbar />
+						<div className="flex-1 overflow-y-scroll px-4 md:px-6 pb-6">{children}</div>
+					</div>
+				</main>
+			)}
+		</>
+	);
 };
 export default DashboardLayout;

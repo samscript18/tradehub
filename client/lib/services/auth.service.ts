@@ -67,12 +67,13 @@ export const getUser = async () => {
 };
 
 export const signOut = async () => {
-  try {
-    await authApi.get('/auth/sign-out');
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+  
+  // try {
+  //   await authApi.get('/auth/sign-out');
+  // } catch (error) {
+  //   errorHandler(error as AxiosErrorShape | string);
+  //   throw error;
+  // }
 };
 
 export const contactUs = async (data: ContactUs) => {
