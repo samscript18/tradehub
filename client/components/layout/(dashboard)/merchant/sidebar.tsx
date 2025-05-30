@@ -134,7 +134,7 @@ const MerchantDashboardSidebar = () => {
 							},
 						}}
 						className={cn(
-							'py-3 px-4 text-sm flex items-center gap-4',
+							'py-3 md:py-2 px-4 text-sm flex items-center gap-4',
 							'hover:text-primary hover:font-bold cursor-pointer duration-200',
 							'text-gray-400 hover:bg-[#242424] hover:text-red-600',
 							'rounded-md',
