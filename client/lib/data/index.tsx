@@ -1,4 +1,20 @@
-import { avatar1, avatar2, avatar3 } from '@/public/images';
+import {
+	artisanCreations,
+	avatar1,
+	avatar2,
+	avatar3,
+	basket,
+	freshAndLocal,
+	homeEssentials,
+	knittedWears,
+	leatherBag,
+	pottery,
+	potterySet,
+	sheaButter,
+	styleStudio,
+	toteBag,
+	vase,
+} from '@/public/images';
 import { FaCreditCard, FaSearch, FaShieldAlt, FaShoppingBag, FaStore } from 'react-icons/fa';
 import { FaCartShopping, FaTruck, FaUsers } from 'react-icons/fa6';
 import { FiGlobe, FiTool } from 'react-icons/fi';
@@ -185,7 +201,6 @@ export const storeCategories: {
 	{ id: '14', value: 'crafts', label: 'Arts & Crafts', icon: '🎨' },
 	{ id: '15', value: 'music', label: 'Music & Instruments', icon: '🎵' },
 ];
-
 
 export const nigerianStatesAndCities = {
 	abia: {
@@ -1347,3 +1362,142 @@ export const nigerianStatesAndCities = {
 	},
 };
 
+export const categories = [
+	{
+		id: 1,
+		icon: <FaUsers />,
+		name: 'Fashion & Apparel',
+	},
+	{
+		id: 2,
+		icon: <FaUsers />,
+		name: 'Beauty & Care',
+	},
+	{
+		id: 3,
+		icon: <FaUsers />,
+		name: 'Food & Beverages',
+	},
+	{
+		id: 4,
+		icon: <FaUsers />,
+		name: 'Accessories',
+	},
+	{
+		id: 5,
+		icon: <FaUsers />,
+		name: 'Home & Living',
+	},
+	{
+		id: 6,
+		icon: <FaUsers />,
+		name: 'Arts & Crafts',
+	},
+];
+
+export const merchantStores = [
+	{
+		id: 1,
+		img: artisanCreations,
+		name: 'Artisan Creations',
+		rating: 4.8,
+		categories: [{ id: 1, name: 'Arts & Crafts' }],
+	},
+	{
+		id: 2,
+		img: freshAndLocal,
+		name: 'Fresh & Local',
+		rating: 4.5,
+		categories: [{ id: 1, name: 'Food & Beverages' }],
+	},
+	{
+		id: 3,
+		img: styleStudio,
+		name: 'Style Studio',
+		rating: 4.7,
+		categories: [{ id: 1, name: 'Fashion' }],
+	},
+	{
+		id: 4,
+		img: homeEssentials,
+		name: 'Home Essentials',
+		rating: 4.0,
+		categories: [{ id: 1, name: 'Home & Living' }],
+	},
+];
+
+export const newProducts = [
+	{
+		id: 1,
+		img: leatherBag,
+		name: 'Handcrafted Leather Bag',
+		merchant: 'Artisan Creations',
+		price: '₦22,000',
+	},
+	{
+		id: 2,
+		img: vase,
+		name: 'Handmade Vase',
+		merchant: 'Ceramic Arts',
+		price: '₦29,500',
+	},
+	{
+		id: 3,
+		img: pottery,
+		name: 'Handmade Pottery',
+		merchant: 'Ceramic Arts',
+		price: '₦15,000',
+	},
+	{
+		id: 4,
+		img: knittedWears,
+		name: 'Knitted Wears',
+		merchant: 'Style Studio',
+		price: '₦7,500',
+	},
+	{
+		id: 5,
+		img: sheaButter,
+		name: 'Handmade Shea Butter Soap',
+		merchant: 'Natural Essence',
+		price: '₦3,400',
+	},
+	{
+		id: 6,
+		img: basket,
+		name: 'Handwoven Market Basket',
+		merchant: 'Heritage Crafts',
+		price: '₦4,500',
+	},
+	{
+		id: 7,
+		img: toteBag,
+		name: 'African Print Tote Bag',
+		merchant: 'Heritage Crafts',
+		price: '₦5,000',
+	},
+	{
+		id: 8,
+		img: potterySet,
+		name: 'Handmade Pottery Set',
+		merchant: 'Artisan Creations',
+		price: '₦5,500',
+	},
+];
+
+export const actions = [
+	{
+		id: 1,
+		icon: <FaUsers />,
+		title: 'Free Delivery on Some Orders',
+		description: 'Use promo code for free shipping',
+		action: 'Shop Now',
+	},
+	{
+		id: 2,
+		icon: <FaUsers />,
+		title: 'Support Black business week',
+		description: 'Special deals and discounts',
+		action: 'Learn More',
+	},
+];

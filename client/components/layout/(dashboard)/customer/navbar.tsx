@@ -1,11 +1,14 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/lib/store/auth.store';
 import { Search, ShoppingCart, User, Bell } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 const CustomerDashboardNavbar = () => {
 	const router = useRouter();
+	const { user } = useAuth();
 	return (
 		<nav className="flex justify-between items-center bg-background/60 py-4 px-4 md:px-6 lg:px-12">
 			<div className="flex-1 max-w-md md:mx-8">
@@ -32,13 +35,23 @@ const CustomerDashboardNavbar = () => {
 					className="hover:bg-primary hover:text-white cursor-pointer">
 					<ShoppingCart className="w-5 h-5" />
 				</Button>
-				<Button
-					onClick={() => router.push('/customer/profile')}
-					variant="ghost"
-					size="icon"
-					className="hover:bg-primary hover:text-white cursor-pointer">
-					<User className="w-5 h-5" />
-				</Button>
+				{user?.profilePicture ? (
+					<Image
+						src={user?.profilePicture as string}
+						alt="profile-img"
+						width={20}
+						height={20}
+						className="w-[20px] h-[20px] object-center object-cover rounded-full cursor-pointer"
+					/>
+				) : (
+					<Button
+						onClick={() => router.push('/customer/profile')}
+						variant="ghost"
+						size="icon"
+						className="hover:bg-primary hover:text-white cursor-pointer">
+						<User className="w-5 h-5" />
+					</Button>
+				)}
 			</div>
 		</nav>
 	);
