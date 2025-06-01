@@ -13,7 +13,7 @@ const Footer = () => {
 				hidden: { opacity: 0, y: 30 },
 				visible: { opacity: 1, y: 0 },
 			}}
-			className="mt-4 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
+			className="mb-4 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
 			&copy; {new Date().getFullYear()} TradeHub. All rights reserved.
 		</motion.footer>
 	);

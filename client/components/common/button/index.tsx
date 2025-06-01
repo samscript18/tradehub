@@ -26,7 +26,7 @@ const loadingVariants: Record<string, Variant> = {
 };
 
 type Props = {
-	children: ReactNode;
+	children?: ReactNode;
 	size?: 'small' | 'medium' | 'large' | 'extra-small';
 	variant?: 'filled' | 'accent' | 'outline' | 'black' | 'destructive' | 'success';
 	className?: string;
