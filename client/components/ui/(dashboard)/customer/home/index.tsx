@@ -56,7 +56,7 @@ const HomeDashboard = () => {
 					Browse Categories
 				</motion.h2>
 				<motion.div
-					className="flex max-md:flex-col gap-8"
+					className="max-md:w-full flex max-lg:overflow-x-scroll gap-3 md:gap-8"
 					initial="hidden"
 					whileInView="visible"
 					viewport={{ once: true, amount: 0.5 }}
@@ -64,7 +64,7 @@ const HomeDashboard = () => {
 					{categories.map((category) => {
 						return (
 							<motion.div
-								className="flex flex-col justify-center items-center w-[130px] bg-[#1E2A3B] py-3 px-1 rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md space-y-2.5"
+								className="flex flex-col justify-center items-center min-w-[130px] md:w-[130px] bg-[#1E2A3B] py-3 px-1 rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md space-y-2.5"
 								key={category.id}
 								variants={{
 									hidden: {
@@ -85,7 +85,7 @@ const HomeDashboard = () => {
 						);
 					})}
 				</motion.div>
-				<div className="flex justify-between items-center mt-8">
+				<div className="flex justify-between items-center mt-6 md:mt-8">
 					<motion.h2
 						className="text-md font-bold"
 						initial="hidden"
@@ -123,7 +123,7 @@ const HomeDashboard = () => {
 					{merchantStores.map((merchant) => {
 						return (
 							<motion.div
-								className="flex flex-col w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md"
+								className="flex flex-col min-w-[170px] md:w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md"
 								key={merchant.id}
 								variants={{
 									hidden: {
@@ -185,7 +185,7 @@ const HomeDashboard = () => {
 						);
 					})}
 				</motion.div>
-				<div className="flex justify-between items-center mt-8">
+				<div className="flex justify-between items-center mt-6 md:mt-8">
 					<motion.h2
 						className="text-md font-bold"
 						initial="hidden"
@@ -223,7 +223,7 @@ const HomeDashboard = () => {
 					{newProducts.map((product) => {
 						return (
 							<motion.div
-								className="flex flex-col w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md"
+								className="flex flex-col min-w-[170px] md:w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md"
 								key={product.id}
 								variants={{
 									hidden: {
@@ -248,9 +248,15 @@ const HomeDashboard = () => {
 								<div className="bg-[#1E2A3B] p-2 space-y-2 shadow-md rounded-b-xl">
 									<h3 className="text-[13px] font-bold">{product.name}</h3>
 									<p className="text-xs text-gray-300">{product.merchant}</p>
-									<div className="flex justify-between items-center">
+									<div className="flex max-lg:flex-col justify-between items-start lg:items-center">
 										<h4 className="text-sm font-bold">{product.price}</h4>
-										<Button variant="filled" className="px-4 py-1.5 w-full font-normal mt-1 text-xs">
+										<Button variant="filled" className="px-4 py-1.5 w-full font-normal mt-1 text-xs max-lg:hidden">
+											Add to cart
+										</Button>
+										<Button
+											fullWidth
+											variant="filled"
+											className="px-4 py-1.5 w-full font-normal mt-1 text-xs lg:hidden">
 											Add to cart
 										</Button>
 									</div>
@@ -259,7 +265,7 @@ const HomeDashboard = () => {
 						);
 					})}
 				</motion.div>
-				<div className="flex justify-between items-center gap-6 mt-6">
+				<div className="flex max-md:flex-col justify-between items-center gap-6 mt-6">
 					<div className="w-full flex justify-between items-center gap-8 bg-gradient-to-r from-primary to-primary/20 rounded-md shadow-md p-3">
 						<div className="space-y-2">
 							<motion.h2
