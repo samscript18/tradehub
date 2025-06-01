@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Providers from '@/lib/providers/providers';
 import { sora } from '@/lib/utils/fonts';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
 	title: {
@@ -20,7 +21,9 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={`${sora.className} antialiased`}>
-				<Providers>{children}</Providers>
+				<Providers>
+					<Suspense>{children}</Suspense>
+				</Providers>
 			</body>
 		</html>
 	);

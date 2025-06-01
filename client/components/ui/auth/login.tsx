@@ -1,65 +1,88 @@
 'use client';
 import Button from '@/components/common/button';
+import { Checkbox } from '@/components/common/inputs/checkbox';
 import TextField, { PasswordTextField } from '@/components/common/inputs/text-field';
+import Logo from '@/components/common/logo';
 import WavingHand from '@/components/common/waving-hand';
 import AuthLayout from '@/components/layout/auth/auth-layout';
-import { loginUser } from '@/lib/services/auth.service';
+import { googleSignIn, loginUser } from '@/lib/services/auth.service';
 import { useAuth } from '@/lib/store/auth.store';
 import { LoginType } from '@/lib/types/auth';
+import { toastError, toastSuccess } from '@/lib/utils/toast';
 import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
+import { FaGoogle } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 
 const LoginPage = () => {
 	const router = useRouter();
-	const { fetchUser, setToken } = useAuth();
+	const { setToken } = useAuth();
 	const {
 		handleSubmit,
 		register,
 		formState: { errors },
+		watch,
+		setValue,
 	} = useForm<LoginType>();
+
+	const rememberMe = watch('rememberMe');
+
+	const [isPending, setIsPending] = useState<boolean>(false);
 
 	const { mutateAsync: _signIn, isPending: _signingIn } = useMutation({
 		mutationKey: ['auth', 'sign-in'],
 		mutationFn: loginUser,
-		onSuccess() {
-			toast.success('Signed in successfully');
-			router.push('/search');
+		onSuccess(data) {
+			toastSuccess('Signed in successfully');
+			setToken(data?.meta.accessToken as string, data?.meta.refreshToken as string);
+			if (data.user.role === 'customer') {
+				router.push('/customer/home');
+			} else {
+				router.push('/merchant/dashboard');
+			}
+		},
+	});
+
+	const { mutate: _googleSignIn } = useMutation({
+		mutationKey: ['auth', 'google-sign-in'],
+		mutationFn: () => googleSignIn(),
+		onError: () => {
+			toastError('Google sign in failed');
 		},
 	});
 
 	const submit = async (e: LoginType) => {
-		const data = await _signIn(e);
-		setToken(data?.access_token as string);
-		fetchUser();
+		await _signIn(e);
 	};
 
 	return (
 		<AuthLayout>
 			<>
-				<h1 className="text-xl md:text-[2.5rem] font-bold">
-					Hi, FUNAABite <WavingHand />
+				<Logo />
+				<h1 className="text-xl md:text-3xl font-bold my-4">
+					Welcome to TradeHub <WavingHand />
 				</h1>
 				<p className="text-sm text-gray-400">
-					Login to get full and personalized access to documents on digifest.
+					Connect with trusted local sellers. Support your community while shopping conveniently.
 				</p>
 
-				<form className="mt-16 space-y-8" onSubmit={handleSubmit(submit)}>
+				<form className="mt-8 space-y-8" onSubmit={handleSubmit(submit)}>
 					<TextField
 						label="Email address/Phone Number"
 						InputProps={{
 							placeholder: 'e.g johndoe@gmail.com',
-							...register('email', {
+							...register('credential', {
 								required: {
 									value: true,
 									message: 'This field is required',
 								},
 							}),
+							className: 'text-sm',
 						}}
-						helperText={errors?.email?.message}
+						helperText={errors?.credential?.message}
 					/>
 
 					<PasswordTextField
@@ -71,27 +94,68 @@ const LoginPage = () => {
 									message: 'This field is required',
 								},
 							}),
+							className: 'text-sm',
 						}}
 						helperText={errors?.password?.message}
 					/>
 
+					<div className="flex justify-between items-center">
+						<div className="flex justify-start gap-2 items-center">
+							<Checkbox
+								checked={rememberMe}
+								onCheckedChange={(checked) => {
+									setValue('rememberMe', checked as boolean);
+								}}
+								id="remember-me"
+								className="accent-primary cursor-pointer"
+							/>
+							<label htmlFor="remember-me" className="text-sm">
+								Remember me
+							</label>
+						</div>
+						<Link href="/forgot-password" className="max-w-fit ml-auto text-sm text-primary mt-3">
+							Forgot Password?
+						</Link>
+					</div>
+
 					<Button loading={_signingIn} fullWidth variant="filled" size="medium" className="mt-8">
-						<>Submit</>
+						<>Log In</>
 					</Button>
 				</form>
-
-				<div className="flex items-center space-between gap-8">
-					<p className="max-w-fit text-[.9rem] mt-3">
-						Do not have an account?{' '}
-						<Link href="/sign-up" className="text-primary">
-							Sign up
-						</Link>
-					</p>
-
-					<Link href="/forgot-password" className="max-w-fit ml-auto text-[.9rem] text-primary mt-3">
-						Forgot Password?
-					</Link>
+				<div className="flex flex-col justify-center items-center">
+					<p className="text-sm text-gray-400 mt-3">or</p>
+					<div className="w-full flex gap-12 justify-center items-center mt-3">
+						<Button
+							onClick={async () => {
+								setIsPending(true);
+								_googleSignIn();
+								setIsPending(false);
+							}}
+							fullWidth
+							variant="outline"
+							icon={<FaGoogle />}
+							iconPosition="left"
+							loading={isPending}
+							loaderSize
+							className="flex justify-center items-center">
+							Google
+						</Button>
+						<Button
+							fullWidth
+							variant="outline"
+							icon={<FaXTwitter />}
+							iconPosition="left"
+							className="flex justify-center items-center">
+							X
+						</Button>
+					</div>
 				</div>
+				<p className="max-w-fit mx-auto text-sm mt-6">
+					New to TradeHub?{' '}
+					<Link href="/sign-up" className="text-primary">
+						Create an account
+					</Link>
+				</p>
 			</>
 		</AuthLayout>
 	);

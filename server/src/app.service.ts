@@ -8,7 +8,7 @@ export class AppService {
         <head>
         <meta charset="UTF-8" />
           <meta name="viewport" content = "width=device-width, initial-scale=1.0" />
-            <title>Her - Homes API </title>
+            <title>TradeHub API </title>
                 <style>
                   @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap");
 

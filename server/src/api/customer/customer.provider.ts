@@ -57,4 +57,20 @@ export class CustomerProvider {
          data,
       };
    }
+
+   // async addAddress(customerId: string, address: Address) {
+   //    return this.customerModel.findByIdAndUpdate(
+   //       customerId,
+   //       {
+   //          $push: { addresses: address }
+   //       },
+   //       { new: true }
+   //    );
+   // }
+
+   // async setDefaultAddress(customerId: string, addressIndex: number) {
+   //    const customer = await this.customerModel.findById(customerId);
+   //    customer.defaultAddress = customer.addresses[addressIndex];
+   //    return customer.save();
+   // }
 }

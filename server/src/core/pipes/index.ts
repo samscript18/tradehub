@@ -29,3 +29,27 @@ export class Base64Pipe implements PipeTransform {
       return value;
    }
 }
+
+export class CredentialValidationPipe implements PipeTransform {
+   transform(value: any) {
+      if (!value.credential) {
+         throw new BadRequestException('Credential is required');
+      }
+
+      const credential = value.credential.toLowerCase().trim();
+
+      const isEmail = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(credential);
+
+      const isPhone = /^\d{11}$/.test(credential);
+
+      if (!isEmail && !isPhone) {
+         throw new BadRequestException('Invalid credential format');
+      }
+
+      return {
+         ...value,
+         credentialType: isEmail ? 'email' : 'phone',
+         credential
+      };
+   }
+}

@@ -30,7 +30,7 @@ const Navbar = () => {
 
 	return (
 		<header className="absolute inset-x-0 top-0 z-50">
-			<nav className="flex items-center justify-between p-6 lg:px-12" aria-label="Global">
+			<nav className="flex items-center justify-between py-6 px-4 md:p-6 lg:px-12" aria-label="Global">
 				<div className="flex lg:flex-1">
 					<motion.div
 						initial="hidden"
@@ -93,8 +93,7 @@ const Navbar = () => {
 								<Link
 									href={link.link}
 									className="text-sm font-medium text-white hover:text-primary hover:underline duration-500">
-									{link.icon}
-									<span>{link.name}</span>
+									{link.name}
 								</Link>
 							</motion.div>
 						);
@@ -112,10 +111,10 @@ const Navbar = () => {
 								visible: { opacity: 1, y: 0 },
 							}}
 							className="w-[70%] flex gap-8">
-							<Button fullWidth variant="outline" onClick={() => router.push('/login')}>
+							<Button fullWidth variant="outline" className="w-full" onClick={() => router.push('/login')}>
 								Log in
 							</Button>
-							<Button fullWidth variant="filled" onClick={() => router.push('/sign-up')}>
+							<Button fullWidth variant="filled" className="px-4 w-full" onClick={() => router.push('/sign-up')}>
 								Sign up
 							</Button>
 						</motion.div>
@@ -203,12 +202,14 @@ const Navbar = () => {
 													},
 												},
 											}}>
-											<Link
-												href={link.link}
+											<div
+												onClick={() => {
+													router.push(link.link);
+													setMenuOpen(false);
+												}}
 												className="block rounded-lg px-3 py-2 text-base font-medium text-white hover:text-primary hover:underline duration-500">
-												{link.icon}
-												<span>{link.name}</span>
-											</Link>
+												{link.name}
+											</div>
 										</motion.div>
 									);
 								})}
@@ -216,7 +217,7 @@ const Navbar = () => {
 							<div className="py-6 mt-8">
 								{!user && (
 									<motion.div
-										className="w-full flex gap-8"
+										className="w-full flex gap-4"
 										initial="hidden"
 										whileInView="visible"
 										viewport={{ once: true, amount: 0.5 }}
@@ -228,7 +229,7 @@ const Navbar = () => {
 										<Button fullWidth variant="outline" onClick={() => router.push('/login')}>
 											Log in
 										</Button>
-										<Button fullWidth variant="filled" onClick={() => router.push('/sign-up')}>
+										<Button fullWidth variant="filled" className="px-4" onClick={() => router.push('/sign-up')}>
 											Sign up
 										</Button>
 									</motion.div>

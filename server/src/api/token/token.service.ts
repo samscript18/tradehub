@@ -6,7 +6,7 @@ import { CreateTokenDto, GetTokenDto } from './dto/create-token.dto';
 
 @Injectable()
 export class TokenService {
-    constructor(@InjectModel(Token.name) private readonly _tokenModel: Model<TokenDocument>) {}
+    constructor(@InjectModel(Token.name) private readonly _tokenModel: Model<TokenDocument>) { }
 
     async findOrCreateToken(createTokenDto: CreateTokenDto) {
         const tokenExists = await this._tokenModel.findOne({
@@ -24,6 +24,12 @@ export class TokenService {
 
     async getToken(getTokenDto: GetTokenDto) {
         const token = await this._tokenModel.findOne(getTokenDto);
+
+        return token;
+    }
+
+    async deleteToken({ email, type }: { email: CreateTokenDto["email"], type: CreateTokenDto["type"] }) {
+        const token = await this._tokenModel.deleteOne({ email, type });
 
         return token;
     }

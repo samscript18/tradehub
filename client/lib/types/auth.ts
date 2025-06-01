@@ -1,14 +1,9 @@
 export interface LoginType {
-  email: string;
+  credential: string;
   password: string;
+  rememberMe?: boolean;
 }
 
-export type User = {
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  email: string;
-};
 
 export type ResetPassword = {
   password: string;
@@ -18,12 +13,24 @@ export type ResetPassword = {
 };
 
 export type SignUp = {
-  firstName: string;
-  lastName: string;
   email: string;
   phoneNumber: string;
   password: string;
-};
+  role: 'customer' | 'merchant',
+  firstName?: string;
+  lastName?: string;
+  storeName?: string;
+  storeDescription?: string;
+  address?: {
+    country: string;
+    state: string;
+    city: string;
+    streetAddress: string;
+    zipcode?: string;
+  };
+  storeCategory?: string[];
+}
+
 
 export type ContactUs = {
   name: string;

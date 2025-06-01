@@ -47,10 +47,10 @@ export class AuthService {
       private readonly MerchantService: MerchantService,
    ) { }
 
-   private async auth(user: UserDocument) {
-      const ONE_HOUR = 1000 * 60 * 60;
+   private async auth(user: UserDocument, rememberMe?: boolean) {
+      const expiryTime = { ONE_HOUR: 1000 * 60 * 60, ONE_DAY: 1000 * 60 * 60 * 24 };
       const accessToken = await this.jwtService.signAsync(user, {
-         expiresIn: '1h',
+         expiresIn: rememberMe ? '1d' : '1h',
       });
       const refreshToken = await this.jwtService.signAsync(user, {
          expiresIn: '7d',
@@ -72,12 +72,12 @@ export class AuthService {
          meta: {
             accessToken,
             refreshToken,
-            lifeSpan: ONE_HOUR,
+            lifeSpan: rememberMe ? expiryTime.ONE_DAY : expiryTime.ONE_HOUR,
          },
       };
    }
 
-   async signUp(signUpDto: RegisterDto, { role, CustomerFirstName, MerchantbusinessName }: { role: string, CustomerFirstName?: string, MerchantbusinessName?: string }): Promise<UserDocument> {
+   async signUp(signUpDto: RegisterDto, { role, CustomerFirstName, MerchantStoreName }: { role: string, CustomerFirstName?: string, MerchantStoreName?: string }): Promise<UserDocument> {
       const userExists = await this.userService.getUser({
          $or: [
             {
@@ -112,7 +112,7 @@ export class AuthService {
          subject: 'TradeHub: Account Verification',
          template: 'account-verification',
          context: {
-            firstName: role === RoleNames.CUSTOMER ? CustomerFirstName : MerchantbusinessName,
+            firstName: role === RoleNames.CUSTOMER ? CustomerFirstName : MerchantStoreName,
             link,
          },
       });
@@ -124,7 +124,7 @@ export class AuthService {
       onBoardCustomerDto.role = RoleNames.CUSTOMER;
       const user = await this.signUp(onBoardCustomerDto, { role: RoleNames.CUSTOMER, CustomerFirstName: onBoardCustomerDto.firstName });
 
-      await this.CustomerService.createCustomer({ ...onBoardCustomerDto, user: user._id });
+      await this.CustomerService.createCustomer({ ...onBoardCustomerDto, addresses: [onBoardCustomerDto.defaultAddress], user: user._id });
 
       return {
          success: true,
@@ -134,13 +134,10 @@ export class AuthService {
 
    async onBoardMerchant(onBoardMerchantDto: OnBoardMerchantDto) {
       onBoardMerchantDto.role = RoleNames.MERCHANT;
-      const user = await this.signUp(onBoardMerchantDto, { role: RoleNames.MERCHANT, MerchantbusinessName: onBoardMerchantDto.businessName });
-
-      const { url } = await this.fileService.uploadResource(onBoardMerchantDto.businessLogo, { resource_type: 'image' });
-      onBoardMerchantDto.businessLogo = url;
+      const user = await this.signUp(onBoardMerchantDto, { role: RoleNames.MERCHANT, MerchantStoreName: onBoardMerchantDto.storeName });
 
       await this.MerchantService.createMerchant({
-         ...onBoardMerchantDto,
+         ...onBoardMerchantDto, addresses: [onBoardMerchantDto.defaultAddress],
          user: user._id,
       });
 
@@ -202,7 +199,7 @@ export class AuthService {
          subject: 'TradeHub: Account Verification',
          template: 'account-verification',
          context: {
-            firstName: user.role === RoleNames.CUSTOMER ? Customer.firstName : Merchant.businessName,
+            firstName: user.role === RoleNames.CUSTOMER ? Customer.firstName : Merchant.storeName,
             link,
          },
       });
@@ -237,7 +234,7 @@ export class AuthService {
             subject: 'TradeHub: Password Reset Request',
             template: 'forgot-password',
             context: {
-               firstName: user.role === RoleNames.CUSTOMER ? Customer.firstName : Merchant.businessName,
+               firstName: user.role === RoleNames.CUSTOMER ? Customer.firstName : Merchant.storeName,
                link,
             },
          });
@@ -280,11 +277,11 @@ export class AuthService {
    async signIn(signInDto: SignInDto) {
       let user: UserDocument;
 
-      if (signInDto.email) {
-         user = await this.userService.getUser({ email: signInDto.email });
-      } else if (signInDto.phoneNumber) {
+      if (signInDto.credentialType === 'email') {
+         user = await this.userService.getUser({ email: signInDto.credential });
+      } else if (signInDto.credentialType === 'phone') {
          user = await this.userService.getUser({
-            phoneNumber: signInDto.phoneNumber,
+            phoneNumber: signInDto.credential,
          });
       }
 
@@ -299,7 +296,7 @@ export class AuthService {
       if (!user.emailVerified)
          throw new BadRequestException('Email not verified');
 
-      const data = await this.auth(this.utilService.excludePassword(user));
+      const data = await this.auth(this.utilService.excludePassword(user), signInDto.rememberMe);
 
       return {
          success: true,
@@ -308,21 +305,21 @@ export class AuthService {
       };
    }
 
-   async signInWithToken(verifyEmailDto: VerifyEmailDto) {
-      await this.verifyEmail(verifyEmailDto);
-      const user: UserDocument = await this.userService.getUser({ email: verifyEmailDto.email });
-      if (!user) {
-         throw new NotFoundException('User does not exist');
-      }
+   // async signInWithToken(verifyEmailDto: VerifyEmailDto) {
+   //    await this.verifyEmail(verifyEmailDto);
+   //    const user: UserDocument = await this.userService.getUser({ email: verifyEmailDto.email });
+   //    if (!user) {
+   //       throw new NotFoundException('User does not exist');
+   //    }
 
-      const data = await this.auth(this.utilService.excludePassword(user));
+   //    const data = await this.auth(this.utilService.excludePassword(user));
 
-      return {
-         success: true,
-         message: 'sign in successful',
-         data,
-      };
-   }
+   //    return {
+   //       success: true,
+   //       message: 'sign in successful',
+   //       data,
+   //    };
+   // }
 
    async refreshSession(refreshToken: string) {
       const verifiedToken = await this.jwtService.verifyAsync(refreshToken);
@@ -383,20 +380,22 @@ export class AuthService {
       const user = await this.userService.findOrCreateUser({ email: googleUser.email }, { email: googleUser.email, profilePicture: googleUser.profilePicture, role: googleUser.role, emailVerified: true });
 
       let existingUser: CustomerDocument | MerchantDocument;
-      if (googleUser.role === RoleNames.CUSTOMER) {
+      if (user.role === RoleNames.CUSTOMER) {
          existingUser = await this.CustomerService.findOrCreateCustomer({ user: user._id }, { user: user._id, firstName: googleUser.firstName, lastName: googleUser.lastName })
-      } else if (googleUser.role === RoleNames.MERCHANT) {
+      } else if (user.role === RoleNames.MERCHANT) {
          existingUser = await this.MerchantService.findOrCreateMerchant({ user: user._id }, {
-            user: user._id, businessName: `${googleUser.firstName} ${googleUser.lastName}`, businessLogo: googleUser.profilePicture
+            user: user._id, storeName: `${googleUser.firstName} ${googleUser.lastName}`, storeLogo: googleUser.profilePicture, storeDescription: ''
          });
       } else {
          throw new Error('Invalid role');
       }
 
-      return await this.tokenService.findOrCreateToken({
-         email: user.email || existingUser.user?.email,
-         value: this.utilService.generateToken(),
-         type: TokenTypes.accountVerification,
-      });
+      const data = await this.auth(this.utilService.excludePassword(user));
+
+      return {
+         success: true,
+         message: 'sign in successful',
+         data,
+      };
    }
 }

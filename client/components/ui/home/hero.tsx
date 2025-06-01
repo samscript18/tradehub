@@ -51,8 +51,19 @@ const Hero = () => {
 					<Button fullWidth variant="outline" onClick={() => router.push('/login')}>
 						Shop Now
 					</Button>
-					<Button fullWidth variant="filled" onClick={() => router.push('/sign-up?role=merchant')}>
+					<Button
+						fullWidth
+						variant="filled"
+						className="hidden! md:block! px-2"
+						onClick={() => router.push('/sign-up?role=merchant')}>
 						Become a Merchant
+					</Button>
+					<Button
+						fullWidth
+						variant="filled"
+						className="md:hidden! block! px-2"
+						onClick={() => router.push('/sign-up?role=merchant')}>
+						Sell as Merchant
 					</Button>
 				</motion.div>
 			</div>
