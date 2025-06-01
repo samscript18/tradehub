@@ -1365,32 +1365,32 @@ export const nigerianStatesAndCities = {
 export const categories = [
 	{
 		id: 1,
-		icon: <FaUsers />,
+		icon: <FaUsers className="text-primary" />,
 		name: 'Fashion & Apparel',
 	},
 	{
 		id: 2,
-		icon: <FaUsers />,
+		icon: <FaUsers className="text-primary" />,
 		name: 'Beauty & Care',
 	},
 	{
 		id: 3,
-		icon: <FaUsers />,
+		icon: <FaUsers className="text-primary" />,
 		name: 'Food & Beverages',
 	},
 	{
 		id: 4,
-		icon: <FaUsers />,
+		icon: <FaUsers className="text-primary" />,
 		name: 'Accessories',
 	},
 	{
 		id: 5,
-		icon: <FaUsers />,
+		icon: <FaUsers className="text-primary" />,
 		name: 'Home & Living',
 	},
 	{
 		id: 6,
-		icon: <FaUsers />,
+		icon: <FaUsers className="text-primary" />,
 		name: 'Arts & Crafts',
 	},
 ];
