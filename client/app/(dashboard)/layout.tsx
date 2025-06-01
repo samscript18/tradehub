@@ -8,21 +8,15 @@ import CustomerDashboardSidebar from '@/components/layout/(dashboard)/customer/s
 import CustomerDashboardNavbar from '@/components/layout/(dashboard)/customer/navbar';
 import MerchantDashboardSidebar from '@/components/layout/(dashboard)/merchant/sidebar';
 import MerchantDashboardNavbar from '@/components/layout/(dashboard)/merchant/navbar';
-<<<<<<< HEAD
-=======
 import { usePathname, useRouter } from 'next/navigation';
->>>>>>> 6840c873ce12dd83a302b496f47444b42fad929c
 
 const DashboardLayout = ({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) => {
-<<<<<<< HEAD
-=======
 	const router = useRouter();
 	const pathname = usePathname();
->>>>>>> 6840c873ce12dd83a302b496f47444b42fad929c
 	const [isPending, setIsPending] = useState<boolean>(true);
 	const { user, fetchUser, setToken } = useAuth();
 	useEffect(() => {
@@ -36,10 +30,6 @@ const DashboardLayout = ({
 		setIsPending(false);
 	}, []);
 
-<<<<<<< HEAD
-	if (isPending) return <SessionCheckLoader />;
-
-=======
 	useEffect(() => {
 		if (!isPending && user && user.role) {
 			if (user.role === 'customer' && pathname.startsWith('/merchant')) {
@@ -57,7 +47,6 @@ const DashboardLayout = ({
 		return null;
 	}
 
->>>>>>> 6840c873ce12dd83a302b496f47444b42fad929c
 	return (
 		<>
 			{user?.role === 'customer' ? (
