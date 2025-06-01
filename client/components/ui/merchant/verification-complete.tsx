@@ -1,6 +1,6 @@
 'use client'
 
-import Button from '@/components/common/button/index'
+import Button from '@/components/common/button'
 import { useRouter } from 'next/navigation'
 import { CheckCircle } from 'lucide-react'
 
@@ -16,8 +16,9 @@ export default function VerificationComplete() {
           </div>
           <h2 className="text-3xl font-bold mb-4">Verification Complete!</h2>
           <p className="text-gray-400 mb-8">
-            Your information has been submitted for verification. We'll review
-            your details and notify you via email once the process is complete.
+            Your information has been submitted for verification. We&apos;ll
+            review your details and notify you via email once the process is
+            complete.
           </p>
         </div>
 

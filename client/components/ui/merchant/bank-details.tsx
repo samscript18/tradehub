@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Button from '@/components/common/button/index'
+import Button from '@/components/common/button';
 import BackButton from '@/components/common/button/back-button'
 import type { VerificationData } from '@/app/(dashboard)/merchant/verification/page'
 import {
@@ -28,7 +28,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+// import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 
 interface BankDetailsProps {
@@ -57,11 +57,7 @@ const banks = [
   { value: 'wema_bank', label: 'Wema Bank' },
 ]
 
-const accountTypes = [
-  { value: 'savings', label: 'Savings Account' },
-  { value: 'current', label: 'Current Account' },
-  { value: 'domiciliary', label: 'Domiciliary Account' },
-]
+
 
 export default function BankDetails({
   data,
@@ -129,7 +125,7 @@ export default function BankDetails({
     formData.accountNumber &&
     verificationStatus === 'success'
 
-  const selectedBank = banks.find((bank) => bank.label === formData.bankName)
+  // const selectedBank = banks.find((bank) => bank.label === formData.bankName)
 
   return (
     <div className="space-y-8 lg:space-y-12">
@@ -137,7 +133,7 @@ export default function BankDetails({
       <div className="flex items-center gap-4">
         <BackButton />
         <div>
-          <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-2xl lg:text-3xl font-semibold text-white dark:text-white">
             Bank Account Information
           </h2>
           <p className="text-gray-600 dark:text-gray-400 text-lg mt-2">
@@ -166,7 +162,7 @@ export default function BankDetails({
         </Card>
 
         {/* Personal Information */}
-        <Card className="bg-gray-400 text-white">
+        <Card className="border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="w-5 h-5" />
@@ -191,7 +187,7 @@ export default function BankDetails({
         </Card>
 
         {/* Bank Details */}
-        <Card className="bg-gray-400 text-white">
+        <Card className="border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building2 className="w-5 h-5" />

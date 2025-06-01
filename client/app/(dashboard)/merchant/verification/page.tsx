@@ -9,7 +9,7 @@ import BankDetails from '@/components/ui/merchant/bank-details'
 import ReviewInformation from '@/components/ui/merchant/review-information'
 import VerificationComplete from '@/components/ui/merchant/verification-complete'
 import ProgressIndicator from '@/components/ui/merchant/progress-indicator'
-import { Shield, HelpCircle, Globe } from 'lucide-react'
+// import { Shield, HelpCircle, Globe } from 'lucide-react'
 
 export interface VerificationData {
   verificationMethod: 'email' | 'phone' | null
@@ -89,8 +89,8 @@ export default function MerchantVerificationPage() {
             Verifying Your Information
           </h2>
           <p className="text-gray-400">
-            This process usually takes 1-2 business days. We'll notify you via
-            email once complete.
+            This process usually takes 1-2 business days. We&apos;ll notify you
+            via email once complete.
           </p>
           <div className="mt-4 flex items-center justify-center gap-2 text-blue-400">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -105,7 +105,7 @@ export default function MerchantVerificationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0C1B] text-white">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
       {/* Progress Indicator */}
       <ProgressIndicator
         steps={steps}

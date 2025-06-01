@@ -9,6 +9,8 @@ import CustomerDashboardNavbar from '@/components/layout/(dashboard)/customer/na
 import MerchantDashboardSidebar from '@/components/layout/(dashboard)/merchant/sidebar';
 import MerchantDashboardNavbar from '@/components/layout/(dashboard)/merchant/navbar';
 import { usePathname, useRouter } from 'next/navigation';
+import CustomerDashboardFooter from '@/components/layout/(dashboard)/customer/footer';
+import MerchantDashboardFooter from '@/components/layout/(dashboard)/merchant/footer';
 
 const DashboardLayout = ({
 	children,
@@ -42,19 +44,17 @@ const DashboardLayout = ({
 
 	if (isPending) return <SessionCheckLoader />;
 
-	if (!user || !user.role) {
-		router.push('/login');
-		return null;
-	}
-
 	return (
 		<>
 			{user?.role === 'customer' ? (
 				<main className="flex min-h-screen">
 					<CustomerDashboardSidebar />
-					<div className="w-full flex-1 bg-[#B0B0B0]/10 max-h-screen h-screen flex flex-col">
+					<div className="w-full flex-1 bg-[#B0B0B0]/10 h-screen flex flex-col">
 						<CustomerDashboardNavbar />
-						<div className="flex-1 overflow-y-scroll px-4 md:px-6 pb-6">{children}</div>
+						<div className="overflow-y-scroll">
+							<div className="flex-1 pb-4">{children}</div>
+							<CustomerDashboardFooter />
+						</div>
 					</div>
 				</main>
 			) : (
@@ -62,7 +62,10 @@ const DashboardLayout = ({
 					<MerchantDashboardSidebar />
 					<div className="w-full flex-1 bg-[#B0B0B0]/10 max-h-screen h-screen flex flex-col">
 						<MerchantDashboardNavbar />
-						<div className="flex-1 overflow-y-scroll px-4 md:px-6 pb-6">{children}</div>
+						<div className="overflow-y-scroll min-h-screen">
+							<div className="flex-1 pb-4">{children}</div>
+							<MerchantDashboardFooter />
+						</div>
 					</div>
 				</main>
 			)}

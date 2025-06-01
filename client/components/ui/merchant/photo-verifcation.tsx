@@ -2,7 +2,7 @@
 
 import type React from 'react'
 import { useState, useRef } from 'react'
-import Button from '@/components/common/button/index'
+import Button from '@/components/common/button'
 import BackButton from '@/components/common/button/back-button'
 import type { VerificationData } from '@/app/(dashboard)/merchant/verification/page'
 import Image from 'next/image'
@@ -108,7 +108,7 @@ export default function PhotoVerification({
         videoRef.current.srcObject = stream
       }
       setShowCamera(true)
-    } catch (error) {
+    } catch {
       alert('Camera access denied or not available')
     }
   }
@@ -161,7 +161,7 @@ export default function PhotoVerification({
       <div className="flex items-center gap-4">
         <BackButton />
         <div>
-          <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-2xl lg:text-3xl font-semibold text-white dark:text-white">
             Profile Photo
           </h2>
           <p className="text-gray-600 dark:text-gray-400 text-lg mt-2">

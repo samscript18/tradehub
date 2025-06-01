@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Button from '@/components/common/button/index'
+import Button from '@/components/common/button';
 import BackButton from '@/components/common/button/back-button'
 import type { VerificationData } from '@/app/(dashboard)/merchant/verification/page'
 import { Checkbox } from '@/components/common/inputs/checkbox'

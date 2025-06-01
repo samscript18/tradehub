@@ -1,6 +1,6 @@
+import HomeDashboard from '@/components/ui/(dashboard)/customer/home';
+
 const page = () => {
-  return (
-    <div>home page</div>
-  )
-}
-export default page
+	return <HomeDashboard />;
+};
+export default page;

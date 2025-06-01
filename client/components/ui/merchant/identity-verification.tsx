@@ -2,7 +2,7 @@
 
 import type React from 'react'
 import { useState } from 'react'
-import Button from '@/components/common/button/index'
+import Button from '@/components/common/button'
 import BackButton from '@/components/common/button/back-button'
 import type { VerificationData } from '@/app/(dashboard)/merchant/verification/page'
 import {
@@ -126,8 +126,8 @@ export default function IdentityVerification({
     setUploadProgress(0)
   }
 
-  const handleDocumentTypeSelect = (type: string) => {
-    onUpdate({ documentType: type as any })
+  const handleDocumentTypeSelect = (type: VerificationData['documentType']) => {
+    onUpdate({ documentType: type })
   }
 
   const isValid = data.documentType && data.documentFile
@@ -155,7 +155,7 @@ export default function IdentityVerification({
       <div className="flex items-center gap-4">
         <BackButton />
         <div>
-          <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-2xl lg:text-3xl font-semibold text-white dark:text-white">
             Identity Verification
           </h2>
           <p className="text-gray-600 dark:text-gray-400 text-lg mt-2">
@@ -274,7 +274,11 @@ export default function IdentityVerification({
           {documentTypes.map((type) => (
             <button
               key={type.id}
-              onClick={() => handleDocumentTypeSelect(type.id)}
+              onClick={() =>
+                handleDocumentTypeSelect(
+                  type.id as VerificationData['documentType']
+                )
+              }
               className={cn(
                 'p-6 lg:p-8 rounded-xl border-2 transition-all duration-200 text-center',
                 data.documentType === type.id

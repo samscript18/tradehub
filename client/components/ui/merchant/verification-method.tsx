@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils'
 
 import { useState } from 'react'
-import Button from '@/components/common/button/index'
+import Button from '@/components/common/button'
 import TextField from '@/components/common/inputs/text-field'
 import type { VerificationData } from '@/app/(dashboard)/merchant/verification/page'
 import { Mail, Phone, CheckCircle, Clock, Send } from 'lucide-react'
@@ -92,7 +92,7 @@ export default function VerificationMethod({
     <div className="space-y-8 lg:space-y-12">
       {/* Header */}
       <div className="text-center lg:text-left">
-        <h2 className="text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-white mb-3">
+        <h2 className="text-2xl lg:text-3xl font-semibold text-white dark:text-white mb-3">
           Choose Verification Method
         </h2>
         <p className="text-gray-600 dark:text-gray-400 text-lg">
@@ -230,7 +230,7 @@ export default function VerificationMethod({
                   Verification Code Sent
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  We've sent a 6-digit code to{' '}
+                  We&apos;ve sent a 6-digit code to{' '}
                   <span className="font-medium text-gray-900 dark:text-white">
                     {currentValue}
                   </span>
@@ -302,13 +302,13 @@ export default function VerificationMethod({
       )}
 
       {/* Navigation */}
-      <div className="flex justify-center lg:justify-end pt-8">
+      <div className="flex justify-center text-white lg:justify-end pt-8">
         <Button
           variant="filled"
           size="medium"
           disabled={!isVerified}
           onClick={handleNext}
-          className="min-w-32"
+          className="min-w-[8rem] !text-white"
         >
           Continue
         </Button>
