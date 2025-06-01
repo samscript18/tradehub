@@ -5,7 +5,7 @@ import { useSidebar } from '@/lib/store/global.store';
 import { cn } from '@/lib/utils/cn';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LuLogOut, LuMenu } from 'react-icons/lu';
+import { LuChevronsLeft, LuChevronsRight, LuLogOut, LuMenu } from 'react-icons/lu';
 import { MdClose } from 'react-icons/md';
 import { motion } from 'framer-motion';
 import Logo from '@/components/common/logo';
@@ -14,11 +14,13 @@ import { useMutation } from '@tanstack/react-query';
 import { toastSuccess } from '@/lib/utils/toast';
 import { useAuth } from '@/lib/store/auth.store';
 import Cookies from 'js-cookie';
+import React from 'react';
 
 const MerchantDashboardSidebar = () => {
 	const { resetUser } = useAuth();
 	const router = useRouter();
 	const pathname = usePathname();
+	const [isCollapsed, setIsCollapsed] = React.useState(false);
 	const { isSidebarOpen, toggleSidebar } = useSidebar();
 	const { mutateAsync: triggerSignOut, isPending: _signingOut } = useMutation({
 		mutationKey: ['auth', 'merchant-sign-out'],
@@ -31,6 +33,10 @@ const MerchantDashboardSidebar = () => {
 			router.push('/login');
 		},
 	});
+
+	const toggleCollapse = () => {
+		setIsCollapsed(!isCollapsed);
+	};
 
 	return (
 		<>
@@ -49,14 +55,27 @@ const MerchantDashboardSidebar = () => {
 			{/* Sidebar */}
 			<aside
 				className={cn(
-					'fixed lg:static top-0 left-0 h-screen z-40 py-8 px-6',
+					`fixed lg:static top-0 left-0 h-screen z-40 py-8 md:py-6 ${isCollapsed ? 'px-2' : 'px-6'}`,
 					'duration-300 overflow-y-auto bg-background',
-					'lg:w-[285px] lg:translate-x-0',
+					isCollapsed ? 'lg:w-[80px]' : 'lg:w-[285px]',
+					'lg:translate-x-0',
 					isSidebarOpen ? 'w-full translate-x-0' : 'w-[55px] -translate-x-full lg:translate-x-0',
 					'scrollbar-none'
 				)}>
+				<button
+					onClick={toggleCollapse}
+					className={`hidden lg:flex absolute  ${
+						isCollapsed ? 'top-3 right-6' : 'top-6 right-5'
+					} bg-background border border-gray-600 rounded-full p-1.5 cursor-pointer hover:bg-primary/60 text-white transition-all duration-300`}>
+					{isCollapsed ? (
+						<LuChevronsRight className="w-4 h-4 text-gray-400" />
+					) : (
+						<LuChevronsLeft className="w-4 h-4 text-gray-400" />
+					)}
+				</button>
+
 				{/* Logo or Header */}
-				{isSidebarOpen && (
+				{isSidebarOpen && !isCollapsed && (
 					<motion.div
 						className="max-md:mb-8"
 						initial="hidden"
@@ -102,6 +121,7 @@ const MerchantDashboardSidebar = () => {
 									className={cn(
 										'flex gap-4 p-4 rounded-md',
 										'items-center cursor-pointer',
+										`${isCollapsed ? 'justify-center' : 'justify-start'}`,
 										'transition-all duration-300 text-sm',
 										'text-gray-400 hover:bg-[#242424] hover:text-primary',
 										is_current_route && 'border-[#242424] bg-[#242424] text-primary font-bold'
@@ -113,7 +133,7 @@ const MerchantDashboardSidebar = () => {
 									}}>
 									<span className={cn('text-[1.1rem]', is_current_route ? 'text-primary' : '')}>{link.icon}</span>
 									{/* <p className="hidden md:block">{link.name}</p> */}
-									{isSidebarOpen && link.name}
+									{isSidebarOpen && !isCollapsed && link.name}
 								</Link>
 							</motion.div>
 						);
@@ -138,12 +158,13 @@ const MerchantDashboardSidebar = () => {
 							'hover:text-primary hover:font-bold cursor-pointer duration-200',
 							'text-gray-400 hover:bg-[#242424] hover:text-red-600',
 							'rounded-md',
+							isCollapsed && 'justify-center',
 							_signingOut && 'text-red-600 font-bold animate-pulse'
 						)}
 						onClick={async () => await triggerSignOut()}>
 						<LuLogOut />
 						{/* <p className="hidden lg:block">Sign Out</p> */}
-						{isSidebarOpen && <span>Sign Out</span>}
+						{!isCollapsed && isSidebarOpen && <span>Sign Out</span>}
 					</motion.li>
 				</motion.ul>
 			</aside>
