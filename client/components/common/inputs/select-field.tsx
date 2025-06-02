@@ -42,12 +42,14 @@ interface Props {
 	showDropDownSuffix?: boolean;
 	label?: string;
 	helperText?: string;
+	width?: string;
 }
 
 const SelectField: FC<Props> = ({
 	data = [],
 	value,
 	onClear,
+	width,
 	onSelect,
 	loading,
 	onSearch,
@@ -61,7 +63,9 @@ const SelectField: FC<Props> = ({
 }) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [options, setOptions] = useState<Option[]>(data);
-	const [selectedOption, setSelectedOption] = useState<Option | undefined>();
+	const [selectedOption, setSelectedOption] = useState<Option | undefined>(
+		data.find((option) => option.value === value)
+	);
 	const [search, setSearch] = useState<string>('');
 	const [labelFocused, setLabelFocused] = useState<boolean>(false);
 
@@ -69,6 +73,11 @@ const SelectField: FC<Props> = ({
 		setLabelFocused(true);
 		setIsOpen(true);
 	};
+
+	useEffect(() => {
+		const option = data.find((opt) => opt.value === value);
+		setSelectedOption(option);
+	}, [value, data]);
 
 	useEffect(() => {
 		if (data) {
@@ -94,7 +103,7 @@ const SelectField: FC<Props> = ({
 	}, [search, data, onSearch]);
 
 	return (
-		<div className={cn('relative min-w-[200px]', className)}>
+		<div className={cn(`relative ${width ? width : 'min-w-[200px]'}`, className)}>
 			<div className="w-full">
 				<header
 					className={cn(
@@ -124,17 +133,24 @@ const SelectField: FC<Props> = ({
 						}}
 						className={cn(
 							`outline-none border-none placeholder:text-sm ${
-								value && 'placeholder:text-white'
+								selectedOption && 'placeholder:text-white'
 							} text-white capitalize flex-1 w-full`,
 							inputClassName
 						)}
-						placeholder={value || placeholder || label}
+						placeholder={
+							selectedOption
+								? typeof selectedOption.label === 'string'
+									? selectedOption.label
+									: value
+								: placeholder || label
+						}
 						value={search}
 						onChange={(e) => {
 							setIsOpen(true);
 							setSearch(e.target.value);
 							focusLabel();
 						}}
+						readOnly={!isOpen}
 					/>
 
 					{(value || search) && (

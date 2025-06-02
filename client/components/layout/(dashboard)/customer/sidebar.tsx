@@ -43,8 +43,8 @@ const CustomerDashboardSidebar = () => {
 			{/* Mobile Menu Button */}
 			<button
 				onClick={toggleSidebar}
-				className="lg:hidden fixed top-3 right-4 z-50 p-2 rounded-md bg-background text-white">
-				{isSidebarOpen ? <MdClose size={24} /> : <LuMenu size={24} />}
+				className="lg:hidden fixed top-3.5 right-1 md:right-4 z-50 p-2 rounded-md bg-background text-white">
+				{isSidebarOpen ? <MdClose size={24} className='mt-2' /> : <LuMenu size={24} />}
 			</button>
 
 			{/* Overlay for mobile */}

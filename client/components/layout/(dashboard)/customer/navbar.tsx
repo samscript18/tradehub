@@ -17,6 +17,7 @@ const CustomerDashboardNavbar = () => {
 					<Input
 						placeholder="Search for products, services, or merchants"
 						className="pl-10 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:outline-none focus-visible:ring-0 focus-visible:border-primary focus-visible:ring-offset-0"
+						onKeyDown={() => router.push('/customer/home/search')}
 					/>
 				</div>
 			</div>
