@@ -38,7 +38,7 @@ const MerchantDashboardNavbar = () => {
 					/>
 				) : (
 					<Button
-						onClick={() => router.push('/customer/profile')}
+						onClick={() => router.push('/merchant/profile')}
 						variant="ghost"
 						size="icon"
 						className="hover:bg-primary hover:text-white cursor-pointer">
