@@ -60,9 +60,9 @@ const DashboardLayout = ({
 			) : (
 				<main className="flex min-h-screen">
 					<MerchantDashboardSidebar />
-					<div className="w-full flex-1 bg-[#B0B0B0]/10 max-h-screen h-screen flex flex-col">
+					<div className="w-full flex-1 bg-[#B0B0B0]/10 h-screen flex flex-col">
 						<MerchantDashboardNavbar />
-						<div className="overflow-y-scroll min-h-screen">
+						<div className="overflow-y-scroll">
 							<div className="flex-1 pb-4">{children}</div>
 							<MerchantDashboardFooter />
 						</div>

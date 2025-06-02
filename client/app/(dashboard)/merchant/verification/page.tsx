@@ -2,14 +2,13 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import VerificationMethod from '@/components/ui/merchant/verification-method'
-import IdentityVerification from '@/components/ui/merchant/identity-verification'
-import PhotoVerification from '@/components/ui/merchant/photo-verifcation'
-import BankDetails from '@/components/ui/merchant/bank-details'
-import ReviewInformation from '@/components/ui/merchant/review-information'
-import VerificationComplete from '@/components/ui/merchant/verification-complete'
-import ProgressIndicator from '@/components/ui/merchant/progress-indicator'
-// import { Shield, HelpCircle, Globe } from 'lucide-react'
+import VerificationMethod from '@/components/ui/(dashboard)/merchant/verification-method'
+import IdentityVerification from '@/components/ui/(dashboard)/merchant/identity-verification'
+import PhotoVerification from '@/components/ui/(dashboard)/merchant/photo-verification'
+import BankDetails from '@/components/ui/(dashboard)/merchant/bank-details'
+import ReviewInformation from '@/components/ui/(dashboard)/merchant/review-information'
+import VerificationComplete from '@/components/ui/(dashboard)/merchant/verification-complete'
+import ProgressIndicator from '@/components/ui/(dashboard)/merchant/progress-indicator'
 
 export interface VerificationData {
   verificationMethod: 'email' | 'phone' | null
