@@ -1,13 +1,13 @@
-export type DocumentType = 'course' | 'past' | 'lecture'
+export interface Address {
+  country: string;
+  state: string;
+  city: string;
+  streetAddress: string;
+  zipcode?: string;
+}
 
-export interface Document {
-  id: string
-  title: string
-  courseCode: string
-  department: string
-  level: string
-  semester: string
-  type: DocumentType
-  fileSize: string
-  date: string
+export interface DeliveryAddress extends Address {
+  id: string;
+  name: string;
+  phoneNumber: string;
 }

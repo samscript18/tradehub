@@ -22,23 +22,36 @@ const DashboardLayout = ({
 	const [isPending, setIsPending] = useState<boolean>(true);
 	const { user, fetchUser, setToken } = useAuth();
 	useEffect(() => {
-		setIsPending(true);
-		const access_token = Cookies.get('access_token');
-		const refresh_token = Cookies.get('refresh_token');
-		if (access_token && refresh_token) {
-			setToken(access_token, refresh_token);
-		}
-		fetchUser();
-		setIsPending(false);
-	}, []);
+		const init = async () => {
+			try {
+				setIsPending(true);
+				const access_token = Cookies.get('access_token');
+				const refresh_token = Cookies.get('refresh_token');
+				if (access_token && refresh_token) {
+					setToken(access_token, refresh_token);
+				}
+				await fetchUser();
+			} catch (error) {
+				console.log(error);
+				throw error;
+			} finally {
+				setIsPending(false);
+			}
+		};
+		init();
+	}, [fetchUser, setToken]);
 
 	useEffect(() => {
-		if (!isPending && user && user.role) {
-			if (user.role === 'customer' && pathname.startsWith('/merchant')) {
-				router.push('/customer/home');
-			} else if (user.role === 'merchant' && pathname.startsWith('/customer')) {
-				router.push('/merchant/dashboard');
-			}
+		if (isPending) return;
+
+		if (!user) {
+			router.push('/login');
+		}
+
+		if (user?.role === 'customer' && pathname.startsWith('/merchant')) {
+			router.push('/customer/home');
+		} else if (user?.role === 'merchant' && pathname.startsWith('/customer')) {
+			router.push('/merchant/dashboard');
 		}
 	}, [isPending, user, pathname]);
 
@@ -46,7 +59,7 @@ const DashboardLayout = ({
 
 	return (
 		<>
-			{user?.role === 'customer' ? (
+			{user?.role === 'customer' && (
 				<main className="flex min-h-screen">
 					<CustomerDashboardSidebar />
 					<div className="w-full flex-1 bg-[#B0B0B0]/10 h-screen flex flex-col">
@@ -57,7 +70,8 @@ const DashboardLayout = ({
 						</div>
 					</div>
 				</main>
-			) : (
+			)}{' '}
+			{user?.role === 'merchant' && (
 				<main className="flex min-h-screen">
 					<MerchantDashboardSidebar />
 					<div className="w-full flex-1 bg-[#B0B0B0]/10 h-screen flex flex-col">

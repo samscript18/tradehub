@@ -8,6 +8,8 @@ import Image from 'next/image';
 import { FaStore } from 'react-icons/fa';
 import { FaTruck } from 'react-icons/fa6';
 import { IoIosArrowForward } from 'react-icons/io';
+import Product from '../ui/product';
+import Link from 'next/link';
 
 const HomeDashboard = () => {
 	return (
@@ -60,7 +62,7 @@ const HomeDashboard = () => {
 					initial="hidden"
 					whileInView="visible"
 					viewport={{ once: true, amount: 0.5 }}
-					transition={{ staggerChildren: 0.2, delayChildren: 0.7 }}>
+					transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
 					{categories.map((category) => {
 						return (
 							<motion.div
@@ -98,32 +100,34 @@ const HomeDashboard = () => {
 						}}>
 						Top Local Merchants
 					</motion.h2>
-					<motion.p
-						className="text-xs text-primary cursor-pointer"
-						initial="hidden"
-						whileInView="visible"
-						viewport={{ once: true, amount: 0.5 }}
-						transition={{ duration: 0.5, delay: 0.5 }}
-						variants={{
-							hidden: { opacity: 0, y: 30 },
-							visible: { opacity: 1, y: 0 },
-						}}>
-						View All{' '}
-						<span className="inline-block ">
-							<IoIosArrowForward className="text-primary" />
-						</span>
-					</motion.p>
+					<Link href={'/customer/products'}>
+						<motion.p
+							className="text-xs text-primary cursor-pointer"
+							initial="hidden"
+							whileInView="visible"
+							viewport={{ once: true, amount: 0.5 }}
+							transition={{ duration: 0.5, delay: 0.3 }}
+							variants={{
+								hidden: { opacity: 0, y: 30 },
+								visible: { opacity: 1, y: 0 },
+							}}>
+							View All{' '}
+							<span className="inline-block ">
+								<IoIosArrowForward className="text-primary" />
+							</span>
+						</motion.p>
+					</Link>
 				</div>
 				<motion.div
-					className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+					className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6"
 					initial="hidden"
 					whileInView="visible"
 					viewport={{ once: true, amount: 0.5 }}
-					transition={{ staggerChildren: 0.2, delayChildren: 0.7 }}>
+					transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
 					{merchantStores.map((merchant) => {
 						return (
 							<motion.div
-								className="flex flex-col min-w-[170px] md:w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md"
+								className="flex flex-col min-w-[155px] sm:min-w-[170px] md:w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md"
 								key={merchant.id}
 								variants={{
 									hidden: {
@@ -153,7 +157,7 @@ const HomeDashboard = () => {
 										initial="hidden"
 										whileInView="visible"
 										viewport={{ once: true, amount: 0.5 }}
-										transition={{ staggerChildren: 0.2, delayChildren: 0.7 }}>
+										transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
 										{merchant.categories.map((category) => {
 											return (
 												<motion.div
@@ -198,71 +202,32 @@ const HomeDashboard = () => {
 						}}>
 						New Arrivals
 					</motion.h2>
-					<motion.p
-						className="text-xs text-primary cursor-pointer"
-						initial="hidden"
-						whileInView="visible"
-						viewport={{ once: true, amount: 0.5 }}
-						transition={{ duration: 0.5, delay: 0.5 }}
-						variants={{
-							hidden: { opacity: 0, y: 30 },
-							visible: { opacity: 1, y: 0 },
-						}}>
-						View All{' '}
-						<span className="inline-block ">
-							<IoIosArrowForward className="text-primary" />
-						</span>
-					</motion.p>
+					<Link href={'/customer/products'}>
+						<motion.p
+							className="text-xs text-primary cursor-pointer"
+							initial="hidden"
+							whileInView="visible"
+							viewport={{ once: true, amount: 0.5 }}
+							transition={{ duration: 0.5, delay: 0.3 }}
+							variants={{
+								hidden: { opacity: 0, y: 30 },
+								visible: { opacity: 1, y: 0 },
+							}}>
+							View All{' '}
+							<span className="inline-block ">
+								<IoIosArrowForward className="text-primary" />
+							</span>
+						</motion.p>
+					</Link>
 				</div>
 				<motion.div
-					className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+					className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6"
 					initial="hidden"
 					whileInView="visible"
 					viewport={{ once: true, amount: 0.5 }}
-					transition={{ staggerChildren: 0.2, delayChildren: 0.7 }}>
+					transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
 					{newProducts.map((product) => {
-						return (
-							<motion.div
-								className="flex flex-col min-w-[170px] md:w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md"
-								key={product.id}
-								variants={{
-									hidden: {
-										opacity: 0,
-										y: 30,
-									},
-									visible: {
-										opacity: 1,
-										y: 0,
-										transition: {
-											duration: 0.8,
-										},
-									},
-								}}>
-								<Image
-									src={product.img}
-									alt={product.name}
-									width={350}
-									height={180}
-									className="w-full h-full rounded-t-xl"
-								/>
-								<div className="bg-[#1E2A3B] p-2 space-y-2 shadow-md rounded-b-xl">
-									<h3 className="text-[13px] font-bold">{product.name}</h3>
-									<p className="text-xs text-gray-300">{product.merchant}</p>
-									<div className="flex max-lg:flex-col justify-between items-start lg:items-center">
-										<h4 className="text-sm font-bold">{product.price}</h4>
-										<Button variant="filled" className="px-4 py-1.5 w-full font-normal mt-1 text-xs max-lg:hidden">
-											Add to cart
-										</Button>
-										<Button
-											fullWidth
-											variant="filled"
-											className="px-4 py-1.5 w-full font-normal mt-1 text-xs lg:hidden">
-											Add to cart
-										</Button>
-									</div>
-								</div>
-							</motion.div>
-						);
+						return <Product key={product.id} {...product} />;
 					})}
 				</motion.div>
 				<div className="flex max-md:flex-col justify-between items-center gap-6 mt-6">

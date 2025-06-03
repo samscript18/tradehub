@@ -1,3 +1,5 @@
+import { StaticImageData } from "next/image";
+
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -22,14 +24,11 @@ export interface User {
   role: 'customer' | 'merchant';
 }
 
-export type Document = {
-  _id: string;
-  createdAt: Date;
+export interface Product {
+  id: number;
+  img: StaticImageData | string;
   name: string;
-  description: string;
-  url: string;
-  mime_type: string;
-  uploaded_by: User;
-  byte_size: number;
-  upload_id?: string;
-};
+  merchant: string;
+  price: number;
+  quantity?: number;
+}

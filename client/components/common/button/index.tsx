@@ -70,8 +70,7 @@ const Button: FC<Props> = (props) => {
 			mainClass += 'bg-primary border-primary text-white hover:bg-primary/50 text-center';
 			break;
 		case 'accent':
-			mainClass +=
-				'bg-accent text-white hover:bg-accent/80 text-center border-primary text-black ';
+			mainClass += 'bg-accent text-white hover:bg-accent/80 text-center border-primary text-black ';
 			break;
 		case 'outline':
 			mainClass +=
@@ -128,7 +127,7 @@ const Button: FC<Props> = (props) => {
 			) : (
 				<>
 					{iconPosition === 'left' && <div className="flex items-center">{icon}</div>}
-					<span className={`flex-shrink-0 ${icon && 'mt-0.5'}`}>{children}</span>
+					{children && <span className={`flex-shrink-0 ${icon && 'mt-0.5'}`}>{children}</span>}
 					{iconPosition === 'right' && <div className="flex items-center">{icon}</div>}
 				</>
 			)}

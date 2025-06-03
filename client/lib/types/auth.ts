@@ -1,3 +1,5 @@
+import { Address } from "./types";
+
 export interface LoginType {
   credential: string;
   password: string;
@@ -21,13 +23,7 @@ export type SignUp = {
   lastName?: string;
   storeName?: string;
   storeDescription?: string;
-  address?: {
-    country: string;
-    state: string;
-    city: string;
-    streetAddress: string;
-    zipcode?: string;
-  };
+  address?: Address;
   storeCategory?: string[];
 }
 

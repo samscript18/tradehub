@@ -1,4 +1,6 @@
+import ProfilePage from '@/components/ui/(dashboard)/customer/profile';
+
 const page = () => {
-	return <div>profile page</div>;
+	return <ProfilePage />;
 };
 export default page;

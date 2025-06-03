@@ -1,4 +1,6 @@
+import CartPage from '@/components/ui/(dashboard)/customer/cart';
+
 const page = () => {
-	return <div>cart page</div>;
+	return <CartPage />;
 };
 export default page;

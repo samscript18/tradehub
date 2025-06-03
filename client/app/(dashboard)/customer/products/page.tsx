@@ -1,4 +1,6 @@
+import ProductsPage from '@/components/ui/(dashboard)/customer/products';
+
 const page = () => {
-	return <div>products page</div>;
+	return <ProductsPage />;
 };
 export default page;

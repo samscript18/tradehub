@@ -1,14 +1,15 @@
-'use client';
-import Button from '@/components/common/button';
-import SelectField from '@/components/common/inputs/select-field';
-import { storeCategories, newProducts } from '@/lib/data';
-import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
-import Product from '../ui/product';
+'use client'
 
-const SearchPage = () => {
-	return (
-		<section className="px-4">
+import Button from '@/components/common/button';
+import {  newProducts, storeCategories } from '@/lib/data';
+import { motion } from 'framer-motion';
+import Product from '../ui/product';
+import { ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
+import SelectField from '@/components/common/inputs/select-field';
+
+const ProductsPage = () => {
+  return (
+    <section className="px-4">
 			<div className="max-md:w-full flex max-md:flex-col items-start md:items-center justify-between mb-6">
 				<div className="max-md:w-full flex max-md:flex-col items-start md:items-center max-md:space-y-4 space-x-4">
 					<div className="flex justify-center items-center mt-2">
@@ -156,6 +157,6 @@ const SearchPage = () => {
 				</div>
 			</div>
 		</section>
-	);
-};
-export default SearchPage;
+  )
+}
+export default ProductsPage

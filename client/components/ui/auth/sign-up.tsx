@@ -322,7 +322,7 @@ const SignUpPage = () => {
 								className="col-span-2"
 								InputProps={{
 									type: 'tel',
-									placeholder: 'e.g your store address',
+									placeholder: 'e.g your address zipcode',
 									...register('address.zipcode', {
 										required: {
 											value: true,
