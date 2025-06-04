@@ -26,30 +26,7 @@ const CartPage = () => {
 		total,
 	} = useCart();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
-	const [selectedAddress, setSelectedAddress] = useState<string>('address-1');
-
-	const addresses: DeliveryAddress[] = [
-		{
-			id: 'address-1',
-			name: `${user?.firstName ? user?.firstName + user?.lastName : 'John Smilga'}`,
-			streetAddress: '123 Market Street',
-			city: 'Abeokuta',
-			state: 'Ogun State',
-			zipcode: '94105',
-			phoneNumber: '+2347012344567',
-			country: 'Nigeria',
-		},
-		{
-			id: 'address-2',
-			name: `${user?.firstName ? user?.firstName + user?.lastName : 'John Smilga'}`,
-			streetAddress: '456 Community Ave',
-			city: 'Sango Ota',
-			state: 'Ogun State',
-			zipcode: '94607',
-			phoneNumber: '+2348139876543',
-			country: 'Nigeria',
-		},
-	];
+	const [selectedAddress, setSelectedAddress] = useState<string>('0');
 
 	const {
 		handleSubmit,
@@ -229,24 +206,30 @@ const CartPage = () => {
 							) : (
 								<>
 									<RadioGroup value={selectedAddress} onValueChange={setSelectedAddress} className="space-y-4">
-										{addresses.map((address) => (
-											<div key={address.id} className="relative bg-[#181A20] rounded-lg shadow-lg">
+										{user?.addresses?.map((address, index) => (
+											<div key={index} className="relative bg-[#181A20] rounded-lg shadow-lg">
 												<Label
-													htmlFor={address.id}
+													htmlFor={index.toString()}
 													className={`block p-6 rounded-lg border-1 cursor-pointer transition-all ${
-														selectedAddress === address.id ? 'border-primary' : 'border-gray-700 hover:border-gray-600'
+														selectedAddress === index.toString() ? 'border-primary' : 'border-gray-700 hover:border-gray-600'
 													}`}>
 													<div className="flex items-start gap-4">
-														<RadioGroupItem value={address.id} id={address.id} className="border-gray-600 text-primary" />
+														<RadioGroupItem
+															value={index.toString()}
+															id={index.toString()}
+															className="border-gray-600 text-primary"
+														/>
 														<div className="flex-1">
-															<div className="font-medium text-sm mb-1">{address.name}</div>
+															<div className="font-medium text-sm mb-1">
+																{user.firstName} {user.lastName}
+															</div>
 															<div className="text-gray-400 text-xs space-y-1">
 																<div>{address.streetAddress}</div>
 																<div>
 																	{address.city}, {address.state}
 																</div>
 																<div>{address.zipcode}</div>
-																<div>{address.phoneNumber}</div>
+																<div>{user.phoneNumber}</div>
 															</div>
 														</div>
 													</div>

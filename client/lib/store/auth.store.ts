@@ -29,12 +29,15 @@ export const useAuth = create<AuthStore>()(
       async fetchUser() {
         try {
           const user = await getUser();
-          const { firstName, lastName, addresses: customerAddresses, dateOfBirth, gender } = await getCustomer()
-          const { storeName, storeLogo, storeDescription, storeCategory, isVerified, addresses: merchantAddresses } = await getMerchant()
 
           if (user.role === 'customer') {
+            const { firstName, lastName, addresses: customerAddresses, dateOfBirth, gender } = await getCustomer()
+
             set({ user: { ...user, firstName, lastName, addresses: customerAddresses, dateOfBirth, gender } as User & Customer });
+
           } else if (user.role === 'merchant') {
+            const { storeName, storeLogo, storeDescription, storeCategory, isVerified, addresses: merchantAddresses } = await getMerchant()
+            
             set({ user: { ...user, storeName, storeLogo, storeDescription, storeCategory, isVerified, addresses: merchantAddresses } as User & Merchant });
           }
 

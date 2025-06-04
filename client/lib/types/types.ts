@@ -9,7 +9,6 @@ export interface Address {
 }
 
 export interface DeliveryAddress extends Address {
-  id: string;
   name: string;
   phoneNumber: string;
 }
