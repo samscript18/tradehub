@@ -61,7 +61,7 @@ export const getUser = async () => {
 
     return response?.data?.data;
   } catch (error) {
-    console.log(error);
+    errorHandler(error as AxiosErrorShape | string);
     throw error;
   }
 };

@@ -7,12 +7,12 @@ import { UpdateCustomerDto } from './dto/update-customer.dto';
 @Injectable()
 export class CustomerProvider {
    constructor(
-      private readonly CustomerService: CustomerService,
+      private readonly customerService: CustomerService,
       private readonly userService: UserService,
    ) { }
 
    async getCustomers() {
-      const data = await this.CustomerService.getCustomers({});
+      const data = await this.customerService.getCustomers({});
 
       if (!data) {
          throw new NotFoundException('Customers not found');
@@ -25,8 +25,22 @@ export class CustomerProvider {
       };
    }
 
-   async getCustomer(CustomerId: string) {
-      const data = await this.CustomerService.getCustomer({ _id: CustomerId });
+   async getCustomer(customerId: string) {
+      const data = await this.customerService.getCustomer({ _id: customerId });
+
+      if (!data) {
+         throw new NotFoundException('Customer not found');
+      }
+
+      return {
+         success: true,
+         message: 'Customer profile fetched',
+         data,
+      };
+   }
+
+   async getUserCustomer(userId: string) {
+      const data = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
 
       if (!data) {
          throw new NotFoundException('Customer not found');
@@ -40,7 +54,7 @@ export class CustomerProvider {
    }
 
    async updateCustomer(updateCustomerDto: UpdateCustomerDto, userId: string) {
-      const data = await this.CustomerService.updateCustomer(
+      const data = await this.customerService.updateCustomer(
          { user: new Types.ObjectId(userId) },
          updateCustomerDto,
       );

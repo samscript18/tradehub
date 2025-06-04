@@ -2,9 +2,14 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { getUser } from '../services/auth.service';
 import { User } from '../types';
+import { getCustomer } from '../services/customer.service';
+import { Customer, Merchant } from '../types/types';
+import { getMerchant } from '../services/merchant.service';
+
+type IUser = (User & Customer) | (User & Merchant)
 
 type AuthStoreState = {
-  user?: User | undefined;
+  user?: IUser;
   accessToken?: string;
   refreshToken?: string;
 };
@@ -24,10 +29,15 @@ export const useAuth = create<AuthStore>()(
       async fetchUser() {
         try {
           const user = await getUser();
+          const { firstName, lastName, addresses: customerAddresses, dateOfBirth, gender } = await getCustomer()
+          const { storeName, storeLogo, storeDescription, storeCategory, isVerified, addresses: merchantAddresses } = await getMerchant()
 
-          console.log(user);
+          if (user.role === 'customer') {
+            set({ user: { ...user, firstName, lastName, addresses: customerAddresses, dateOfBirth, gender } as User & Customer });
+          } else if (user.role === 'merchant') {
+            set({ user: { ...user, storeName, storeLogo, storeDescription, storeCategory, isVerified, addresses: merchantAddresses } as User & Merchant });
+          }
 
-          set({ user });
         } catch {
           set({ user: undefined });
         }

@@ -6,26 +6,36 @@ import { RoleNames } from '../user/enums';
 import { CustomerProvider } from './customer.provider';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 
-@Controller('Customer')
+@Controller('customer')
 @ApiTags('Customer')
 @ApiBearerAuth()
 export class CustomerController {
-   constructor(private readonly CustomerProvider: CustomerProvider) { }
+   constructor(private readonly customerProvider: CustomerProvider) { }
 
    @Get('')
    @ApiOperation({ summary: 'Get Customers' })
    @Roles([RoleNames.ADMIN])
    async getCustomers() {
-      const data = await this.CustomerProvider.getCustomers();
+      const data = await this.customerProvider.getCustomers();
 
       return data;
    }
 
-   @Get(':CustomerId')
+
+   @Get('/user')
+   @Roles([RoleNames.CUSTOMER])
+   @ApiOperation({ summary: 'Get user customer profile' })
+   async getUserCustomer(@Auth('_id') userId: string) {
+      const data = await this.customerProvider.getUserCustomer(userId);
+
+      return data;
+   }
+
+   @Get(':customerId')
    @Roles([RoleNames.CUSTOMER])
    @ApiOperation({ summary: 'Get Customer by id' })
-   async getCustomer(@Param('CustomerId', MongoIdPipe) CustomerId: string) {
-      const data = await this.CustomerProvider.getCustomer(CustomerId);
+   async getCustomer(@Param('customerId') customerId: string) {
+      const data = await this.customerProvider.getCustomer(customerId);
 
       return data;
    }
@@ -34,7 +44,7 @@ export class CustomerController {
    @Roles([RoleNames.CUSTOMER])
    @ApiOperation({ summary: 'Update Customer' })
    async updateCustomer(@Auth('_id') userId: string, @Body() updateCustomerDto: UpdateCustomerDto) {
-      const data = await this.CustomerProvider.updateCustomer(updateCustomerDto, userId);
+      const data = await this.customerProvider.updateCustomer(updateCustomerDto, userId);
 
       return data;
    }

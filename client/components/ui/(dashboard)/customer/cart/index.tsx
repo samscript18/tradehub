@@ -243,8 +243,9 @@ const CartPage = () => {
 															<div className="text-gray-400 text-xs space-y-1">
 																<div>{address.streetAddress}</div>
 																<div>
-																	{address.city}, {address.state} {address.zipcode}
+																	{address.city}, {address.state}
 																</div>
+																<div>{address.zipcode}</div>
 																<div>{address.phoneNumber}</div>
 															</div>
 														</div>

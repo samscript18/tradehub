@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronRight, Shield, ShieldCheck, Globe, Bell, Moon } from 'lucide-react';
 import { Switch } from '@/components/common/switch';
 import { useAuth } from '@/lib/store/auth.store';
@@ -11,6 +11,7 @@ import { UpdateProfile } from '@/lib/types/auth';
 import Button from '@/components/common/button';
 import TextField, { PasswordTextField } from '@/components/common/inputs/text-field';
 import { REGEX } from '@/lib/utils/regex';
+import { convertUrl } from '@/lib/utils/file';
 
 interface SettingItem {
 	icon: React.ReactNode;
@@ -114,11 +115,21 @@ const ProfilePage = () => {
 		},
 	});
 
-	const password = watch('password');
+	const newPassword = watch('newPassword');
 
 	const submit = async (e: UpdateProfile) => {
 		console.log(e);
 	};
+
+	useEffect(() => {
+		const handleProfileImage = async () => {
+			if (user?.profilePicture) {
+				const profileImage = await convertUrl(user?.profilePicture);
+				setProfileImage(profileImage);
+			}
+		};
+		handleProfileImage();
+	}, [user]);
 
 	const SettingSection = ({ title, items }: { title: string; items: SettingItem[] }) => (
 		<div className="bg-[#181A20] rounded-lg shadow-lg p-4 md:p-6 space-y-4">
@@ -164,10 +175,10 @@ const ProfilePage = () => {
 	);
 
 	return (
-		<div className="">
-			{isEdit ? (
-				<form onSubmit={handleSubmit(submit)} className="px-4 py-8 space-y-8">
-					<div className="bg-[#181A20] rounded-lg p-8 text-center">
+		<section>
+			<div onSubmit={handleSubmit(submit)} className="space-y-8  px-4 py-8">
+				<div className="bg-[#181A20] rounded-lg p-8 text-center">
+					{isEdit ? (
 						<div className="relative inline-block mb-4">
 							<div className="w-24 h-24 rounded-full overflow-hidden mx-auto">
 								<ImageUploader
@@ -180,15 +191,48 @@ const ProfilePage = () => {
 										setProfileImage(undefined);
 										setValue('profilePicture', undefined);
 									}}
-									className={'w-24 h-24 rounded-full'}
+									className={'w-24 h-24 rounded-full! p-0!'}
 								/>
 							</div>
 						</div>
+					) : (
+						<div className="relative inline-block mb-4">
+							<div className="w-24 h-24 rounded-full overflow-hidden mx-auto">
+								<Avatar className="w-24 h-24">
+									<AvatarImage src={user?.profilePicture} alt="profile-image" />
+									<AvatarFallback className="text-xl bg-primary">
+										{user?.firstName?.slice(0, 1)}
+										{user?.lastName?.slice(0, 1)}
+									</AvatarFallback>
+								</Avatar>
+							</div>
+						</div>
+					)}
 
-						<h1 className="text-xl font-bold text-white mb-2">Edit Profile</h1>
-						<p className="text-gray-400 text-sm">Update your profile information and settings</p>
-					</div>
+					{isEdit ? (
+						<div className="bg-[#181A20] rounded-lg p-8 text-center">
+							<h1 className="text-xl font-bold text-white mb-2">Edit Profile</h1>
+						</div>
+					) : (
+						<>
+							<div className="flex justify-center items-center">
+								<Button
+									variant="filled"
+									className="px-4 text-xs font-semibold my-4"
+									onClick={() => setIsEdit(true)}>
+									Edit Profile
+								</Button>
+							</div>
 
+							<h1 className="text-xl font-bold text-white mb-2">
+								{user?.firstName} {user?.lastName}
+							</h1>
+						</>
+					)}
+					<p className="text-gray-400 text-sm">Update your profile information and settings</p>
+				</div>
+
+				{isEdit ? (
 					<div className="bg-[#181A20] rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-2 md:gap-8 px-4 py-6 md:p-6 space-y-8">
 						<h2 className="font-semibold mb-4 col-span-2">Basic Information</h2>
 						<TextField
@@ -265,14 +309,18 @@ const ProfilePage = () => {
 							helperText={errors?.phoneNumber?.message}
 						/>
 					</div>
+				) : (
+					<SettingSection title="Personal Information" items={personalInfo} />
+				)}
 
+				{isEdit ? (
 					<div className="bg-[#181A20] rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-2 md:gap-8 px-4 py-6 md:p-6 ">
 						<h2 className="font-semibold mb-4 col-span-2">Password Management</h2>
 						<PasswordTextField
 							className="col-span-2 mb-8"
 							label="Current Password"
 							InputProps={{
-								...register('password', {
+								...register('currentPassword', {
 									required: {
 										value: true,
 										message: 'This field is required',
@@ -287,14 +335,14 @@ const ProfilePage = () => {
 									},
 								}),
 							}}
-							helperText={errors?.password?.message}
+							helperText={errors?.currentPassword?.message}
 						/>
 
 						<PasswordTextField
 							className="col-span-2 mb-8"
 							label="New Password"
 							InputProps={{
-								...register('password', {
+								...register('newPassword', {
 									required: {
 										value: true,
 										message: 'This field is required',
@@ -309,7 +357,7 @@ const ProfilePage = () => {
 									},
 								}),
 							}}
-							helperText={errors?.password?.message}
+							helperText={errors?.newPassword?.message}
 						/>
 
 						<PasswordTextField
@@ -320,66 +368,33 @@ const ProfilePage = () => {
 									setConfirmPassword(e.target.value);
 								},
 							}}
-							helperText={password && password !== confirmPassword ? 'Passwords do not match' : undefined}
+							helperText={newPassword && newPassword !== confirmPassword ? 'Passwords do not match' : undefined}
 						/>
 
 						<Button
 							fullWidth
 							variant="filled"
-							className="py-3 text-sm font-semibold mb-4 col-span-2"
-							onClick={() => setIsEdit(true)}>
+							className="py-3 text-sm font-semibold max-md:mt-4 mb-4 col-span-2">
 							Update Password
 						</Button>
 					</div>
+				) : (
+					<SettingSection title="Security Settings" items={securitySettings} />
+				)}
 
-					<SettingSection title="Account Preferences" items={accountPreferences} />
+				<SettingSection title="Account Preferences" items={accountPreferences} />
 
+				{isEdit && (
 					<Button
 						fullWidth
+						onClick={handleSubmit(submit)}
 						variant="filled"
-						className="py-3 text-sm font-semibold mb-4"
-						onClick={() => setIsEdit(true)}>
+						className="py-3 text-sm font-semibold mb-4">
 						Save Changes
 					</Button>
-				</form>
-			) : (
-				<div className="px-4 py-8 space-y-8">
-					<div className="bg-[#181A20] rounded-lg p-8 text-center">
-						<div className="relative inline-block mb-4">
-							<div className="w-24 h-24 rounded-full overflow-hidden mx-auto">
-								<Avatar className="w-24 h-24">
-									<AvatarImage src={user?.profilePicture} alt="profile-image" />
-									<AvatarFallback className="text-xl bg-primary">
-										{user?.firstName?.slice(0, 1)}
-										{user?.lastName?.slice(0, 1)}
-									</AvatarFallback>
-								</Avatar>
-							</div>
-						</div>
-
-						<div className="flex justify-center items-center">
-							<Button
-								variant="filled"
-								className="px-4 text-xs font-semibold my-4"
-								onClick={() => setIsEdit(true)}>
-								Edit Profile
-							</Button>
-						</div>
-
-						<h1 className="text-xl font-bold text-white mb-2">
-							{user?.firstName} {user?.lastName}
-						</h1>
-						<p className="text-gray-400 text-sm">Update your profile information and settings</p>
-					</div>
-
-					<SettingSection title="Personal Information" items={personalInfo} />
-
-					<SettingSection title="Security Settings" items={securitySettings} />
-
-					<SettingSection title="Account Preferences" items={accountPreferences} />
-				</div>
-			)}
-		</div>
+				)}
+			</div>
+		</section>
 	);
 };
 

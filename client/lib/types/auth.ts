@@ -37,7 +37,8 @@ export type ContactUs = {
 export type UpdateProfile = {
   email?: string;
   phoneNumber?: string;
-  password?: string;
+  currentPassword?: string
+  newPassword?: string;
   firstName?: string;
   lastName?: string;
   profilePicture?: File | string

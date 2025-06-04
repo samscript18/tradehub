@@ -16,13 +16,13 @@ import { MerchantProvider } from './merchant.provider';
 export class MerchantController {
    constructor(private readonly MerchantProvider: MerchantProvider) { }
 
-   // @Get('/user')
-   // @Roles([RoleNames.MERCHANT])
-   // async getUserMerchant(@Auth('_id') userId: string) {
-   //    const data = await this.MerchantProvider.getUserMerchant(userId);
+   @Get('/user')
+   @Roles([RoleNames.MERCHANT])
+   async getUserMerchant(@Auth('_id') userId: string) {
+      const data = await this.MerchantProvider.getUserMerchant(userId);
 
-   //    return data;
-   // }
+      return data;
+   }
 
    // @Put('/kyc/update')
    // @Roles([RoleNames.MERCHANT])
