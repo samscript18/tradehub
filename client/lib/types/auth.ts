@@ -33,3 +33,12 @@ export type ContactUs = {
   email: string;
   message: string;
 }
+
+export type UpdateProfile = {
+  email?: string;
+  phoneNumber?: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  profilePicture?: File | string
+}

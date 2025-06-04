@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import React, { FC } from 'react';
 import { BiTrash, BiUpload } from 'react-icons/bi';
@@ -7,6 +8,7 @@ interface Props {
 	onUploadImage?(file: File): void;
 	onRemoveImage?(): void;
 	id?: string;
+	className: string;
 }
 
 const ImageUploader: FC<Props> = ({
@@ -14,10 +16,11 @@ const ImageUploader: FC<Props> = ({
 	uploaded_image,
 	onUploadImage,
 	onRemoveImage,
+	className,
 }) => {
 	if (uploaded_image) {
 		return (
-			<div className="w-full h-[120px] rounded-md border-4 relative">
+			<div className={cn(className, 'w-full h-[120px] rounded-md border-4 relative')}>
 				<Image
 					src={URL.createObjectURL(uploaded_image)}
 					alt="image-uploader-image"
@@ -28,7 +31,7 @@ const ImageUploader: FC<Props> = ({
 				/>
 				<span
 					onClick={onRemoveImage}
-					className="w-[30px] h-[30px] rounded-md flex items-center justify-center bg-red-50 absolute top-2 right-2 cursor-pointer">
+					className="w-[30px] h-[30px] rounded-md flex items-center justify-center bg-red-500 absolute top-2 right-2 cursor-pointer">
 					<BiTrash />
 				</span>
 			</div>
@@ -39,7 +42,10 @@ const ImageUploader: FC<Props> = ({
 		<>
 			<label
 				htmlFor={id}
-				className="border-2 border-dashed rounded-md bg-gray-200 px-6 py-8 flex flex-col items-center border-primary cursor-pointer">
+				className={cn(
+					className,
+					'border-2 border-dashed rounded-md bg-gray-200 px-6 py-8 flex flex-col items-center border-primary cursor-pointer'
+				)}>
 				<BiUpload size={25} />
 				<p className="text-[.9rem] font-semibold text-gray-600 mt-2">Choose File</p>
 			</label>
@@ -51,7 +57,7 @@ const ImageUploader: FC<Props> = ({
 				type="file"
 				className="hidden"
 				id={id}
-				accept=".pdf,.doc,.docx,.ppt,.pptx"
+				accept="*/"
 			/>
 		</>
 	);
