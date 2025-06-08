@@ -11,8 +11,12 @@ import {
    IsOptional,
    IsDateString,
    IsNumberString,
+   ValidatorConstraint,
+   ValidatorConstraintInterface,
+   registerDecorator,
 } from 'class-validator';
 import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
+import { ValidationOptions } from 'joi';
 
 export const IsString = (isOptional: boolean) => {
    const decorators = [_IsString()];
@@ -117,3 +121,42 @@ export const IsBase64 = (isOptional: boolean) => {
 
    return applyDecorators(...decorators);
 };
+
+@ValidatorConstraint({ async: false })
+export class IsBase64MediaConstraint implements ValidatorConstraintInterface {
+   private readonly regex =
+      /^data:(image\/(png|jpeg|jpg|gif|webp|svg\+xml)|video\/(mp4|webm|ogg|quicktime));base64,[A-Za-z0-9+/=\s]+$/;
+
+   validate(base64: string): boolean {
+      return typeof base64 === 'string' && this.regex.test(base64);
+   }
+
+   defaultMessage(): string {
+      return 'Each media file must be a valid base64-encoded image or video string (with MIME type)';
+   }
+}
+
+export function IsBase64MediaArray(validationOptions?: ValidationOptions) {
+   const validatorInstance = new IsBase64MediaConstraint();
+
+   return function (object: Object, propertyName: string) {
+      registerDecorator({
+         name: 'isBase64MediaArray',
+         target: object.constructor,
+         propertyName,
+         options: validationOptions,
+         validator: {
+            validate(mediaArray: string[]): boolean {
+               if (!Array.isArray(mediaArray)) return false;
+               return mediaArray.every((media) =>
+                  validatorInstance.validate(media),
+               );
+            },
+            defaultMessage(): string {
+               return 'All items must be valid base64-encoded image or video strings';
+            },
+         },
+      });
+   };
+}
+

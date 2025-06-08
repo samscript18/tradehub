@@ -7,7 +7,7 @@ import { FilterQuery, Model, Query, QueryOptions, UpdateQuery } from 'mongoose';
 export class CustomerService {
    constructor(
       @InjectModel(Customer.name)
-      private readonly _CustomerModel: Model<CustomerDocument>,
+      private readonly _customerModel: Model<CustomerDocument>,
    ) { }
 
    async populate(model: Query<any, CustomerDocument>) {
@@ -17,31 +17,31 @@ export class CustomerService {
    }
 
    async createCustomer<T>(data: T) {
-      const Customer = await this._CustomerModel.create(data);
+      const customer = await this._customerModel.create(data);
 
-      return Customer;
+      return customer;
    }
 
    async findOrCreateCustomer<T>(filter: FilterQuery<CustomerDocument>, data: T) {
-      let Customer = await this.populate(this._CustomerModel.findOne(filter));
+      let customer = await this.populate(this._customerModel.findOne(filter));
 
-      if (!Customer) {
-         Customer = await this._CustomerModel.create(data);
+      if (!customer) {
+         customer = await this._customerModel.create(data);
       }
 
-      return Customer;
+      return customer;
    }
 
    async getCustomer(filter: FilterQuery<CustomerDocument>) {
-      const Customer = await this.populate(this._CustomerModel.findOne(filter));
+      const customer = await this.populate(this._customerModel.findOne(filter));
 
-      return Customer;
+      return customer;
    }
 
    async getCustomers(filter: FilterQuery<CustomerDocument>) {
-      const Customers = await this.populate(this._CustomerModel.find(filter));
+      const customers = await this.populate(this._customerModel.find(filter));
 
-      return Customers;
+      return customers;
    }
 
    async updateCustomer(
@@ -49,20 +49,20 @@ export class CustomerService {
       update: UpdateQuery<CustomerDocument>,
       options?: QueryOptions<CustomerDocument>,
    ) {
-      const Customer = await this.populate(
-         this._CustomerModel.findOneAndUpdate(filter, update, {
+      const customer = await this.populate(
+         this._customerModel.findOneAndUpdate(filter, update, {
             new: true,
             runValidators: true,
             ...options,
          }),
       );
 
-      return Customer;
+      return customer;
    }
 
    async deleteCustomer(filter: FilterQuery<CustomerDocument>) {
-      const Customer = await this._CustomerModel.findOneAndDelete(filter);
+      const customer = await this._customerModel.findOneAndDelete(filter);
 
-      return Customer;
+      return customer;
    }
 }

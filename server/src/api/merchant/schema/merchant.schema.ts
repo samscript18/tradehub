@@ -3,6 +3,7 @@ import { HydratedDocument, Types } from 'mongoose';
 import { User, UserDocument } from 'src/api/user/schema/user.schema';
 import { schemaOptions } from 'src/shared/constants/db.const';
 import { Address, AddressSchema } from './address.schema';
+import DEFAULT_IMAGES from 'src/shared/constants/images.const';
 
 @Schema(schemaOptions)
 export class Merchant {
@@ -15,7 +16,7 @@ export class Merchant {
    @Prop()
    storeName: string;
 
-   @Prop()
+   @Prop({ type: String, default: DEFAULT_IMAGES.profilePicture })
    storeLogo: string;
 
    @Prop()

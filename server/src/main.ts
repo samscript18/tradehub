@@ -47,7 +47,7 @@ async function bootstrap() {
 
    const swaggerConfig = new DocumentBuilder()
       .setTitle('TradeHub API🏬')
-      .setDescription('Welcome to the TradeHub API, your gateway to building powerful integrations with our dynamic e-commerce platform. This API enables developers to seamlessly interact with TradeHub’s ecosystem—supporting buyers, merchants, products, orders, payments, authentication, and more.')
+      .setDescription('Welcome to the TradeHub API, your gateway to building powerful integrations with our dynamic e-commerce platform. This API enables developers to seamlessly interact with TradeHub’s ecosystem supporting buyers, merchants, products, orders, payments, authentication, and more.')
       .setVersion('1.0.0')
       .addCookieAuth()
       .addServer('https://tradehub-be-dev.onrender.com')
