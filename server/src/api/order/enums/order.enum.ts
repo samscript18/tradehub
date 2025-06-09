@@ -3,6 +3,7 @@ export enum OrderStatus {
   CONFIRMED = 'confirmed',
   PROCESSING = 'processing',
   SHIPPED = 'shipped',
+  IN_TRANSIT = 'in_transit',
   DELIVERED = 'delivered',
   CANCELLED = 'cancelled',
   RETURNED = 'returned',

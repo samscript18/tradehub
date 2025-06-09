@@ -7,6 +7,8 @@ import { TokenModule } from './token/token.module';
 import { UserModule } from './user/user.module';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
+import { NotificationModule } from './notification/notification.module';
+import { PaymentModule } from './payment/payment.module';
 
 
 @Module({
@@ -18,7 +20,9 @@ import { OrderModule } from './order/order.module';
       CustomerModule,
       MerchantModule,
       ProductModule,
-      OrderModule
+      OrderModule,
+      NotificationModule,
+      PaymentModule
    ]
 })
 export class ApiModule { }

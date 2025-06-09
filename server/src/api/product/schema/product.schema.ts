@@ -4,8 +4,9 @@ import { HydratedDocument, Types } from 'mongoose';
 import { ProductVariant, ProductVariantSchema } from './variant.schema';
 import { MerchantDocument } from 'src/api/merchant/schema/merchant.schema';
 import { ProductStatus } from '../enums/product.enum';
+import { schemaOptions } from 'src/shared/constants/db.const';
 
-@Schema({ timestamps: true })
+@Schema(schemaOptions)
 export class Product {
   @Prop({ type: Types.ObjectId, ref: 'Merchant', required: true })
   merchant: MerchantDocument;

@@ -24,5 +24,6 @@ import { MerchantModule } from '../merchant/merchant.module';
   ],
   controllers: [ProductController],
   providers: [ProductService, ProductProvider],
+  exports: [ProductService]
 })
 export class ProductModule { }

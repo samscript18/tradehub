@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Order Failed</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 0;
+      color: #111827;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+    h1 {
+      color: #ef4444;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #6b7280;
+      text-align: center;
+    }
+    .details {
+      margin: 20px 0;
+    }
+    .details p {
+      margin: 5px 0;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background-color: #2D7FF9;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚠️ Payment Failed</h1>
+    <p>Hi {{customerName}},</p>
+    <p>Your payment for order <strong>#{{orderId}}</strong> was unsuccessful. Please try again.</p>
+
+    <div class="details">
+      <p><strong>Amount Attempted:</strong> ₦{{amount}}</p>
+      <p><strong>Reference:</strong> {{transactionRef}}</p>
+    </div>
+
+    {{!-- <a class="button" href="{{retryLink}}" target="_blank">Retry Payment</a> --}}
+
+    <p>If you were charged or have questions, please contact support.</p>
+
+    <div class="footer">
+      © TradeHub. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>

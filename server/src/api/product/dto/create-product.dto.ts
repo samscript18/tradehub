@@ -27,6 +27,7 @@ export class CreateProductDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => VariantDto)
+  @ApiProperty()
   variants: VariantDto[];
 }
 

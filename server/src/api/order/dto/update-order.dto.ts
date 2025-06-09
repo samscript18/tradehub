@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateOrderDto } from './create-order.dto';
+import { IsEnum } from "src/shared/decorators";
+import { OrderStatus } from "../enums/order.enum";
 
-export class UpdateOrderDto extends PartialType(CreateOrderDto) {}
+export class UpdateOrderDto {
+  @IsEnum(OrderStatus, false)
+  status: string;
+}

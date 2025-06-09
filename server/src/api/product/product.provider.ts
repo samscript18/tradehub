@@ -130,11 +130,6 @@ export class ProductProvider {
       delete query.rating;
     }
 
-    if (query.priceRange) {
-      _query.priceRange = query.priceRange;
-      delete query.priceRange;
-    }
-
     if (query.status) {
       _query.status = query.status;
       delete query.status
@@ -239,11 +234,6 @@ export class ProductProvider {
     if (query.rating) {
       _query.rating = query.rating;
       delete query.rating;
-    }
-
-    if (query.priceRange) {
-      _query.priceRange = query.priceRange;
-      delete query.priceRange;
     }
 
     if (query.status) {

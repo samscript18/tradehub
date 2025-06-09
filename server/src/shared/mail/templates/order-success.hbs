@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <meta charset='UTF-8' />
+    <title>Order Successful</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9fafb;
+        margin: 0;
+        padding: 0;
+        color: #111827;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+      h1 {
+        color: #2d7ff9;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #6b7280;
+        text-align: center;
+      }
+      .details {
+        margin: 20px 0;
+      }
+      .details p {
+        margin: 5px 0;
+      }
+      .button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 24px;
+        background-color: #2d7ff9;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='container'>
+      <h1>🎉 Order Confirmed!</h1>
+      <p>Hi {{customerName}},</p>
+      <p>Your order
+        <strong>#{{orderId}}</strong>
+        has been successfully placed and paid for. We’ve notified the merchants
+        to begin processing.</p>
+
+      <div class='details'>
+        <p><strong>Total Amount:</strong> ₦{{amount}}</p>
+        <p><strong>Payment Reference:</strong> {{transactionRef}}</p>
+        {{!-- <p><strong>Order Date:</strong> {{orderDate}}</p> --}}
+      </div>
+
+      {{!-- <a class="button" href="{{orderLink}}" target="_blank">View My Order</a> --}}
+
+      <p>Thank you for shopping with TradeHub!</p>
+
+      <div class='footer'>
+        © TradeHub. All rights reserved.
+      </div>
+    </div>
+  </body>
+</html>

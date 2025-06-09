@@ -3,7 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Query, QueryOptions, UpdateQuery } from 'mongoose';
 import { UtilService } from 'src/shared/services/utils.service';
 import { PaginationQuery } from 'src/shared/interfaces/pagination.interface';
-import { Order, OrderDocument } from './schema/order.schema';
+import { Order, OrderDocument } from '../schema/order.schema';
+import { OrderStatus } from '../enums/order.enum';
 
 @Injectable()
 export class OrderService {
@@ -32,7 +33,12 @@ export class OrderService {
     return order;
   }
 
-  async getOrders(filter: FilterQuery<OrderDocument>, paginationQuery?: PaginationQuery) {
+  async getOrders(filter: FilterQuery<OrderDocument>, paginationQuery?: PaginationQuery): Promise<{
+    data: OrderDocument[];
+    page: number;
+    totalPages: number;
+    count: number;
+  }> {
     const count = await this._orderModel.find(filter).countDocuments()
 
     const { skip, page, totalPages, limit } = this.utilService.resolvePaginationQuery({
@@ -70,5 +76,16 @@ export class OrderService {
     const order = await this._orderModel.findOneAndDelete(filter);
 
     return order;
+  }
+
+  async computeAggregatedStatus(statuses: string[]): Promise<OrderStatus> {
+    const unique = new Set(statuses);
+
+    if (unique.size === 1) return statuses[0] as OrderStatus;
+    if (unique.has(OrderStatus.PROCESSING)) return OrderStatus.PROCESSING;
+    if (unique.has(OrderStatus.PROCESSING) && unique.has(OrderStatus.SHIPPED)) return OrderStatus.PROCESSING;
+    if (unique.has(OrderStatus.SHIPPED)) return OrderStatus.SHIPPED;
+
+    return OrderStatus.PENDING;
   }
 }

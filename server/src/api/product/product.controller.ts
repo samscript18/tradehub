@@ -21,14 +21,6 @@ export class ProductController {
     return this.productProvider.createProduct(createProductDto, userId);
   }
 
-  // @Get()
-  // @IsPublic()
-  // @ApiOperation({ summary: 'Get property listings' })
-  // getPropertyListings(@Query() query: GetPropertyListingsDto) {
-  //   const newQuery = { ...query, status: PropertyListingStatus.APPROVED }
-  //   return this.propertyListingProvider.getPropertyListings(newQuery);
-  // }
-
   @Get('filters')
   @IsPublic()
   @ApiOperation({ summary: 'Get products filters' })
