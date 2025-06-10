@@ -70,12 +70,12 @@ const MerchantProfilePage = () => {
 			accountNumber: '****-****-4567',
 			routingNumber: '021000021',
 			accountType: 'Checking',
-			currency: 'USD - US Dollar',
+			currency: 'NGN - Naira',
 			lastVerified: 'Jan 22, 2024',
 		},
 		businessMetrics: {
 			memberSince: 'January 2020',
-			totalSales: '$125,430',
+			totalSales: '₦125,430',
 			averageRating: '4.8/5.0 (234 reviews)',
 		},
 	});
