@@ -3,17 +3,17 @@ import {
 	avatar1,
 	avatar2,
 	avatar3,
-	basket,
 	freshAndLocal,
 	homeEssentials,
-	knittedWears,
-	leatherBag,
-	pottery,
-	potterySet,
-	sheaButter,
+	// basket,
+	// knittedWears,
+	// leatherBag,
+	// pottery,
+	// potterySet,
+	// sheaButter,
+	// vase,
+	// toteBag,
 	styleStudio,
-	toteBag,
-	vase,
 } from '@/public/images';
 import { FaCreditCard, FaSearch, FaShieldAlt, FaShoppingBag, FaStore } from 'react-icons/fa';
 import { FaCartShopping, FaTruck, FaUsers } from 'react-icons/fa6';
@@ -1426,64 +1426,64 @@ export const merchantStores = [
 	},
 ];
 
-export const newProducts = [
-	{
-		id: 1,
-		img: leatherBag,
-		name: 'Handcrafted Leather Bag',
-		merchant: 'Artisan Creations',
-		price: 22000,
-	},
-	{
-		id: 2,
-		img: vase,
-		name: 'Handmade Vase',
-		merchant: 'Ceramic Arts',
-		price: 29500,
-	},
-	{
-		id: 3,
-		img: pottery,
-		name: 'Handmade Pottery',
-		merchant: 'Ceramic Arts',
-		price: 15000,
-	},
-	{
-		id: 4,
-		img: knittedWears,
-		name: 'Knitted Wears',
-		merchant: 'Style Studio',
-		price: 7500,
-	},
-	{
-		id: 5,
-		img: sheaButter,
-		name: 'Handmade Shea Butter Soap',
-		merchant: 'Natural Essence',
-		price: 3400,
-	},
-	{
-		id: 6,
-		img: basket,
-		name: 'Handwoven Market Basket',
-		merchant: 'Heritage Crafts',
-		price: 4500,
-	},
-	{
-		id: 7,
-		img: toteBag,
-		name: 'African Print Tote Bag',
-		merchant: 'Heritage Crafts',
-		price: 5000,
-	},
-	{
-		id: 8,
-		img: potterySet,
-		name: 'Handmade Pottery Set',
-		merchant: 'Artisan Creations',
-		price: 5500,
-	},
-];
+// export const newProducts: Product[] = [
+// 	{
+// 		id: 1,
+// 		img: leatherBag,
+// 		name: 'Handcrafted Leather Bag',
+// 		merchant: 'Artisan Creations',
+// 		price: 22000,
+// 	},
+// 	{
+// 		id: 2,
+// 		img: vase,
+// 		name: 'Handmade Vase',
+// 		merchant: 'Ceramic Arts',
+// 		price: 29500,
+// 	},
+// 	{
+// 		id: 3,
+// 		img: pottery,
+// 		name: 'Handmade Pottery',
+// 		merchant: 'Ceramic Arts',
+// 		price: 15000,
+// 	},
+// 	{
+// 		id: 4,
+// 		img: knittedWears,
+// 		name: 'Knitted Wears',
+// 		merchant: 'Style Studio',
+// 		price: 7500,
+// 	},
+// 	{
+// 		id: 5,
+// 		img: sheaButter,
+// 		name: 'Handmade Shea Butter Soap',
+// 		merchant: 'Natural Essence',
+// 		price: 3400,
+// 	},
+// 	{
+// 		id: 6,
+// 		img: basket,
+// 		name: 'Handwoven Market Basket',
+// 		merchant: 'Heritage Crafts',
+// 		price: 4500,
+// 	},
+// 	{
+// 		id: 7,
+// 		img: toteBag,
+// 		name: 'African Print Tote Bag',
+// 		merchant: 'Heritage Crafts',
+// 		price: 5000,
+// 	},
+// 	{
+// 		id: 8,
+// 		img: potterySet,
+// 		name: 'Handmade Pottery Set',
+// 		merchant: 'Artisan Creations',
+// 		price: 5500,
+// 	},
+// ];
 
 export const actions = [
 	{

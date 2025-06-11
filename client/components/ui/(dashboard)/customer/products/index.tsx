@@ -1,15 +1,22 @@
-'use client'
+'use client';
 
 import Button from '@/components/common/button';
-import {  newProducts, storeCategories } from '@/lib/data';
+import { storeCategories } from '@/lib/data';
 import { motion } from 'framer-motion';
 import Product from '../ui/product';
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import SelectField from '@/components/common/inputs/select-field';
+import { useQuery } from '@tanstack/react-query';
+import { getProducts } from '@/lib/services/customer.service';
+import Loader from '@/components/common/loaders';
 
 const ProductsPage = () => {
-  return (
-    <section className="px-4">
+	const { data, isPending } = useQuery({
+		queryFn: () => getProducts({ page: 1, limit: 10 }),
+		queryKey: ['get-products'],
+	});
+	return (
+		<section className="px-4">
 			<div className="max-md:w-full flex max-md:flex-col items-start md:items-center justify-between mb-6">
 				<div className="max-md:w-full flex max-md:flex-col items-start md:items-center max-md:space-y-4 space-x-4">
 					<div className="flex justify-center items-center mt-2">
@@ -112,17 +119,26 @@ const ProductsPage = () => {
 					/>
 				</div>
 			</div>
-			<p className="text-xs text-gray-200 mb-6">Showing 24 of 156 results</p>
-			<motion.div
-				className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-4"
-				initial="hidden"
-				whileInView="visible"
-				viewport={{ once: true, amount: 0.5 }}
-				transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
-				{newProducts.map((product) => {
-					return <Product key={product.id} {...product} />;
-				})}
-			</motion.div>
+			<p className="text-xs text-gray-200 mb-6">
+				Showing {data?.data.length} of {data?.meta?.count} results
+			</p>
+			{isPending ? (
+				<div className="flex justify-center items-center gap-4">
+					<Loader />
+					<p className="font-medium">Fetching products...</p>
+				</div>
+			) : (
+				<motion.div
+					className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-4"
+					initial="hidden"
+					whileInView="visible"
+					viewport={{ once: true, amount: 0.5 }}
+					transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
+					{data?.data?.map((product) => {
+						return <Product key={product._id} {...product} />;
+					})}
+				</motion.div>
+			)}
 			<div className="flex justify-center mt-10 max-md:mb-4">
 				<div className="flex items-center space-x-2">
 					<Button
@@ -157,6 +173,6 @@ const ProductsPage = () => {
 				</div>
 			</div>
 		</section>
-  )
-}
-export default ProductsPage
+	);
+};
+export default ProductsPage;

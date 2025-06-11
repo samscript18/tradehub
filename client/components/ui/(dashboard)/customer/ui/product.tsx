@@ -3,8 +3,7 @@
 import Button from '@/components/common/button';
 import { formatNaira } from '@/lib/helpers';
 import { useCart } from '@/lib/store/cart.store';
-import { Product as IProduct } from '@/lib/types';
-import { cartProduct1 } from '@/public/images';
+import { Product as IProduct } from '@/lib/types/types';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,7 +13,7 @@ const Product = (product: IProduct) => {
 	const { addItem } = useCart();
 	const [isDisabled, setIsDisabled] = useState<boolean>(false);
 	return (
-		<Link href={`/customer/products/${product.id}`}>
+		<Link href={`/customer/products/${product._id}`}>
 			<motion.div
 				className="flex flex-col h-full min-w-[155px] sm:min-w-[170px] md:w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md"
 				variants={{
@@ -31,7 +30,7 @@ const Product = (product: IProduct) => {
 					},
 				}}>
 				<Image
-					src={product.img}
+					src={product.images[0]}
 					alt={product.name}
 					width={350}
 					height={180}
@@ -39,20 +38,13 @@ const Product = (product: IProduct) => {
 				/>
 				<div className="bg-[#1E2A3B] p-2 space-y-2 shadow-md rounded-b-xl">
 					<h3 className="text-[13px] font-bold">{product.name}</h3>
-					<p className="text-xs text-gray-300">{product.merchant}</p>
+					<p className="text-xs text-gray-300">{product.merchant.storeName}</p>
 					<div className="flex max-lg:flex-col justify-between items-start lg:items-center">
-						<h4 className="text-sm font-bold">{formatNaira(product.price)}</h4>
+						<h4 className="text-sm font-bold">{formatNaira(product.variants[0].price)}</h4>
 						<div className="max-lg:hidden">
 							<Button
 								onClick={() => {
-									addItem({
-										id: 1,
-										name: 'Organic Sweet Potatoes',
-										merchant: 'Fresh Farms Co.',
-										price: 4.99,
-										quantity: 1,
-										img: cartProduct1,
-									});
+									addItem(product, 1);
 									setIsDisabled(true);
 								}}
 								variant="filled"
@@ -64,14 +56,7 @@ const Product = (product: IProduct) => {
 						<div className="lg:hidden w-full">
 							<Button
 								onClick={() => {
-									addItem({
-										id: 1,
-										name: 'Organic Sweet Potatoes',
-										merchant: 'Fresh Farms Co.',
-										price: 4990,
-										quantity: 1,
-										img: cartProduct1,
-									});
+									addItem(product, 1);
 									setIsDisabled(true);
 								}}
 								fullWidth

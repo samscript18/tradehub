@@ -22,7 +22,7 @@ export class PaystackService {
       amount: JSON.stringify(parseInt(String(data.amount * 1.1 * 100))),
       callback_url: data.redirect_url
         ? `${frontendUrl}${data.redirect_url}`
-        : `${frontendUrl}/order/verify/${data.reference}`,
+        : `${frontendUrl}/customer/order/verify/${data.reference}`,
       currency: 'NGN',
     });
 

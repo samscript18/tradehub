@@ -1,17 +1,24 @@
 'use client';
 import Button from '@/components/common/button';
 import { Rating } from '@/components/common/rating';
-import { categories, merchantStores, newProducts } from '@/lib/data';
+import { categories, merchantStores } from '@/lib/data';
 import { homeBgImg } from '@/public/images';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { FaStore } from 'react-icons/fa';
 import { FaTruck } from 'react-icons/fa6';
 import { IoIosArrowForward } from 'react-icons/io';
-import Product from '../ui/product';
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
+import { getProducts } from '@/lib/services/customer.service';
+import Product from '../ui/product';
+import Loader from '@/components/common/loaders';
 
 const HomeDashboard = () => {
+	const { data, isPending } = useQuery({
+		queryFn: () => getProducts({ page: 1, limit: 10 }),
+		queryKey: ['get-products'],
+	});
 	return (
 		<section>
 			<div
@@ -220,16 +227,23 @@ const HomeDashboard = () => {
 						</motion.p>
 					</Link>
 				</div>
-				<motion.div
-					className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6"
-					initial="hidden"
-					whileInView="visible"
-					viewport={{ once: true, amount: 0.5 }}
-					transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
-					{newProducts.map((product) => {
-						return <Product key={product.id} {...product} />;
-					})}
-				</motion.div>
+				{isPending ? (
+					<div className="flex justify-center items-center gap-4">
+						<Loader />
+						<p className="font-medium">Fetching products...</p>
+					</div>
+				) : (
+					<motion.div
+						className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6"
+						initial="hidden"
+						whileInView="visible"
+						viewport={{ once: true, amount: 0.5 }}
+						transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
+						{data?.data?.map((product) => {
+							return <Product key={product._id} {...product} />;
+						})}
+					</motion.div>
+				)}
 				<div className="flex max-md:flex-col justify-between items-center gap-6 mt-6">
 					<div className="w-full flex justify-between items-center gap-8 bg-gradient-to-r from-primary to-primary/20 rounded-md shadow-md p-3">
 						<div className="space-y-2">

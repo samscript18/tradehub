@@ -27,7 +27,7 @@ export class ProductProvider {
 
     const merchant: MerchantDocument = await this.merchantService.getMerchant({ user: new Types.ObjectId(userId) });
 
-    const newProductDto = { ...createProductDto, merchant: merchant._id };
+    const newProductDto = { ...createProductDto, category: createProductDto.category.toLowerCase(), merchant: merchant._id };
 
     const data = await this.productService.createProduct(newProductDto);
 
@@ -144,6 +144,8 @@ export class ProductProvider {
       paginationQuery.page = query.page;
       delete query.page;
     }
+
+    console.log(_query)
 
     const { data, page, count, totalPages } = await this.productService.getProducts(
       _query,
