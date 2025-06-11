@@ -16,7 +16,7 @@ import Loader from '@/components/common/loaders';
 
 const HomeDashboard = () => {
 	const { data, isPending } = useQuery({
-		queryFn: () => getProducts({ page: 1, limit: 10 }),
+		queryFn: () => getProducts({ page: Number(1), limit: Number(10) }),
 		queryKey: ['get-products'],
 	});
 	return (

@@ -11,9 +11,9 @@ import { getProducts } from '@/lib/services/customer.service';
 
 const SearchPage = () => {
 	const { data, isPending } = useQuery({
-		queryFn: () => getProducts({ page: 1, limit: 10 }),
-		queryKey: ['get-products'],
-	});
+	queryFn: () => getProducts({ page: Number(1), limit: Number(10) }),
+	queryKey: ['get-products'],
+});
 	return (
 		<section className="px-4">
 			<div className="max-md:w-full flex max-md:flex-col items-start md:items-center justify-between mb-6">
