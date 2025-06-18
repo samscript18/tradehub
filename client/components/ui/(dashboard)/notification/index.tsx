@@ -58,7 +58,7 @@ export default function NotificationsPage() {
 				<div className="flex justify-center items-center text-center mt-6">
 					<p className="text-white text-sm">Loading Notifications...</p>
 				</div>
-			) : notifications!.length > 1 ? (
+			) : notifications && notifications.length > 1 ? (
 				<Tabs defaultValue="notifications" className="w-full">
 					<TabsContent value="notifications" className="mt-6">
 						<div className="space-y-4">
