@@ -16,6 +16,7 @@ import { OrderProvider } from 'src/api/order/order.provider';
 import { OrderMetadata } from '../interfaces/metadata';
 import { CustomerService } from 'src/api/customer/customer.service';
 import { CustomerDocument } from 'src/api/customer/schema/customer.schema';
+import { NotificationProvider } from 'src/api/notification/notification.provider';
 
 @Injectable()
 export class WebhookService {
@@ -24,7 +25,8 @@ export class WebhookService {
     private readonly paymentService: PaymentService,
     private readonly orderProvider: OrderProvider,
     private readonly mailService: MailService,
-    private readonly customerService: CustomerService
+    private readonly customerService: CustomerService,
+    private readonly notificationProvider: NotificationProvider
   ) { }
 
   private validateWebhookSignature(signature: string, webhookResponse: WebhookResponse) {
@@ -78,6 +80,7 @@ export class WebhookService {
 
     if (!attempt) throw new NotFoundException('Payment not found');
 
+
     const metadata = attempt.metadata as OrderMetadata;
 
     const order = await this.orderProvider.createOrder({
@@ -85,6 +88,11 @@ export class WebhookService {
     }, attempt.user.id);
 
     const customer: CustomerDocument = await this.customerService.getCustomer({ user: attempt.user._id })
+    
+    await this.notificationProvider.createNotification({
+      message: `Your payment to process the order ${order.data?.[0].groupId} was successful.`,
+      type: 'payment_successful',
+    }, customer.user._id.toString());
 
     await this.mailService.sendMail({
       to: customer.user.email,

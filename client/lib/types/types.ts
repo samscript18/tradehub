@@ -1,5 +1,5 @@
 import { User } from ".";
-import { NotificationType, OrderStatus, ProductStatus } from "../enums";
+import { OrderStatus, ProductStatus } from "../enums";
 
 export interface Address {
   country: string;
@@ -124,7 +124,7 @@ export interface Notification {
   };
   title: string;
   message: string;
-  type: NotificationType;
+  type: string;
   data?: NotificationData;
   isRead: boolean;
   createdAt: string;

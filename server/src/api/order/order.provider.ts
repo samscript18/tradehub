@@ -77,7 +77,6 @@ export class OrderProvider {
           });
 
           const merchant: MerchantDocument = await this.merchantService.getMerchant({ _id: new Types.ObjectId(merchantId) });
-          console.log(merchant)
 
           await this.notificationProvider.createNotification({
             message: `New order ${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
