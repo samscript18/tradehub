@@ -22,7 +22,7 @@ export class CheckoutService {
       user: new Types.ObjectId(userId)
     });
 
-    const totalAmount = createOrderDto.products.reduce(
+    const totalAmount = 3000 + createOrderDto.products.reduce(
       (sum, item) => sum + (item.price * item.quantity),
       0
     );
@@ -35,7 +35,7 @@ export class CheckoutService {
       reference,
       metadata: createOrderDto
     });
-    
+
     const paymentUrl = await this.paystackService.initiateTransaction({
       email: customer.user.email,
       amount: totalAmount,

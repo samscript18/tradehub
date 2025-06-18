@@ -55,14 +55,14 @@ export class OrderProvider {
       const order = await this.orderService.createOrder({
         groupId,
         customer: customer._id,
-        merchant: product.merchant, 
+        merchant: product.merchant,
         status: OrderStatus.PROCESSING,
         price: merchantProducts.reduce(
           (sum, item) => sum + (item.price * item.quantity),
           0
         ),
         address: createOrderDto.address,
-        items: merchantProducts.map(item => ({
+        products: merchantProducts.map(item => ({
           product: item.productId,
           quantity: item.quantity,
           variant: item.variant
