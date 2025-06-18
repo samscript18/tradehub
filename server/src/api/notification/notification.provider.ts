@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UserService } from '../user/user.service';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class NotificationProvider {
@@ -26,7 +27,7 @@ export class NotificationProvider {
   }
 
   async getNotifications(userId: string) {
-    const notifications = await this.notificationService.getNotifications({ user: userId }
+    const notifications = await this.notificationService.getNotifications({ user: new Types.ObjectId(userId) }
     );
     return {
       success: true,
@@ -54,7 +55,7 @@ export class NotificationProvider {
 
   async markAllNotificationsAsRead(userId: string) {
     const data = await this.notificationService.updateNotifications(
-      { user: userId },
+      { user: new Types.ObjectId(userId) },
       { isRead: true },
     );
 
