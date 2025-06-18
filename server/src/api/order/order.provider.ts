@@ -69,8 +69,9 @@ export class OrderProvider {
             price: totalPrice,
             address: createOrderDto.address,
             products: items.map(item => ({
-              product: new Types.ObjectId(item.productId),
+              product: item.productId,
               quantity: item.quantity,
+              price: item.price,
               variant: item.variant
             }))
           });
