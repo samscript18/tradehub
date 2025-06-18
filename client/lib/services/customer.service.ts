@@ -29,7 +29,11 @@ export const updateCustomer = async () => {
 export const getProducts = async (query?: GetProductsQueryDto) => {
   try {
     const response = await authApi.get<ApiResponse<Product[]>>('/product', {
-      params: query
+      params: {
+        ...query,
+        page: Number(query?.page),
+        limit: Number(query?.limit)
+      }
     });
 
     return response?.data;
