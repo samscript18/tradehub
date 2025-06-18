@@ -23,7 +23,10 @@ export class PaymentService {
     return await this._paymentAttemptModel.findOneAndUpdate(filter, update, {
       new: true,
       runValidators: true,
-    });
+    }).populate({
+      path: 'user',
+      select: '_id email', 
+    });;
   }
 
   async getPaymentAttempts(filter: FilterQuery<PaymentAttemptDocument>) {

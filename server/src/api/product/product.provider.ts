@@ -145,8 +145,6 @@ export class ProductProvider {
       delete query.page;
     }
 
-    console.log(_query)
-
     const { data, page, count, totalPages } = await this.productService.getProducts(
       _query,
       paginationQuery as PaginationQuery,
