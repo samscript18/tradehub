@@ -54,7 +54,11 @@ export default function NotificationsPage() {
 
 			<p className="text-gray-400 text-sm max-md:hidden">Stay updated with your latest activities</p>
 
-			{!isLoading && notifications!.length > 1 ? (
+			{isLoading ? (
+				<div className="flex justify-center items-center text-center mt-6">
+					<p className="text-white text-sm">Loading Notifications...</p>
+				</div>
+			) : notifications!.length > 1 ? (
 				<Tabs defaultValue="notifications" className="w-full">
 					<TabsContent value="notifications" className="mt-6">
 						<div className="space-y-4">
