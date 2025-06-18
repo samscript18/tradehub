@@ -81,6 +81,7 @@ export class WebhookService {
     const metadata = attempt.metadata as OrderMetadata;
 
     console.log(metadata)
+    console.log(attempt.user)
 
     const order = await this.orderProvider.createOrder({
       ...metadata
