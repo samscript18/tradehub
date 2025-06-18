@@ -28,7 +28,7 @@ export class OrderProvider {
   ) { }
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string) {
-    const customer = await this.customerService.getCustomer({ user: userId });
+    const customer = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
     if (!customer) {
       throw new NotFoundException('Customer not found');
     }
