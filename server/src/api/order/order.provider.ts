@@ -55,7 +55,7 @@ export class OrderProvider {
       const order = await this.orderService.createOrder({
         groupId,
         customer: customer._id,
-        merchant: product.merchant, // This should be an ObjectId reference
+        merchant: product.merchant, 
         status: OrderStatus.PROCESSING,
         price: merchantProducts.reduce(
           (sum, item) => sum + (item.price * item.quantity),
@@ -73,7 +73,7 @@ export class OrderProvider {
       await this.notificationProvider.createNotification({
         message: `New order ${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
         type: 'order_placed'
-      }, product.merchant.user.id);
+      }, product.merchant.user);
 
       return order;
     });
