@@ -28,68 +28,73 @@ export class OrderProvider {
   ) { }
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string) {
-    const customer = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
-    if (!customer) throw new NotFoundException('Customer not found');
+    try {
 
-    const groupId = v4();
+      const customer = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
+      if (!customer) throw new NotFoundException('Customer not found');
 
-    const allProductIds = createOrderDto.products.map(product => product.productId);
-    const { data: products
-    } = await this.productService.getProducts({
-      _id: { $in: allProductIds }
-    });
+      const groupId = v4();
 
-    const productMap = new Map(products.map(product => [product._id.toString(), product]));
+      const allProductIds = createOrderDto.products.map(product => new Types.ObjectId(product.productId));
+      const { data: products
+      } = await this.productService.getProducts({
+        _id: { $in: allProductIds }
+      });
 
-    const merchantGroup = new Map<string, any[]>();
-    for (const item of createOrderDto.products) {
-      const product = productMap.get(item.productId);
-      if (!product) throw new NotFoundException(`Product ${item.productId} not found`);
+      const productMap = new Map(products.map(product => [product._id.toString(), product]));
 
-      const merchantId = product.merchant.toString();
-      if (!merchantGroup.has(merchantId)) {
-        merchantGroup.set(merchantId, []);
+      const merchantGroup = new Map<string, any[]>();
+      for (const item of createOrderDto.products) {
+        const product = productMap.get(item.productId);
+        if (!product) throw new NotFoundException(`Product ${item.productId} not found`);
+
+        const merchantId = product.merchant._id.toString();
+        if (!merchantGroup.has(merchantId)) {
+          merchantGroup.set(merchantId, []);
+        }
+        merchantGroup.get(merchantId).push({ ...item, product });
       }
-      merchantGroup.get(merchantId).push({ ...item, product });
+
+      const orders = await Promise.all(
+        Array.from(merchantGroup.entries()).map(async ([merchantId, items]) => {
+          const totalPrice = items.reduce(
+            (sum, item) => sum + (item.variant?.price || item.product.price) * item.quantity, 0
+          );
+
+          const order = await this.orderService.createOrder({
+            groupId,
+            customer: customer._id,
+            merchant: new Types.ObjectId(merchantId),
+            status: OrderStatus.PROCESSING,
+            price: totalPrice,
+            address: createOrderDto.address,
+            products: items.map(item => ({
+              product: new Types.ObjectId(item.productId),
+              quantity: item.quantity,
+              variant: item.variant
+            }))
+          });
+
+          const merchant: MerchantDocument = await this.merchantService.getMerchant({ _id: new Types.ObjectId(merchantId) });
+          console.log(merchant)
+
+          await this.notificationProvider.createNotification({
+            message: `New order ${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
+            type: 'order_placed',
+          }, merchant.user._id.toString());
+
+          return order;
+        })
+      );
+
+      return {
+        success: true,
+        message: 'Order created successfully',
+        data: orders,
+      };
+    } catch (error) {
+      console.log(error)
     }
-
-    const orders = await Promise.all(
-      Array.from(merchantGroup.entries()).map(async ([merchantId, items]) => {
-        const totalPrice = items.reduce(
-          (sum, item) => sum + (item.product.price * item.quantity), 0
-        );
-
-        const order = await this.orderService.createOrder({
-          groupId,
-          customer: customer._id,
-          merchant: new Types.ObjectId(merchantId),
-          status: OrderStatus.PROCESSING,
-          price: totalPrice,
-          address: createOrderDto.address,
-          products: items.map(item => ({
-            product: item.productId,
-            quantity: item.quantity,
-            variant: item.variant
-          }))
-        });
-
-        const merchant: MerchantDocument = await this.merchantService.getMerchant({ _id: new Types.ObjectId(merchantId) });
-        console.log(merchant)
-
-        await this.notificationProvider.createNotification({
-          message: `New order ${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
-          type: 'order_placed',
-        }, merchant.user._id.toString());
-
-        return order;
-      })
-    );
-
-    return {
-      success: true,
-      message: 'Order created successfully',
-      data: orders,
-    };
   }
 
 
