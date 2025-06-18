@@ -14,6 +14,7 @@ import { v4 } from 'uuid'
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { GetOrdersDto } from './dto/get-order.dto';
 import { NotificationProvider } from '../notification/notification.provider';
+import { OrderStatus } from './enums/order.enum';
 
 
 @Injectable()
@@ -27,71 +28,62 @@ export class OrderProvider {
   ) { }
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string) {
-    const groupId = v4();
-    const customer: CustomerDocument = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
-
-    const itemsByMerchant = new Map<string, typeof createOrderDto.products>();
-
-    for (const item of createOrderDto.products) {
-      const product: ProductDocument = await this.productService.getProduct({ _id: item.productId });
-      if (!product) throw new BadRequestException(`Product not found`);
-
-      const merchantId = product.merchant.toString();
-
-      if (!itemsByMerchant.has(merchantId)) {
-        itemsByMerchant.set(merchantId, []);
-      }
-      itemsByMerchant.get(merchantId)!.push(item);
+    const customer = await this.customerService.getCustomer({ user: userId });
+    if (!customer) {
+      throw new NotFoundException('Customer not found');
     }
 
-    const createdOrders: OrderDocument[] = [];
+    // Get unique merchant IDs from products
+    const merchantIds = [...new Set(createOrderDto.products.map(item => item.productId))];
 
-    for (const [merchantId, items] of itemsByMerchant.entries()) {
-      for (const item of items) {
-        const product: ProductDocument = await this.productService.getProduct({ _id: item.productId })
-        const variant = product.variants.find(variant =>
-          variant.size === item.variant.size && variant.color === item.variant.color
-        )
+    const groupId = v4();
 
-        if (!variant) throw new BadRequestException(`Variant not found`);
 
-        if (variant.stock < item.quantity) {
-          throw new BadRequestException(`Insufficient stock for product ${product.name}`);
-        }
+    // Create order for each merchant
+    const orderPromises = merchantIds.map(async (merchantId) => {
+      // Get merchant products from order
+      const merchantProducts = createOrderDto.products.filter(
+        item => item.productId === merchantId
+      );
+
+      const product = await this.productService.getProduct({ _id: merchantId });
+      if (!product) {
+        throw new NotFoundException(`Product ${merchantId} not found`);
       }
 
+      // Create order
       const order = await this.orderService.createOrder({
-        ...createOrderDto,
-        merchant: merchantId,
+        groupId,
         customer: customer._id,
-        products: items,
-        groupId
+        merchant: product.merchant, // This should be an ObjectId reference
+        status: OrderStatus.PROCESSING,
+        price: merchantProducts.reduce(
+          (sum, item) => sum + (item.price * item.quantity),
+          0
+        ),
+        address: createOrderDto.address,
+        items: merchantProducts.map(item => ({
+          product: item.productId,
+          quantity: item.quantity,
+          variant: item.variant
+        }))
       });
 
-      await Promise.all(items.map(item =>
-        this.productService.updateProduct(
-          {
-            _id: item.productId, 'variants.size': item.variant.size,
-            'variants.color': item.variant.color
-          },
-          { $inc: { 'variants.$.stock': -item.quantity } },
-        )
-      ));
-
-      createdOrders.push(order);
-
-      const merchant: MerchantDocument = await this.merchantService.getMerchant({ _id: merchantId });
 
       await this.notificationProvider.createNotification({
         message: `New order ${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
         type: 'order_placed'
-      }, merchant.user._id.toString());
-    }
+      }, product.merchant.user.id);
+
+      return order;
+    });
+
+    const createdOrders = await Promise.all(orderPromises);
 
     return {
       success: true,
       message: 'Order created successfully',
-      data: { _id: groupId, orders: createdOrders },
+      data: createdOrders,
     };
   }
 
@@ -118,10 +110,10 @@ export class OrderProvider {
         merchantOrders: orders.map((order) => ({
           orderId: order._id,
           merchant: order.merchant,
-          items: order.items,
+          items: order.products,
           status: order.status,
         })),
-        products: orders.map((order) => order.items.map((item) => { item.product, item.quantity })),
+        products: orders.map((order) => order.products?.map((item) => { item.product, item.quantity })),
         price: orders.reduce((acc, curr) => acc + curr.price, 0)
       }
     }
@@ -204,10 +196,10 @@ export class OrderProvider {
             name: order.merchant.storeName,
             logo: order.merchant.storeLogo
           },
-          items: order.items,
+          items: order.products,
           status: order.status,
         })),
-        products: groupOrders.map((order) => order.items.map((item) => { item.product, item.quantity })),
+        products: groupOrders.map((order) => order.products?.map((item) => { item.product, item.quantity })),
         price: groupOrders.reduce((acc, curr) => acc + curr.price, 0)
       });
     }

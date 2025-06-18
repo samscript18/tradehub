@@ -92,7 +92,7 @@ export class WebhookService {
       template: 'order-success',
       context: {
         customerName: customer.firstName,
-        orderId: order.data._id,
+        orderId: order.data?.[0].groupId,
         amount: (attempt.metadata as OrderMetadata).price,
         transactionRef: attempt.reference,
       },
