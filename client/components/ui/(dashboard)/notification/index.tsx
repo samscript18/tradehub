@@ -58,7 +58,7 @@ export default function NotificationsPage() {
 				<div className="flex justify-center items-center text-center mt-6">
 					<p className="text-white text-sm">Loading Notifications...</p>
 				</div>
-			) : notifications && notifications.length > 1 ? (
+			) : notifications && notifications.length > 0 ? (
 				<Tabs defaultValue="notifications" className="w-full">
 					<TabsContent value="notifications" className="mt-6">
 						<div className="space-y-4">
@@ -66,7 +66,7 @@ export default function NotificationsPage() {
 								<div
 									key={notification._id}
 									onClick={() => _markAsRead(notification._id)}
-									className="bg-gray-800 rounded-lg p-4 border border-gray-700 flex items-center justify-between">
+									className="bg-gray-800 rounded-lg p-2 md:p-4 cursor-pointer border border-gray-700 flex max-md:flex-col items-center justify-between">
 									<div className="flex items-center gap-4">
 										{notification.type === 'order_placed' || notification.type === 'payment_successful' ? (
 											<CheckCircle className="h-5 w-5 text-blue-500" />
@@ -74,18 +74,18 @@ export default function NotificationsPage() {
 											<Package className="h-5 w-5 text-green-500" />
 										)}
 										<div className="flex-1">
-											<div className="flex items-center gap-2">
-												<p className="text-white font-medium">{notification.message}</p>
+											<div className="flex items-center md:gap-2">
+												<p className="text-white font-medium text-[13px]">{notification.message}</p>
 												{(!notification.isRead || _isMarkingAsRead) && (
 													<div className="w-2 h-2 bg-blue-500 rounded-full"></div>
 												)}
 											</div>
-											<p className="text-sm text-gray-400 mt-1">
+											<p className="text-[13px] text-gray-400 mt-1">
 												{formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
 											</p>
 										</div>
 									</div>
-									<Button size="sm" className="bg-primary hover:bg-primary">
+									<Button size="sm" className="text-[13px] bg-primary hover:bg-primary max-md:ml-auto">
 										View
 									</Button>
 								</div>
