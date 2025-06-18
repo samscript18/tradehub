@@ -2,12 +2,13 @@
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { CheckCircle, Package } from 'lucide-react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getNotifications, markAllAsRead, markAsRead } from '@/lib/services/notification.service';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/lib/store/auth.store';
 
 export default function NotificationsPage() {
+	const queryClient = useQueryClient();
 	const { user } = useAuth();
 	const { data: notifications, isLoading } = useQuery({
 		queryFn: () => getNotifications(),
@@ -17,11 +18,17 @@ export default function NotificationsPage() {
 	const { mutateAsync: _markAsRead, isPending: _isMarkingAsRead } = useMutation({
 		mutationKey: ['mark-as-read'],
 		mutationFn: markAsRead,
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ['get-notifications'] });
+		},
 	});
 
 	const { mutateAsync: _markAllAsRead, isPending: _isMarkingAllAsRead } = useMutation({
 		mutationKey: ['mark-all-as-read'],
 		mutationFn: markAllAsRead,
+		onSuccess() {
+			queryClient.invalidateQueries({ queryKey: ['get-notifications'] });
+		},
 	});
 
 	return (
@@ -39,16 +46,6 @@ export default function NotificationsPage() {
 						className="text-blue-400 hover:text-blue-300 p-0">
 						{_isMarkingAllAsRead ? <div className="animate-bounce">...</div> : 'Mark all as read'}
 					</Button>
-					{/* <Select defaultValue="all">
-						<SelectTrigger className="w-48 bg-gray-800 border-gray-700">
-							<SelectValue />
-						</SelectTrigger>
-						<SelectContent className="bg-gray-800 border-gray-700">
-							<SelectItem value="all">All Notifications</SelectItem>
-							<SelectItem value="unread">Unread Only</SelectItem>
-							<SelectItem value="read">Read Only</SelectItem>
-						</SelectContent>
-					</Select> */}
 				</div>
 			</div>
 
