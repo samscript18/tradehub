@@ -29,63 +29,69 @@ export class OrderProvider {
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string) {
     const customer = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
-    if (!customer) {
-      throw new NotFoundException('Customer not found');
-    }
-
-    // Get unique merchant IDs from products
-    const merchantIds = [...new Set(createOrderDto.products.map(item => item.productId))];
+    if (!customer) throw new NotFoundException('Customer not found');
 
     const groupId = v4();
 
-
-    // Create order for each merchant
-    const orderPromises = merchantIds.map(async (merchantId) => {
-      // Get merchant products from order
-      const merchantProducts = createOrderDto.products.filter(
-        item => item.productId === merchantId
-      );
-
-      const product = await this.productService.getProduct({ _id: merchantId });
-      if (!product) {
-        throw new NotFoundException(`Product ${merchantId} not found`);
-      }
-
-      // Create order
-      const order = await this.orderService.createOrder({
-        groupId,
-        customer: customer._id,
-        merchant: product.merchant,
-        status: OrderStatus.PROCESSING,
-        price: merchantProducts.reduce(
-          (sum, item) => sum + (item.price * item.quantity),
-          0
-        ),
-        address: createOrderDto.address,
-        products: merchantProducts.map(item => ({
-          product: item.productId,
-          quantity: item.quantity,
-          variant: item.variant
-        }))
-      });
-
-
-      await this.notificationProvider.createNotification({
-        message: `New order ${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
-        type: 'order_placed'
-      }, product.merchant.user);
-
-      return order;
+    const allProductIds = createOrderDto.products.map(product => product.productId);
+    const { data: products
+    } = await this.productService.getProducts({
+      _id: { $in: allProductIds }
     });
 
-    const createdOrders = await Promise.all(orderPromises);
+    const productMap = new Map(products.map(product => [product._id.toString(), product]));
+
+    const merchantGroup = new Map<string, any[]>();
+    for (const item of createOrderDto.products) {
+      const product = productMap.get(item.productId);
+      if (!product) throw new NotFoundException(`Product ${item.productId} not found`);
+
+      const merchantId = product.merchant.toString();
+      if (!merchantGroup.has(merchantId)) {
+        merchantGroup.set(merchantId, []);
+      }
+      merchantGroup.get(merchantId).push({ ...item, product });
+    }
+
+    const orders = await Promise.all(
+      Array.from(merchantGroup.entries()).map(async ([merchantId, items]) => {
+        const totalPrice = items.reduce(
+          (sum, item) => sum + (item.product.price * item.quantity), 0
+        );
+
+        const order = await this.orderService.createOrder({
+          groupId,
+          customer: customer._id,
+          merchant: new Types.ObjectId(merchantId),
+          status: OrderStatus.PROCESSING,
+          price: totalPrice,
+          address: createOrderDto.address,
+          products: items.map(item => ({
+            product: item.productId,
+            quantity: item.quantity,
+            variant: item.variant
+          }))
+        });
+
+        const merchant: MerchantDocument = await this.merchantService.getMerchant({ _id: new Types.ObjectId(merchantId) });
+        console.log(merchant)
+
+        await this.notificationProvider.createNotification({
+          message: `New order ${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
+          type: 'order_placed',
+        }, merchant.user._id.toString());
+
+        return order;
+      })
+    );
 
     return {
       success: true,
       message: 'Order created successfully',
-      data: createdOrders,
+      data: orders,
     };
   }
+
 
   async getCustomerOrder(groupId: string, userId: string) {
     const customer: CustomerDocument = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });

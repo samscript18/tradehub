@@ -31,7 +31,12 @@ export class ProductService {
     return product;
   }
 
-  async getProducts(filter: FilterQuery<ProductDocument>, paginationQuery?: PaginationQuery) {
+  async getProducts(filter: FilterQuery<ProductDocument>, paginationQuery?: PaginationQuery): Promise<{
+    data: ProductDocument[];
+    page: number;
+    totalPages: number;
+    count: number;
+  }> {
     const count = await this._productModel.find(filter).countDocuments()
 
     const { skip, page, totalPages, limit } = this.utilService.resolvePaginationQuery({
