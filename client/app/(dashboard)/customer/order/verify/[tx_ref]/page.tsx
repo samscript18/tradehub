@@ -1,6 +1,7 @@
 'use client';
 
 import Loader from '@/components/common/loaders';
+import { formatNaira } from '@/lib/helpers';
 import { verifyTransaction } from '@/lib/services/customer.service';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter, useParams } from 'next/navigation';
@@ -63,7 +64,9 @@ const VerifyPayment = () => {
 					<div className="flex flex-col justify-center items-center">
 						<HiOutlineCheckCircle size={100} className="text-green-700 mb-8" />
 						<h2 className="sm:text-xl md:text-2xl text-green-700 pb-3 font-bold">Payment Successful!</h2>
-						<p className="my-2 text-gray-600">Your payment of {data?.metadata.price} was successful.</p>
+						<p className="my-2 text-gray-600">
+							Your payment of {formatNaira(data?.metadata.price)} was successful.
+						</p>
 						<p className="my-2 text-gray-600">Please wait a moment, we will redirect you shortly.</p>
 						<Loader />
 					</div>
@@ -72,7 +75,7 @@ const VerifyPayment = () => {
 					<div className="flex flex-col justify-center items-center">
 						<HiOutlineXCircle size={100} className="text-red-700 mb-8" />
 						<h2 className="sm:text-xl md:text-2xl text-red-700 pb-3 font-bold">Payment Failed!</h2>
-						<p className="my-2 text-gray-600">Your payment of {data?.metadata.price} failed.</p>
+						<p className="my-2 text-gray-600">Your payment of {formatNaira(data?.metadata.price)} failed.</p>
 						<p className="my-2 text-gray-600">Please wait a moment, we will redirect you shortly.</p>
 						<Loader />
 					</div>
@@ -81,7 +84,9 @@ const VerifyPayment = () => {
 					<div id={data?._id} className="flex flex-col justify-center items-center">
 						<MdOutlinePending size={100} className="text-gray-700 mb-8" />
 						<h2 className="sm:text-xl md:text-2xl text-gray-700 pb-3 font-bold">Payment pending!</h2>
-						<p className="my-2 text-gray-600">Your payment of {data?.metadata.price} is pending.</p>
+						<p className="my-2 text-gray-600">
+							Your payment of {formatNaira(data?.metadata.price)} is pending.
+						</p>
 						<p className="my-2 text-gray-600">
 							Please wait a moment to confirm your transaction or you&#39;ll be redirected shortly.
 						</p>
