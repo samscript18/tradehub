@@ -158,7 +158,7 @@ const HomeDashboard = () => {
 								/>
 								<div className="bg-[#1E2A3B] p-2 space-y-2 shadow-md rounded-b-xl">
 									<h3 className="text-sm font-bold">{merchant.name}</h3>
-									<Rating initialRating={merchant.rating} readonly size="sm" className="gap-1" />
+									{Rating(merchant.rating)}
 									<motion.div
 										className="flex gap-4 flex-wrap"
 										initial="hidden"

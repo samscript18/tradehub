@@ -5,6 +5,7 @@ import { MongoIdPipe } from 'src/core/pipes';
 import { RoleNames } from '../user/enums';
 import { CustomerProvider } from './customer.provider';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { AddressDto } from '../order/dto/create-order.dto';
 
 @Controller('customer')
 @ApiTags('Customer')
@@ -45,6 +46,15 @@ export class CustomerController {
    @ApiOperation({ summary: 'Update Customer' })
    async updateCustomer(@Auth('_id') userId: string, @Body() updateCustomerDto: UpdateCustomerDto) {
       const data = await this.customerProvider.updateCustomer(updateCustomerDto, userId);
+
+      return data;
+   }
+
+   @Put('/address')
+   @Roles([RoleNames.CUSTOMER])
+   @ApiOperation({ summary: 'Add Customer Address' })
+   async addCustomerAddress(@Auth('_id') userId: string, @Body() addressDto: AddressDto) {
+      const data = await this.customerProvider.addAddress(userId, addressDto);
 
       return data;
    }

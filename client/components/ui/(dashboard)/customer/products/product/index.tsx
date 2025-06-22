@@ -160,7 +160,7 @@ const ProductPage = () => {
 
 								<div className="flex items-center gap-2 mb-4">
 									<div className="flex">
-										<Rating initialRating={4} readonly size="sm" className="gap-1" />
+										{Rating(4)}
 									</div>
 									<span className="text-xs text-gray-400">4.0 (5 reviews)</span>
 								</div>
