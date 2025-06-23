@@ -17,18 +17,24 @@ const SelectCountry: FC<Props> = ({ onLocationSelect, loading = false, className
 	const [selectedState, setSelectedState] = useState('');
 	const [selectedCity, setSelectedCity] = useState('');
 
-	const handleCountryChange = (option: { value: string | number }) => {
+	const handleCountryChange = (option: {
+		value: string | number | { label?: string; min?: number; max?: number | null };
+	}) => {
 		setSelectedCountry(String(option.value));
 		setSelectedState('');
 		setSelectedCity('');
 	};
 
-	const handleStateChange = (option: { value: string | number }) => {
+	const handleStateChange = (option: {
+		value: string | number | { label?: string; min?: number; max?: number | null };
+	}) => {
 		setSelectedState(String(option.value));
 		setSelectedCity('');
 	};
 
-	const handleCityChange = (option: { value: string | number }) => {
+	const handleCityChange = (option: {
+		value: string | number | { label?: string; min?: number; max?: number | null };
+	}) => {
 		const cityValue = String(option.value);
 		setSelectedCity(cityValue);
 		onLocationSelect?.({

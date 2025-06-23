@@ -24,7 +24,7 @@ const labelVariants: Record<string, Variant> = {
 
 export type Option = {
 	label: string | ReactNode;
-	value: string | number | { label: string; min: number; max: number | null };
+	value: string | number | { label?: string; min?: number; max?: number | null };
 	id: string;
 };
 
