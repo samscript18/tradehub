@@ -3,7 +3,7 @@ import { UserService } from '../user/user.service';
 import { Types } from 'mongoose';
 import { CustomerService } from './customer.service';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
-import { AddressDto } from '../order/dto/create-order.dto';
+import { AddressDto } from './dto/address.dto';
 
 @Injectable()
 export class CustomerProvider {

@@ -24,7 +24,7 @@ const labelVariants: Record<string, Variant> = {
 
 export type Option = {
 	label: string | ReactNode;
-	value: string | number;
+	value: string | number | { label: string; min: number; max: number | null };
 	id: string;
 };
 
@@ -144,7 +144,7 @@ const SelectField: FC<Props> = ({
 									: value
 								: placeholder || label
 						}
-						value={search}
+						value={value || search}
 						onChange={(e) => {
 							setIsOpen(true);
 							setSearch(e.target.value);

@@ -1,20 +1,55 @@
 'use client';
 
 import Button from '@/components/common/button';
-import { storeCategories } from '@/lib/data';
 import { motion } from 'framer-motion';
 import Product from '../ui/product';
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import SelectField from '@/components/common/inputs/select-field';
 import { useQuery } from '@tanstack/react-query';
-import { getProducts } from '@/lib/services/customer.service';
+import { getProducts, getProductsFilters } from '@/lib/services/customer.service';
 import Loader from '@/components/common/loaders';
+import { useState } from 'react';
 
 const ProductsPage = () => {
-	const { data, isPending } = useQuery({
-		queryFn: () => getProducts({ page: Number(1), limit: Number(10) }),
-		queryKey: ['get-products'],
+	const [filter, setFilter] = useState<{
+		category?: string;
+		priceRange?: { label: string; min: number; max: number | null };
+		rating?: string;
+	}>({});
+	const [page, setPage] = useState<number>(1);
+
+	const { data: filters } = useQuery({
+		queryFn: () => getProductsFilters(),
+		queryKey: ['get-products-filters'],
 	});
+
+	const queryFilter: {
+		category?: string;
+		priceRange?: { min: number; max: number | null };
+	} = {};
+
+	if (filter.category) {
+		queryFilter['category'] = String(filter.category);
+	}
+
+	if (filter.priceRange) {
+		queryFilter['priceRange'] = { min: filter.priceRange.min, max: filter.priceRange.max };
+	}
+
+	const { data, isPending } = useQuery({
+		queryFn: () =>
+			getProducts({
+				page,
+				limit: Number(10),
+				...queryFilter,
+				// rating: filter.rating,
+			}),
+
+		queryKey: ['get-products', filter, page],
+	});
+
+	const totalPages = data?.meta?.totalPages || 1;
+
 	return (
 		<section className="px-4">
 			<div className="max-md:w-full flex max-md:flex-col items-start md:items-center justify-between mb-6">
@@ -33,27 +68,42 @@ const ProductsPage = () => {
 					<div className="max-md:w-full grid grid-cols-1 md:grid-cols-3 max-md:space-y-4 space-x-4 max-md:mt-2">
 						<SelectField
 							width={'w-full md:min-w-[50px]'}
-							data={storeCategories}
+							data={
+								filters?.category
+									? filters.category.map((category: string) => ({
+											label: category,
+											value: category,
+											id: category,
+									  }))
+									: []
+							}
 							placeholder="Categories"
+							value={filter.category || ''}
 							inputClassName="bg-[#2a2a2a] border-[#3a3a3a] text-xs"
 							onSelect={(option) => {
-								console.log('Selected option:', option.value);
+								setFilter((prev) => ({ ...prev, category: String(option.value) }));
 							}}
 						/>
 
 						<SelectField
 							width={'w-full md:min-w-[50px]'}
-							data={[
-								{
-									label: 'Price Range',
-									value: 'price range',
-									id: 'price range',
-								},
-							]}
+							data={
+								filters?.priceRange
+									? filters.priceRange.map((range) => ({
+											label: range.label,
+											value: { label: range.label, min: range.min, max: range.max },
+											id: range.label,
+									  }))
+									: []
+							}
+							value={filter.priceRange?.label || ''}
 							placeholder="Price Range"
 							inputClassName="bg-[#2a2a2a] border-[#3a3a3a] text-xs"
 							onSelect={(option) => {
-								console.log('Selected option:', option.value);
+								setFilter((prev) => ({
+									...prev,
+									priceRange: option.value as { label: string; min: number; max: number | null },
+								}));
 							}}
 						/>
 
@@ -143,32 +193,32 @@ const ProductsPage = () => {
 				<div className="flex items-center space-x-2">
 					<Button
 						variant="outline"
-						icon={<ChevronLeft className="w-4 h-4" />}
+						icon={<ChevronLeft className="w-4 h-4 text-white" />}
 						iconPosition="left"
 						className="bg-[#2a2a2a] border-[#3a3a3a] text-white text-sm py-2.5 max-[350px]:px-5"
+						disabled={page === 1}
+						onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
 					/>
-					<Button className="bg-primary hover:bg-primary text-white text-sm w-8 h-8">1</Button>
-					<Button variant="outline" className="bg-[#2a2a2a] border-[#3a3a3a] text-white text-sm w-8 h-8">
-						2
-					</Button>
-					<Button variant="outline" className="bg-[#2a2a2a] border-[#3a3a3a] text-white text-sm w-8 h-8">
-						3
-					</Button>
+					{Array.from({ length: totalPages }, (_, i) => (
+						<Button
+							key={i + 1}
+							className={`${
+								page === i + 1
+									? 'bg-primary hover:bg-primary text-white'
+									: 'bg-[#2a2a2a] border-[#3a3a3a] text-white'
+							} text-sm w-8 h-8`}
+							variant={page === i + 1 ? undefined : 'outline'}
+							onClick={() => setPage(i + 1)}>
+							{i + 1}
+						</Button>
+					))}
 					<Button
 						variant="outline"
-						className="bg-[#2a2a2a] border-[#3a3a3a] text-white text-sm w-8 h-8 max-md:hidden">
-						4
-					</Button>
-					<Button
-						variant="outline"
-						className="bg-[#2a2a2a] border-[#3a3a3a] text-white text-sm w-8 h-8 max-md:hidden">
-						5
-					</Button>
-					<Button
-						variant="outline"
-						icon={<ChevronRight className="w-4 h-4" />}
+						icon={<ChevronRight className="w-4 h-4 text-white" />}
 						iconPosition="right"
 						className="bg-[#2a2a2a] border-[#3a3a3a] text-white text-sm py-2.5 max-[350px]:px-5"
+						disabled={page === totalPages}
+						onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
 					/>
 				</div>
 			</div>

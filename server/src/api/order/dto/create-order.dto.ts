@@ -35,7 +35,7 @@ export class AddressDto {
   country: string;
 
   @IsString()
-  zipcode: string;
+  postalcode: string;
 }
 
 export class CreateOrderDto {

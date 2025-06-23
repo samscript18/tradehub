@@ -6,11 +6,11 @@ export interface Address {
   state: string;
   city: string;
   street: string;
-  zipcode?: string;
+  postalcode?: string;
 }
 
 export interface DeliveryAddress extends Address {
-  name: string;
+  fullName: string;
   phoneNumber: string;
 }
 
@@ -61,7 +61,7 @@ export interface OrderAddress {
   city: string;
   state: string;
   country: string;
-  zipcode: string;
+  postalcode: string;
 }
 
 export interface Order {
@@ -88,6 +88,19 @@ export interface ProductVariant {
   color?: string;
   price: number;
   stock: number;
+}
+
+export interface ProductPriceRange {
+  label: string;
+  min: number;
+  max: number | null;
+  count: number;
+}
+
+export interface ProductFilters {
+  category: string[];
+  rating: number[];
+  priceRange: ProductPriceRange[];
 }
 
 export interface Product {

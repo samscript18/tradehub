@@ -73,51 +73,30 @@ export class ProductProvider {
 
     if (query.search) {
       const search = query.search.trim();
-      const match = search.match(DEFAULT_MATCHERS.price);
 
-      if (match) {
-        const min = Number(match[1]) * 100_000;
-        const max = Number(match[3]) * 100_000;
+      _query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { status: { $regex: search, $options: 'i' } },
+      ];
 
-        _query['variants'] = {
-          $elemMatch: {
-            price: { $gte: min, $lte: max }
-          }
-        };
-
-      } else {
-        _query.$or = [
-          { name: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } },
-          { status: { $regex: search, $options: 'i' } },
-        ];
-
-        if (!isNaN(Number(search))) {
-          _query.$or.push(
-            { 'variants.price': Number(search) },
-            { rating: Number(search) }
-          );
-        }
+      if (!isNaN(Number(search))) {
+        _query.$or.push(
+          { rating: Number(search) }
+        );
       }
 
       delete query.search;
     }
 
-    if (query.priceRange) {
-      const match = query.priceRange.match(DEFAULT_MATCHERS.price);
-
-      if (match) {
-        const min = Number(match[1]) * 100_000;
-        const max = Number(match[3]) * 100_000;
-
-        _query['variants'] = {
-          $elemMatch: {
-            price: { $gte: min, $lte: max }
-          }
-        };
-      }
-
-      delete query.priceRange;
+    if (query.priceRangeMin || query.priceRangeMax) {
+      _query['variants'] = {
+        $elemMatch: {
+          price: { $gte: Number(query.priceRangeMin), ...(query.priceRangeMax ? { $lte: query.priceRangeMax } : {}) }
+        }
+      };
+      delete query.priceRangeMin;
+      delete query.priceRangeMax;
     }
 
     if (query.category) {
@@ -179,51 +158,32 @@ export class ProductProvider {
 
     if (query.search) {
       const search = query.search.trim();
-      const match = search.match(DEFAULT_MATCHERS.price)
 
-      if (match) {
-        const min = Number(match[1]) * 100_000;
-        const max = Number(match[3]) * 100_000;
+      _query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { status: { $regex: search, $options: 'i' } },
+      ];
 
-        _query['variants'] = {
-          $elemMatch: {
-            price: { $gte: min, $lte: max }
-          }
-        };
-
-      } else {
-        _query.$or = [
-          { name: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } },
-          { status: { $regex: search, $options: 'i' } },
-        ];
-
-        if (!isNaN(Number(search))) {
-          _query.$or.push(
-            { 'variants.price': Number(search) },
-            { rating: Number(search) }
-          );
-        }
+      if (!isNaN(Number(search))) {
+        _query.$or.push(
+          { 'variants.price': Number(search) },
+          { rating: Number(search) }
+        );
       }
+
 
       delete query.search;
     }
 
-    if (query.priceRange) {
-      const match = query.priceRange.match(DEFAULT_MATCHERS.price);
-
-      if (match) {
-        const min = Number(match[1]) * 100_000;
-        const max = Number(match[3]) * 100_000;
-
-        _query['variants'] = {
-          $elemMatch: {
-            price: { $gte: min, $lte: max }
-          }
-        };
-      }
-
-      delete query.priceRange;
+    if (query.priceRangeMin || query.priceRangeMax) {
+      _query['variants'] = {
+        $elemMatch: {
+          price: { $gte: Number(query.priceRangeMin), ...(query.priceRangeMax ? { $lte: query.priceRangeMax } : {}) }
+        }
+      };
+      delete query.priceRangeMin;
+      delete query.priceRangeMax;
     }
 
     if (query.category) {

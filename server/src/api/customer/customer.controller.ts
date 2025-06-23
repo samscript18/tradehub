@@ -1,11 +1,10 @@
 import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Auth, Roles } from 'src/shared/decorators/auth.decorators';
-import { MongoIdPipe } from 'src/core/pipes';
 import { RoleNames } from '../user/enums';
 import { CustomerProvider } from './customer.provider';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
-import { AddressDto } from '../order/dto/create-order.dto';
+import { AddressDto } from './dto/address.dto';
 
 @Controller('customer')
 @ApiTags('Customer')

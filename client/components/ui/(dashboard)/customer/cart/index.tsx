@@ -13,7 +13,7 @@ import { REGEX } from '@/lib/utils/regex';
 import { useCart } from '@/lib/store/cart.store';
 import { Label } from '@/components/ui/label';
 import { formatNaira } from '@/lib/helpers';
-import { initiateCheckout } from '@/lib/services/customer.service';
+import { addDeliveryAddress, initiateCheckout } from '@/lib/services/customer.service';
 import { useMutation } from '@tanstack/react-query';
 
 const CartPage = () => {
@@ -27,6 +27,7 @@ const CartPage = () => {
 		deliveryFee,
 		total,
 	} = useCart();
+	const { fetchUser } = useAuth();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [selectedAddress, setSelectedAddress] = useState<string>('0');
 	const { mutateAsync, isPending } = useMutation({
@@ -36,6 +37,10 @@ const CartPage = () => {
 			window.location.href = data.paymentUrl;
 		},
 	});
+	const { mutateAsync: _addDeliveryInfo, isPending: _isAddingDeliveryInfo } = useMutation({
+		mutationFn: addDeliveryAddress,
+		mutationKey: ['add-delivery-info'],
+	});
 
 	const {
 		handleSubmit,
@@ -44,7 +49,9 @@ const CartPage = () => {
 	} = useForm<DeliveryAddress>({});
 
 	const submit = async (e: DeliveryAddress) => {
-		console.log(e);
+		await _addDeliveryInfo(e);
+		fetchUser();
+		setIsEdit(false);
 	};
 
 	useEffect(() => {
@@ -131,7 +138,7 @@ const CartPage = () => {
 										className="col-span-2"
 										InputProps={{
 											placeholder: 'e.g John Smilga',
-											...register('name', {
+											...register('fullName', {
 												required: {
 													value: true,
 													message: 'This field is required',
@@ -139,7 +146,7 @@ const CartPage = () => {
 											}),
 											className: 'text-xs',
 										}}
-										helperText={errors?.name?.message}
+										helperText={errors?.fullName?.message}
 									/>
 
 									<TextField
@@ -195,12 +202,11 @@ const CartPage = () => {
 									/>
 
 									<TextField
-										label="Zip Code"
+										label="State"
 										className="col-span-2 lg:col-span-1"
 										InputProps={{
-											type: 'tel',
-											placeholder: 'e.g your zipcode',
-											...register('zipcode', {
+											placeholder: 'e.g your state',
+											...register('state', {
 												required: {
 													value: true,
 													message: 'This field is required',
@@ -208,9 +214,32 @@ const CartPage = () => {
 											}),
 											className: 'text-xs',
 										}}
-										helperText={errors?.zipcode?.message}
+										helperText={errors?.state?.message}
 									/>
-									<Button fullWidth variant="filled" size="medium" className="col-span-2 text-xs" type="submit">
+
+									<TextField
+										label="Postal Code"
+										className="col-span-2 lg:col-span-1"
+										InputProps={{
+											type: 'tel',
+											placeholder: 'e.g your postalcode',
+											...register('postalcode', {
+												required: {
+													value: true,
+													message: 'This field is required',
+												},
+											}),
+											className: 'text-xs',
+										}}
+										helperText={errors?.postalcode?.message}
+									/>
+									<Button
+										fullWidth
+										loading={_isAddingDeliveryInfo}
+										variant="filled"
+										size="medium"
+										className="col-span-2 text-xs"
+										type="submit">
 										Save details
 									</Button>
 								</form>
@@ -239,7 +268,7 @@ const CartPage = () => {
 																<div>
 																	{address.city}, {address.state}
 																</div>
-																<div>{address.zipcode}</div>
+																<div>{address.postalcode}</div>
 																<div>{user.phoneNumber}</div>
 															</div>
 														</div>
@@ -293,7 +322,7 @@ const CartPage = () => {
 											state: user.defaultAddress.state || '',
 											street: user.defaultAddress.street || '',
 											city: user.defaultAddress.city || '',
-											zipcode: user.defaultAddress.zipcode || '',
+											postalcode: user.defaultAddress.postalcode || '',
 										},
 										price: total(),
 										products: cartItems.map((item) => ({

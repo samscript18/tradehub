@@ -37,7 +37,7 @@ export interface CreateOrderDto {
     city: string;
     state: string;
     country: string;
-    zipcode: string;
+    postalcode: string;
   };
 }
 
@@ -75,7 +75,7 @@ export interface GetProductsQueryDto {
   limit?: number;
   search?: string;
   category?: string;
-  priceRange?: string;
+  priceRange?: { label?: string; min: number; max: number | null };
   rating?: number;
   status?: ProductStatus;
 }

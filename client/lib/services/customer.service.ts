@@ -2,7 +2,7 @@ import { AxiosErrorShape, errorHandler } from "../config/axios-error";
 import { authApi } from "../config/axios-instance";
 import { CheckoutDto, GetProductsQueryDto } from "../dtos";
 import { ApiResponse } from "../types";
-import { Customer, Order, Product } from "../types/types";
+import { Customer, DeliveryAddress, Order, Product, ProductFilters } from "../types/types";
 
 export const getCustomer = async () => {
   try {
@@ -26,11 +26,36 @@ export const updateCustomer = async () => {
   }
 };
 
+export const addDeliveryAddress = async (data: DeliveryAddress) => {
+  try {
+    const response = await authApi.put<ApiResponse<Customer>>('/customer/address', data);
+
+    return response?.data?.data;
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+    throw error;
+  }
+};
+
+export const getProductsFilters = async () => {
+  try {
+    const response = await authApi.get<ApiResponse<ProductFilters>>('/product/filters');
+
+    return response?.data?.data;
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+    throw error;
+  }
+};
+
 export const getProducts = async (query?: GetProductsQueryDto) => {
   try {
     const response = await authApi.get<ApiResponse<Product[]>>('/product', {
       params: {
-        ...query,
+        // ...query,
+        category: query?.category,
+        priceRangeMin: query?.priceRange?.min,
+        priceRangeMax: query?.priceRange?.max,
         page: Number(query?.page),
         limit: Number(query?.limit)
       }

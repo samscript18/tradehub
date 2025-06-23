@@ -287,6 +287,10 @@ export class AuthService {
 
       if (!user) throw new UnauthorizedException('Invalid login credentials');
 
+      if (!user.password) {
+         throw new UnauthorizedException('Account does not have a password set. Please use social login.');
+      }
+
       const passwordMatch: boolean = await this.utilService.comparePassword(
          signInDto.password,
          user.password,

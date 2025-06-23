@@ -15,7 +15,7 @@ export class Address {
   street: string;
 
   @Prop({ required: false })
-  zipcode: string;
+  postalcode: string;
 }
 
 export const AddressSchema = SchemaFactory.createForClass(Address);
