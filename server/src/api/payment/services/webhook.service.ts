@@ -17,6 +17,7 @@ import { OrderMetadata } from '../interfaces/metadata';
 import { CustomerService } from 'src/api/customer/customer.service';
 import { CustomerDocument } from 'src/api/customer/schema/customer.schema';
 import { NotificationProvider } from 'src/api/notification/notification.provider';
+import { UserService } from 'src/api/user/user.service';
 
 @Injectable()
 export class WebhookService {
@@ -26,7 +27,8 @@ export class WebhookService {
     private readonly orderProvider: OrderProvider,
     private readonly mailService: MailService,
     private readonly customerService: CustomerService,
-    private readonly notificationProvider: NotificationProvider
+    private readonly notificationProvider: NotificationProvider,
+    private readonly userService: UserService,
   ) { }
 
   private validateWebhookSignature(signature: string, webhookResponse: WebhookResponse) {
@@ -88,11 +90,15 @@ export class WebhookService {
     }, attempt.user.id);
 
     const customer: CustomerDocument = await this.customerService.getCustomer({ user: attempt.user._id })
-    
-    await this.notificationProvider.createNotification({
-      message: `Your payment to process the order ${order.data?.[0].groupId} was successful.`,
-      type: 'payment_successful',
-    }, customer.user._id.toString());
+
+    const user = await this.userService.getUser({ _id: attempt.user._id });
+
+    if (user && !user.notificationsDisabled) {
+      await this.notificationProvider.createNotification({
+        message: `Your payment to process the order ${order.data?.[0].groupId} was successful.`,
+        type: 'payment_successful',
+      }, customer.user._id.toString());
+    }
 
     await this.mailService.sendMail({
       to: customer.user.email,

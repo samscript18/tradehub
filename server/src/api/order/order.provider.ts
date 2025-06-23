@@ -15,6 +15,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { GetOrdersDto } from './dto/get-order.dto';
 import { NotificationProvider } from '../notification/notification.provider';
 import { OrderStatus } from './enums/order.enum';
+import { UserService } from '../user/user.service';
 
 
 @Injectable()
@@ -24,7 +25,8 @@ export class OrderProvider {
     private readonly customerService: CustomerService,
     private readonly merchantService: MerchantService,
     private readonly productService: ProductService,
-    private readonly notificationProvider: NotificationProvider
+    private readonly notificationProvider: NotificationProvider,
+    private readonly userService: UserService,
   ) { }
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string) {
@@ -78,10 +80,14 @@ export class OrderProvider {
 
           const merchant: MerchantDocument = await this.merchantService.getMerchant({ _id: new Types.ObjectId(merchantId) });
 
-          await this.notificationProvider.createNotification({
-            message: `New order #${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
-            type: 'order_placed',
-          }, merchant.user._id.toString());
+          const user = await this.userService.getUser({ _id: merchant.user._id });
+
+          if (user && !user.notificationsDisabled) {
+            await this.notificationProvider.createNotification({
+              message: `New order #${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
+              type: 'order_placed',
+            }, merchant.user._id.toString());
+          }
 
           return order;
         })
@@ -286,10 +292,14 @@ export class OrderProvider {
 
     const customer: CustomerDocument = await this.customerService.getCustomer({ _id: data.customer })
 
-    await this.notificationProvider.createNotification({
-      message: `Order ${data._id} has been updated to ${data.status}`,
-      type: 'order_updated'
-    }, customer.user._id.toString());
+    const user = await this.userService.getUser({ _id: customer.user._id });
+
+    if (user && !user.notificationsDisabled) {
+      await this.notificationProvider.createNotification({
+        message: `Order ${data._id} has been updated to ${data.status}`,
+        type: 'order_updated'
+      }, customer.user._id.toString());
+    }
 
     return {
       success: true,

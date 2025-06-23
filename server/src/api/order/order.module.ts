@@ -11,6 +11,7 @@ import { NotificationModule } from '../notification/notification.module';
 import { ProductModule } from '../product/product.module';
 import { CheckoutService } from './services/checkout.service';
 import { PaymentModule } from '../payment/payment.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { PaymentModule } from '../payment/payment.module';
     MerchantModule,
     ProductModule,
     NotificationModule,
-    PaymentModule
+    PaymentModule,
+    UserModule
   ],
   controllers: [OrderController],
   providers: [OrderService, OrderProvider, CheckoutService],

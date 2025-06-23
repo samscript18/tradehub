@@ -33,6 +33,9 @@ export class User extends DbMixins {
 
    @Prop({ type: String, required: true, enum: Object.values(RoleNames) })
    role: RoleNames;
+
+   @Prop({ type: Boolean, required: false, default: false })
+   notificationsDisabled: boolean;
 }
 
 export type UserDocument = HydratedDocument<User>;

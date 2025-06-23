@@ -25,7 +25,8 @@ import { NotificationModule } from '../notification/notification.module';
     UserModule,
     CustomerModule,
     forwardRef(() => OrderModule),
-    NotificationModule
+    NotificationModule,
+    UserModule
   ],
   controllers: [PaymentController],
   providers: [PaymentProvider, PaymentService, WebhookService, PaystackService, PaystackProvider],

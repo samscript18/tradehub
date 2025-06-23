@@ -35,6 +35,18 @@ export class UserController {
       return data;
    }
 
+   @Put('/notification')
+   @ApiOperation({ summary: 'Update notification status' })
+   async updateNotificationStatus(
+      @Auth('_id') userId: string,
+   ) {
+      const data = await this.userProvider.updateNotificationStatus(
+         userId
+      );
+
+      return data;
+   }
+
    @Put('/profile-picture')
    @ApiOperation({ summary: 'Update profile picture' })
    @ApiBody({
