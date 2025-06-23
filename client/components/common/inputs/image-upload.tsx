@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import React, { FC } from 'react';
-import { BiTrash, BiUpload } from 'react-icons/bi';
+import { BiLoaderAlt, BiTrash, BiUpload } from 'react-icons/bi';
 
 interface Props {
 	uploaded_image?: File;
@@ -9,6 +9,7 @@ interface Props {
 	onRemoveImage?(): void;
 	id?: string;
 	className: string;
+	loading?: boolean;
 }
 
 const ImageUploader: FC<Props> = ({
@@ -17,6 +18,7 @@ const ImageUploader: FC<Props> = ({
 	onUploadImage,
 	onRemoveImage,
 	className,
+	loading,
 }) => {
 	if (uploaded_image) {
 		return (
@@ -27,12 +29,12 @@ const ImageUploader: FC<Props> = ({
 					width={600}
 					height={200}
 					unoptimized
-					className="w-full h-full object-cover object-center"
+					className="w-full h-full object-cover rounded-full"
 				/>
 				<span
 					onClick={onRemoveImage}
 					className="w-[30px] h-[30px] rounded-md flex items-center justify-center bg-red-500 absolute top-2 right-2 cursor-pointer">
-					<BiTrash />
+					{loading ? <BiLoaderAlt size={20} className="text-white animate-spin" /> : <BiTrash />}
 				</span>
 			</div>
 		);

@@ -2,6 +2,7 @@ import { AxiosErrorShape, errorHandler } from "../config/axios-error";
 import { authApi } from "../config/axios-instance";
 import { CheckoutDto, GetProductsQueryDto } from "../dtos";
 import { ApiResponse } from "../types";
+import { UpdateProfile } from "../types/auth";
 import { Customer, DeliveryAddress, Order, Product, ProductFilters } from "../types/types";
 
 export const getCustomer = async () => {
@@ -15,9 +16,9 @@ export const getCustomer = async () => {
   }
 };
 
-export const updateCustomer = async () => {
+export const updateCustomer = async (data: Partial<UpdateProfile>) => {
   try {
-    const response = await authApi.put<ApiResponse<Customer>>('/customer');
+    const response = await authApi.put<ApiResponse<Customer>>('/customer', data);
 
     return response?.data?.data;
   } catch (error) {

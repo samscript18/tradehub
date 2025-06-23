@@ -12,6 +12,7 @@ export interface User {
   gender?: 'male' | 'female';
   dateOfBirth?: string;
   profilePicture?: string;
+  notificationsDisabled?: boolean;
   email: string;
   phoneNumber: string;
   storeName?: string;

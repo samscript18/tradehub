@@ -174,7 +174,7 @@ const CartPage = () => {
 										className="col-span-2"
 										InputProps={{
 											placeholder: 'e.g your street address',
-											...register('street', {
+											...register('streetAddress', {
 												required: {
 													value: true,
 													message: 'This field is required',
@@ -182,7 +182,7 @@ const CartPage = () => {
 											}),
 											className: 'text-xs',
 										}}
-										helperText={errors?.street?.message}
+										helperText={errors?.streetAddress?.message}
 									/>
 
 									<TextField
@@ -264,7 +264,7 @@ const CartPage = () => {
 																{user.firstName} {user.lastName}
 															</div>
 															<div className="text-gray-400 text-xs space-y-1">
-																<div>{address.street}</div>
+																<div>{address.streetAddress}</div>
 																<div>
 																	{address.city}, {address.state}
 																</div>
@@ -320,7 +320,7 @@ const CartPage = () => {
 										address: {
 											country: user.defaultAddress.country || '',
 											state: user.defaultAddress.state || '',
-											street: user.defaultAddress.street || '',
+											street: user.defaultAddress.streetAddress || '',
 											city: user.defaultAddress.city || '',
 											postalcode: user.defaultAddress.postalcode || '',
 										},
