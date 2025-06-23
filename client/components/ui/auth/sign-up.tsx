@@ -117,7 +117,7 @@ const SignUpPage = () => {
 								country: '',
 								state: '',
 								city: '',
-								street: '',
+								streetAddress: '',
 								postalcode: '',
 							},
 							email: '',
@@ -297,7 +297,7 @@ const SignUpPage = () => {
 								className="col-span-2"
 								InputProps={{
 									placeholder: 'e.g your street address',
-									...register('address.street', {
+									...register('address.streetAddress', {
 										required: {
 											value: true,
 											message: 'This field is required',
@@ -305,7 +305,7 @@ const SignUpPage = () => {
 									}),
 									className: 'text-sm',
 								}}
-								helperText={errors?.address?.street?.message}
+								helperText={errors?.address?.streetAddress?.message}
 							/>
 
 							<SelectCountry
@@ -374,7 +374,7 @@ const SignUpPage = () => {
 								className="col-span-2"
 								InputProps={{
 									placeholder: 'e.g your street address',
-									...register('address.street', {
+									...register('address.streetAddress', {
 										required: {
 											value: true,
 											message: 'This field is required',
@@ -382,7 +382,7 @@ const SignUpPage = () => {
 									}),
 									className: 'text-sm',
 								}}
-								helperText={errors?.address?.street?.message}
+								helperText={errors?.address?.streetAddress?.message}
 							/>
 
 							<SelectCountry
