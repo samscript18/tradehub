@@ -261,7 +261,7 @@ const CartPage = () => {
 														/>
 														<div className="flex-1">
 															<div className="font-medium text-sm mb-1">
-																{user.firstName} {user.lastName}
+																{address.fullName ? address.fullName : `${user.firstName} ${user.lastName}`}
 															</div>
 															<div className="text-gray-400 text-xs space-y-1">
 																<div>{address.streetAddress}</div>
@@ -269,7 +269,7 @@ const CartPage = () => {
 																	{address.city}, {address.state}
 																</div>
 																<div>{address.postalcode}</div>
-																<div>{user.phoneNumber}</div>
+																<div>{address?.phoneNumber || user.phoneNumber}</div>
 															</div>
 														</div>
 													</div>

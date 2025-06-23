@@ -39,7 +39,7 @@ export class CreateProductDto {
   description: string;
 
   @IsArray()
-  @ArrayMinSize(1)
+  @ArrayMinSize(5)
   @IsBase64MediaArray({
     messages: {
       default: 'Each image must be valid base64-encoded image'

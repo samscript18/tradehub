@@ -10,10 +10,9 @@ export interface Address {
 }
 
 export interface DeliveryAddress extends Address {
-  fullName: string;
-  phoneNumber: string;
+  fullName?: string;
+  phoneNumber?: string;
 }
-
 
 export interface Customer {
   _id: string;
@@ -22,8 +21,8 @@ export interface Customer {
   lastName: string;
   gender?: 'male' | 'female';
   dateOfBirth?: string;
-  addresses: Address[];
-  defaultAddress: Address | null;
+  addresses: DeliveryAddress[];
+  defaultAddress: DeliveryAddress | null;
 }
 
 export interface Merchant {
@@ -32,8 +31,8 @@ export interface Merchant {
   storeName: string;
   storeLogo: string;
   storeDescription: string;
-  defaultAddress: Address | null;
-  addresses: Address[];
+  defaultAddress: DeliveryAddress | null;
+  addresses: DeliveryAddress[];
   storeCategory: string[];
   website?: string;
   socials: {
