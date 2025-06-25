@@ -1,12 +1,13 @@
 import { IsEnum, IsNumber, IsString } from "src/shared/decorators";
 import { PaginationQuery } from "src/shared/interfaces/pagination.interface";
 import { ProductStatus } from "../enums/product.enum";
+import { IsObject, IsOptional } from "class-validator";
 
 export class GetProductsDto implements PaginationQuery {
-  @IsNumber(true)
+  @IsNumber(false)
   page: number;
 
-  @IsNumber(true)
+  @IsNumber(false)
   limit: number;
 
   @IsString(true)
@@ -15,11 +16,16 @@ export class GetProductsDto implements PaginationQuery {
   @IsString(true)
   category: string;
 
-  @IsString(true)
-  priceRange: string;
+  @IsNumber(true)
+  @IsOptional()
+  priceRangeMin?: number;
 
   @IsNumber(true)
-  rating: number;
+  @IsOptional()
+  priceRangeMax?: number;
+
+  @IsNumber(true)
+  rating?: number;
 
   @IsEnum(ProductStatus, true)
   status: string

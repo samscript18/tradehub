@@ -32,7 +32,7 @@ export class Order {
     ],
     required: true,
   })
-  items: {
+  products: {
     product: ProductDocument;
     variant: { size?: string; color?: string };
     quantity: number;

@@ -72,6 +72,20 @@ export class UserProvider {
       };
    }
 
+   async updateNotificationStatus(userId: string) {
+      const user = await this.userService.getUser({ _id: userId });
+      if (!user) throw new NotFoundException('User does not exist');
+
+      user.notificationsDisabled = !user.notificationsDisabled;
+
+      await user.save();
+
+      return {
+         success: true,
+         message: 'notification status updated successfully',
+      };
+   }
+
    async deleteByEmail(email: string) {
       await this.userService.deleteUser({ email });
 

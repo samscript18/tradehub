@@ -1,12 +1,20 @@
 import { create } from 'zustand';
-import { Product } from '@/lib/types';
-import { cartProduct1, cartProduct2, cartProduct3 } from '@/public/images';
+import { Product, ProductVariant } from '@/lib/types/types';
+
+interface CartItem extends Product {
+  quantity: number;
+  selectedVariant: {
+    size: string;
+    color?: string;
+    price: number;
+  };
+}
 
 interface CartStore {
-  items: Product[];
-  addItem: (item: Product) => void;
-  removeItem: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  items: CartItem[];
+  addItem: (item: Product, quantity: number) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   subtotal: () => number;
   total: () => number;
   deliveryFee: () => number;
@@ -14,32 +22,7 @@ interface CartStore {
 }
 
 export const useCart = create<CartStore>((set, get) => ({
-  items: [
-    {
-      id: 1,
-      name: 'Organic Sweet Potatoes',
-      merchant: 'Fresh Farms Co.',
-      price: 7580,
-      quantity: 2,
-      img: cartProduct1,
-    },
-    {
-      id: 2,
-      name: 'Heritage Chicken',
-      merchant: 'Local Butcher Shop',
-      price: 6555,
-      quantity: 1,
-      img: cartProduct2,
-    },
-    {
-      id: 3,
-      name: 'Fresh Collard Greens',
-      merchant: 'Green Gardens',
-      price: 4550,
-      quantity: 3,
-      img: cartProduct3,
-    },
-  ],
+  items: [],
   deliveryFee: () => get().items.length > 0 ? 3000 : 0,
 
   loadItems: () => {
@@ -49,30 +32,50 @@ export const useCart = create<CartStore>((set, get) => ({
     }
   },
 
-  addItem: (item) => {
-    const newItems = [...get().items, item];
+  addItem: (product: Product, quantity: number, variant?: ProductVariant) => {
+    const cartItem: CartItem = {
+      ...product,
+      quantity,
+      selectedVariant: variant ? {
+        size: variant.size,
+        color: variant.color,
+        price: variant.price
+      } : {
+        size: product.variants[0].size,
+        color: product.variants[0].color,
+        price: product.variants[0].price
+      }
+    };
+
+    const newItems = [...get().items, cartItem];
     localStorage.setItem('cart-items', JSON.stringify(newItems));
     set({ items: newItems });
   },
 
   removeItem: (id) => {
-    const newItems = get().items.filter((item) => item.id !== id);
+    const newItems = get().items.filter((item) => item._id !== id);
     localStorage.setItem('cart-items', JSON.stringify(newItems));
     set({ items: newItems });
   },
 
-  updateQuantity: (id, newQuantity) => {
+  updateQuantity: (id: string, newQuantity: number) => {
+    if (newQuantity < 0) return;
+
     const newItems = newQuantity === 0
-      ? get().items.filter((item) => item.id !== id)
+      ? get().items.filter((item) => item._id !== id)
       : get().items.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
+        item._id === id ? { ...item, quantity: newQuantity } : item
       );
+
     localStorage.setItem('cart-items', JSON.stringify(newItems));
     set({ items: newItems });
   },
 
   subtotal: () =>
-    get().items.reduce((sum, item) => sum + item.price * (item.quantity || 0), 0),
+    get().items.reduce((sum, item) => {
+      const price = item.selectedVariant.price;
+      return sum + price * item.quantity;
+    }, 0),
 
   total: () => get().subtotal() + get().deliveryFee(),
 }));

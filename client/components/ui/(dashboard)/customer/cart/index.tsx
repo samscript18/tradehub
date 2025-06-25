@@ -13,6 +13,8 @@ import { REGEX } from '@/lib/utils/regex';
 import { useCart } from '@/lib/store/cart.store';
 import { Label } from '@/components/ui/label';
 import { formatNaira } from '@/lib/helpers';
+import { addDeliveryAddress, initiateCheckout } from '@/lib/services/customer.service';
+import { useMutation } from '@tanstack/react-query';
 
 const CartPage = () => {
 	const { user } = useAuth();
@@ -25,8 +27,20 @@ const CartPage = () => {
 		deliveryFee,
 		total,
 	} = useCart();
+	const { fetchUser } = useAuth();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [selectedAddress, setSelectedAddress] = useState<string>('0');
+	const { mutateAsync, isPending } = useMutation({
+		mutationFn: initiateCheckout,
+		mutationKey: ['initiate-checkout'],
+		onSuccess(data) {
+			window.location.href = data.paymentUrl;
+		},
+	});
+	const { mutateAsync: _addDeliveryInfo, isPending: _isAddingDeliveryInfo } = useMutation({
+		mutationFn: addDeliveryAddress,
+		mutationKey: ['add-delivery-info'],
+	});
 
 	const {
 		handleSubmit,
@@ -35,7 +49,9 @@ const CartPage = () => {
 	} = useForm<DeliveryAddress>({});
 
 	const submit = async (e: DeliveryAddress) => {
-		console.log(e);
+		await _addDeliveryInfo(e);
+		fetchUser();
+		setIsEdit(false);
 	};
 
 	useEffect(() => {
@@ -61,11 +77,11 @@ const CartPage = () => {
 								</div>
 							) : (
 								cartItems.map((item) => (
-									<div key={item.id} className="bg-[#181A20] rounded-lg shadow-lg p-4">
+									<div key={item._id} className="bg-[#181A20] rounded-lg shadow-lg p-4">
 										<div className="flex max-md:flex-col items-center gap-4">
 											<div className="w-25 md:w-20 h-25 md:h-20 rounded-lg overflow-hidden flex-shrink-0">
 												<Image
-													src={item.img}
+													src={item.images[0]}
 													alt={item.name}
 													width={80}
 													height={80}
@@ -75,27 +91,29 @@ const CartPage = () => {
 
 											<div className="flex-1 min-w-0">
 												<h3 className="font-semibold text-sm mb-1">{item.name}</h3>
-												<p className="text-xs text-gray-400 mb-2 max-md:text-center">{item.merchant}</p>
-												<p className="text-primary font-semibold max-md:text-center">{formatNaira(item.price)}</p>
+												<p className="text-xs text-gray-400 mb-2 max-md:text-center">{item.merchant.storeName}</p>
+												<p className="text-primary font-semibold max-md:text-center">
+													{formatNaira(item.variants[0].price)}
+												</p>
 											</div>
 
 											<div className="flex items-center gap-8">
 												<div className="flex items-center gap-3">
 													<button
-														onClick={() => updateQuantity(item.id, item.quantity! - 1)}
+														onClick={() => updateQuantity(item._id!, item.quantity! - 1)}
 														className="p-2 bg-[#1E2028] rounded-lg shadow-md cursor-pointer">
 														<Minus className="w-4 h-4" />
 													</button>
 													<span className="px-3 py-2 min-w-[3rem] text-sm font-semibold text-center">{item.quantity}</span>
 													<button
-														onClick={() => updateQuantity(item.id, item.quantity! + 1)}
+														onClick={() => updateQuantity(item._id!, item.quantity! + 1)}
 														className="p-2 bg-[#1E2028] rounded-lg shadow-md cursor-pointer">
 														<Plus className="w-4 h-4" />
 													</button>
 												</div>
 
 												<button
-													onClick={() => removeItem(item.id)}
+													onClick={() => removeItem(item._id!)}
 													className="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-lg cursor-pointer">
 													<Trash2 className="w-4 h-4" />
 												</button>
@@ -120,7 +138,7 @@ const CartPage = () => {
 										className="col-span-2"
 										InputProps={{
 											placeholder: 'e.g John Smilga',
-											...register('name', {
+											...register('fullName', {
 												required: {
 													value: true,
 													message: 'This field is required',
@@ -128,7 +146,7 @@ const CartPage = () => {
 											}),
 											className: 'text-xs',
 										}}
-										helperText={errors?.name?.message}
+										helperText={errors?.fullName?.message}
 									/>
 
 									<TextField
@@ -184,12 +202,11 @@ const CartPage = () => {
 									/>
 
 									<TextField
-										label="Zip Code"
+										label="State"
 										className="col-span-2 lg:col-span-1"
 										InputProps={{
-											type: 'tel',
-											placeholder: 'e.g your zipcode',
-											...register('zipcode', {
+											placeholder: 'e.g your state',
+											...register('state', {
 												required: {
 													value: true,
 													message: 'This field is required',
@@ -197,9 +214,32 @@ const CartPage = () => {
 											}),
 											className: 'text-xs',
 										}}
-										helperText={errors?.zipcode?.message}
+										helperText={errors?.state?.message}
 									/>
-									<Button fullWidth variant="filled" size="medium" className="col-span-2 text-xs" type="submit">
+
+									<TextField
+										label="Postal Code"
+										className="col-span-2 lg:col-span-1"
+										InputProps={{
+											type: 'tel',
+											placeholder: 'e.g your postalcode',
+											...register('postalcode', {
+												required: {
+													value: true,
+													message: 'This field is required',
+												},
+											}),
+											className: 'text-xs',
+										}}
+										helperText={errors?.postalcode?.message}
+									/>
+									<Button
+										fullWidth
+										loading={_isAddingDeliveryInfo}
+										variant="filled"
+										size="medium"
+										className="col-span-2 text-xs"
+										type="submit">
 										Save details
 									</Button>
 								</form>
@@ -221,15 +261,15 @@ const CartPage = () => {
 														/>
 														<div className="flex-1">
 															<div className="font-medium text-sm mb-1">
-																{user.firstName} {user.lastName}
+																{address.fullName ? address.fullName : `${user.firstName} ${user.lastName}`}
 															</div>
 															<div className="text-gray-400 text-xs space-y-1">
 																<div>{address.streetAddress}</div>
 																<div>
 																	{address.city}, {address.state}
 																</div>
-																<div>{address.zipcode}</div>
-																<div>{user.phoneNumber}</div>
+																<div>{address.postalcode}</div>
+																<div>{address?.phoneNumber || user.phoneNumber}</div>
 															</div>
 														</div>
 													</div>
@@ -272,7 +312,31 @@ const CartPage = () => {
 								</div>
 							</div>
 
-							<Button fullWidth variant="filled" className="w-full mb-4 text-sm cursor-pointer">
+							<Button
+								loading={isPending}
+								onClick={() => {
+									if (!user?.defaultAddress) return;
+									const data = {
+										address: {
+											country: user.defaultAddress.country || '',
+											state: user.defaultAddress.state || '',
+											street: user.defaultAddress.streetAddress || '',
+											city: user.defaultAddress.city || '',
+											postalcode: user.defaultAddress.postalcode || '',
+										},
+										price: total(),
+										products: cartItems.map((item) => ({
+											productId: item._id || '',
+											variant: item.selectedVariant,
+											quantity: item.quantity,
+											price: item.selectedVariant.price,
+										})),
+									};
+									mutateAsync(data);
+								}}
+								fullWidth
+								variant="filled"
+								className="w-full mb-4 text-sm cursor-pointer">
 								Proceed to Checkout
 							</Button>
 

@@ -16,6 +16,8 @@ import { OrderProvider } from 'src/api/order/order.provider';
 import { OrderMetadata } from '../interfaces/metadata';
 import { CustomerService } from 'src/api/customer/customer.service';
 import { CustomerDocument } from 'src/api/customer/schema/customer.schema';
+import { NotificationProvider } from 'src/api/notification/notification.provider';
+import { UserService } from 'src/api/user/user.service';
 
 @Injectable()
 export class WebhookService {
@@ -24,7 +26,9 @@ export class WebhookService {
     private readonly paymentService: PaymentService,
     private readonly orderProvider: OrderProvider,
     private readonly mailService: MailService,
-    private readonly customerService: CustomerService
+    private readonly customerService: CustomerService,
+    private readonly notificationProvider: NotificationProvider,
+    private readonly userService: UserService,
   ) { }
 
   private validateWebhookSignature(signature: string, webhookResponse: WebhookResponse) {
@@ -78,13 +82,23 @@ export class WebhookService {
 
     if (!attempt) throw new NotFoundException('Payment not found');
 
+
     const metadata = attempt.metadata as OrderMetadata;
 
     const order = await this.orderProvider.createOrder({
       ...metadata
-    }, attempt.user._id.toString());
+    }, attempt.user.id);
 
     const customer: CustomerDocument = await this.customerService.getCustomer({ user: attempt.user._id })
+
+    const user = await this.userService.getUser({ _id: attempt.user._id });
+
+    if (user && !user.notificationsDisabled) {
+      await this.notificationProvider.createNotification({
+        message: `Your payment to process the order ${order.data?.[0].groupId} was successful.`,
+        type: 'payment_successful',
+      }, customer.user._id.toString());
+    }
 
     await this.mailService.sendMail({
       to: customer.user.email,
@@ -92,7 +106,7 @@ export class WebhookService {
       template: 'order-success',
       context: {
         customerName: customer.firstName,
-        orderId: order.data._id,
+        orderId: order.data?.[0].groupId,
         amount: (attempt.metadata as OrderMetadata).price,
         transactionRef: attempt.reference,
       },

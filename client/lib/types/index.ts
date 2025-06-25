@@ -1,10 +1,8 @@
-import { StaticImageData } from "next/image";
-
-export interface ApiResponse<T> {
+export interface ApiResponse<T, M = { page: number, count: number, totalPages: number }> {
   success: boolean;
   message: string;
   data: T;
-  // meta?: M;
+  meta?: M;
 }
 
 export interface User {
@@ -14,6 +12,7 @@ export interface User {
   gender?: 'male' | 'female';
   dateOfBirth?: string;
   profilePicture?: string;
+  notificationsDisabled?: boolean;
   email: string;
   phoneNumber: string;
   storeName?: string;
@@ -22,13 +21,4 @@ export interface User {
   storeDescription?: string;
   storeCategories: string[];
   role: 'customer' | 'merchant';
-}
-
-export interface Product {
-  id: number;
-  img: StaticImageData | string;
-  name: string;
-  merchant: string;
-  price: number;
-  quantity?: number;
 }

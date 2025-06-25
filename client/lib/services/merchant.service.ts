@@ -6,7 +6,7 @@ import {
   CreateProductDto,
   Product,
 } from '../types/types'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 
 export const getMerchant = async () => {
   try {

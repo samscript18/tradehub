@@ -53,7 +53,6 @@ import { FaNairaSign } from 'react-icons/fa6'
 import { useMutation } from '@tanstack/react-query'
 import { createProduct } from '@/lib/services/merchant.service'
 import type { CreateProductDto, ProductVariant } from '@/lib/types/types' // adjust import as needed
-import { toast } from 'sonner'
 
 const AddProductPage = () => {
   const router = useRouter()
@@ -86,10 +85,12 @@ const AddProductPage = () => {
   const [successMessage, setSuccessMessage] = useState('')
 
   // Enhanced variant interface
-  interface EnhancedProductVariant extends ProductVariant {
+  interface EnhancedProductVariant {
     id: string
-    stock: string
-    sku?: string
+    size: string
+    color: string
+    price: number
+    stock: number
   }
 
   const [variants, setVariants] = useState<EnhancedProductVariant[]>([])
@@ -148,11 +149,10 @@ const AddProductPage = () => {
   const [newVariant, setNewVariant] = useState<
     Omit<EnhancedProductVariant, 'id'>
   >({
-    type: '',
-    value: '',
-    price: '',
-    stock: '',
-    sku: '',
+    size: '',
+    color: '',
+    price: 0,
+    stock: 0,
   })
 
   const handleInputChange = (field: string, value: string) => {
@@ -260,8 +260,8 @@ const AddProductPage = () => {
       newErrors.description = 'Product description is required'
     }
 
-    if (uploadedImages.length === 0) {
-      newErrors.images = 'At least one product image is required'
+    if (uploadedImages.length !== 5) {
+      newErrors.images = 'You must upload exactly 5 product images'
     }
 
     // Check if at least one delivery option is selected
@@ -271,6 +271,14 @@ const AddProductPage = () => {
     if (!hasDeliveryOption) {
       newErrors.deliveryOptions =
         'At least one delivery option must be selected'
+    }
+
+    if (
+      !variants.length ||
+      variants.filter((v) => v.size && v.color && v.price && v.stock).length ===
+        0
+    ) {
+      newErrors.variants = 'At least one product variant is required'
     }
 
     setErrors(newErrors)
@@ -302,7 +310,6 @@ const AddProductPage = () => {
       }, 3000)
     } catch (error) {
       console.error('Error saving draft:', error)
-	  toast.error('Failed to save draft.')
     } finally {
       setIsLoading(false)
     }
@@ -325,19 +332,15 @@ const AddProductPage = () => {
         router.push('/merchant/products')
       }, 2000)
     },
-    onError: (error: unknown) => {
-		let message = 'Failed to publish product.'
-		if (error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string') {
-		  message = (error as any).message
-		}
-		setErrors({ publish: message })
-	  },
+    onError: (error: any) => {
+      setErrors({ publish: error.message || 'Failed to publish product.' })
+    },
   })
 
   // Publish function
   const handlePublish = async () => {
     if (!validateForm()) {
-      setIsLoading(false) // <-- Reset loading if validation fails
+      setIsLoading(false)
       return
     }
 
@@ -353,13 +356,12 @@ const AddProductPage = () => {
         images: imageBase64s,
         category: formData.category,
         variants: variants
-          .filter((v) => v.type && v.value)
+          .filter((v) => v.size && v.color && v.price && v.stock)
           .map((v) => ({
-            type: v.type,
-            value: v.value,
-            price: v.price,
-            stock: v.stock, // <-- include stock per variant
-            sku: v.sku,
+            size: v.size,
+            color: v.color,
+            price: typeof v.price === 'string' ? Number(v.price) : v.price,
+            stock: typeof v.stock === 'string' ? Number(v.stock) : v.stock,
           })),
       }
 
@@ -387,19 +389,13 @@ const AddProductPage = () => {
   const generateId = () => Math.random().toString(36).substr(2, 9)
 
   const handleAddVariant = () => {
-    if (newVariant.type && newVariant.value && newVariant.price) {
+    if (newVariant.size && newVariant.color && newVariant.price) {
       const variant: EnhancedProductVariant = {
         ...newVariant,
         id: generateId(),
-        sku:
-          newVariant.sku ||
-          `${newVariant.type.toLowerCase()}-${newVariant.value.toLowerCase()}-${generateId().slice(
-            0,
-            4
-          )}`,
       }
       setVariants([...variants, variant])
-      setNewVariant({ type: '', value: '', price: '', stock: '', sku: '' })
+      setNewVariant({ size: '', color: '', price: 0, stock: 0 })
       setIsAddingVariant(false)
     }
   }
@@ -425,11 +421,6 @@ const AddProductPage = () => {
     const duplicated: EnhancedProductVariant = {
       ...variant,
       id: generateId(),
-      value: `${variant.value} Copy`,
-      sku: `${variant.type.toLowerCase()}-${variant.value.toLowerCase()}-copy-${generateId().slice(
-        0,
-        4
-      )}`,
     }
     setVariants([...variants, duplicated])
   }
@@ -453,8 +444,7 @@ const AddProductPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] 
-	!text-white">
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
       {/* Success Alert */}
       {showSuccessAlert && (
         <div className="fixed top-4 right-4 z-50">
@@ -700,9 +690,9 @@ const AddProductPage = () => {
             </div>
 
             {/* Modern Variants Section */}
-            <Card className="bg-[#1a1a1a] border-gray-700 text-white">
+            <Card className="bg-[#1a1a1a] border-gray-700">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
+                <CardTitle className="flex items-center gap-2">
                   <Package className="w-5 h-5" />
                   Product Variants ({variants.length})
                 </CardTitle>
@@ -729,11 +719,10 @@ const AddProductPage = () => {
                               className="h-7 text-xs border-gray-600 hover:bg-gray-700"
                               onClick={() => {
                                 setNewVariant({
-                                  type: group.type,
-                                  value,
-                                  price: formData.regularPrice || '0.00',
-                                  stock: '0',
-                                  sku: '',
+                                  size: group.type === 'Size' ? value : '',
+                                  color: group.type === 'Color' ? value : '',
+                                  price: Number(formData.regularPrice) || 0,
+                                  stock: 0,
                                 })
                                 setIsAddingVariant(true)
                               }}
@@ -775,21 +764,23 @@ const AddProductPage = () => {
                       >
                         <div className="flex items-center gap-3">
                           <div className="flex items-center gap-2">
-                            {getVariantIcon(variant.type)}
-                            <Badge
-                              className={`${getVariantColor(
-                                variant.type
-                              )} border text-xs`}
-                            >
-                              {variant.type}
-                            </Badge>
+                            {variant.size && (
+                              <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 border text-xs">
+                                Size: {variant.size}
+                              </Badge>
+                            )}
+                            {variant.color && (
+                              <Badge className="bg-purple-500/10 text-purple-400 border-purple-500/20 border text-xs">
+                                Color: {variant.color}
+                              </Badge>
+                            )}
                           </div>
                           <div>
-                            <h5 className="text-sm font-medium">
-                              {variant.value}
-                            </h5>
+                            <p className="text-sm font-bold">
+                              ₦{variant.price}
+                            </p>
                             <p className="text-xs text-gray-400">
-                              SKU: {variant.sku}
+                              {variant.stock || '0'} in stock
                             </p>
                           </div>
                         </div>
@@ -968,7 +959,7 @@ const AddProductPage = () => {
             disabled={isLoading}
           >
             <Send className="w-4 h-4 mr-2" />
-            {isLoading ? 'Publishing...' : 'Publish'}
+            {isLoading ? 'Submitting...' : 'Submit'}
           </Button>
         </div>
       </div>
@@ -982,89 +973,60 @@ const AddProductPage = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-white">Variant Type</Label>
-          <Select
-            value={newVariant.type}
-            onValueChange={(value) =>
-              setNewVariant({ ...newVariant, type: value })
-            }
-          >
-                  <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
-                    <SelectValue
-                      placeholder="Select type"
-                      className="text-white"
-                    />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#2a2a2a] border-gray-600 text-white">
-                    {variantGroups.map((group) => (
-                      <SelectItem key={group.type} value={group.type}>
-                        <div className="flex items-center gap-2">
-                          {group.icon}
-                          {group.type}
-                        </div>
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="Custom">
-                      <div className="flex items-center gap-2">
-                        <Settings className="w-4 h-4" />
-                        Custom
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Size</Label>
+                <Input
+                  value={newVariant.size}
+                  onChange={(e) =>
+                    setNewVariant({ ...newVariant, size: e.target.value })
+                  }
+                  placeholder="e.g. M"
+                  className="bg-[#2a2a2a] border-gray-600"
+                />
               </div>
               <div className="space-y-2">
-                <Label>Value</Label>
+                <Label>Color</Label>
                 <Input
-                  value={newVariant.value}
+                  value={newVariant.color}
                   onChange={(e) =>
-                    setNewVariant({ ...newVariant, value: e.target.value })
+                    setNewVariant({ ...newVariant, color: e.target.value })
                   }
-                  placeholder="Enter value"
-                  className="bg-[#2a2a2a] border-gray-600 text-white"
+                  placeholder="e.g. Blue"
+                  className="bg-[#2a2a2a] border-gray-600"
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Price</Label>
-                <div className="relative">
-                  <FaNairaSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <Input
-                    value={newVariant.price}
-                    onChange={(e) =>
-                      setNewVariant({ ...newVariant, price: e.target.value })
-                    }
-                    placeholder="0.00"
-                    type="number"
-                    step="0.01"
-                    className="bg-[#2a2a2a] border-gray-600 pl-10"
-                  />
-                </div>
+                <Input
+                  value={newVariant.price}
+                  onChange={(e) =>
+                    setNewVariant({
+                      ...newVariant,
+                      price: Number(e.target.value),
+                    })
+                  }
+                  placeholder="0.00"
+                  type="number"
+                  step="0.01"
+                  className="bg-[#2a2a2a] border-gray-600"
+                />
               </div>
               <div className="space-y-2">
-                <Label>Stock Quantity</Label>
+                <Label>Stock</Label>
                 <Input
                   value={newVariant.stock}
                   onChange={(e) =>
-                    setNewVariant({ ...newVariant, stock: e.target.value })
+                    setNewVariant({
+                      ...newVariant,
+                      stock: Number(e.target.value),
+                    })
                   }
                   placeholder="0"
                   type="number"
                   className="bg-[#2a2a2a] border-gray-600"
                 />
               </div>
-            </div>
-            <div className="space-y-2">
-              <Label>SKU (Optional)</Label>
-              <Input
-                value={newVariant.sku}
-                onChange={(e) =>
-                  setNewVariant({ ...newVariant, sku: e.target.value })
-                }
-                placeholder="Auto-generated if empty"
-                className="bg-[#2a2a2a] border-gray-600"
-              />
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button
@@ -1097,38 +1059,30 @@ const AddProductPage = () => {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Variant Type</Label>
-                  <Select
-                    value={editingVariant.type}
-                    onValueChange={(value) =>
-                      setEditingVariant({ ...editingVariant, type: value })
-                    }
-                  >
-                    <SelectTrigger className="bg-[#2a2a2a] border-gray-600">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#2a2a2a] border-gray-600 text-white">
-                      {variantGroups.map((group) => (
-                        <SelectItem key={group.type} value={group.type}>
-                          <div className="flex items-center gap-2 text-white">
-                            {group.icon}
-                            {group.type}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Value</Label>
+                  <Label>Size</Label>
                   <Input
-                    value={editingVariant.value}
+                    value={editingVariant.size}
                     onChange={(e) =>
                       setEditingVariant({
                         ...editingVariant,
-                        value: e.target.value,
+                        size: e.target.value,
                       })
                     }
+                    placeholder="e.g. M"
+                    className="bg-[#2a2a2a] border-gray-600"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Color</Label>
+                  <Input
+                    value={editingVariant.color}
+                    onChange={(e) =>
+                      setEditingVariant({
+                        ...editingVariant,
+                        color: e.target.value,
+                      })
+                    }
+                    placeholder="e.g. Blue"
                     className="bg-[#2a2a2a] border-gray-600"
                   />
                 </div>
@@ -1143,7 +1097,7 @@ const AddProductPage = () => {
                       onChange={(e) =>
                         setEditingVariant({
                           ...editingVariant,
-                          price: e.target.value,
+                          price: Number(e.target.value),
                         })
                       }
                       type="number"
@@ -1153,32 +1107,20 @@ const AddProductPage = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Stock Quantity</Label>
+                  <Label>Stock</Label>
                   <Input
                     value={editingVariant.stock}
                     onChange={(e) =>
                       setEditingVariant({
                         ...editingVariant,
-                        stock: e.target.value,
+                        stock: Number(e.target.value),
                       })
                     }
+                    placeholder="0"
                     type="number"
                     className="bg-[#2a2a2a] border-gray-600"
                   />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label>SKU</Label>
-                <Input
-                  value={editingVariant.sku}
-                  onChange={(e) =>
-                    setEditingVariant({
-                      ...editingVariant,
-                      sku: e.target.value,
-                    })
-                  }
-                  className="bg-[#2a2a2a] border-gray-600"
-                />
               </div>
               <div className="flex justify-end gap-2 pt-4">
                 <Button

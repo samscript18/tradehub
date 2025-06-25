@@ -12,10 +12,10 @@ export class Address {
   country: string;
 
   @Prop({ required: false })
-  streetAddress: string;
+  street: string;
 
   @Prop({ required: false })
-  zipcode: string;
+  postalcode: string;
 }
 
 export const AddressSchema = SchemaFactory.createForClass(Address);

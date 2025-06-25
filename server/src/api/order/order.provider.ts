@@ -14,6 +14,8 @@ import { v4 } from 'uuid'
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { GetOrdersDto } from './dto/get-order.dto';
 import { NotificationProvider } from '../notification/notification.provider';
+import { OrderStatus } from './enums/order.enum';
+import { UserService } from '../user/user.service';
 
 
 @Injectable()
@@ -23,77 +25,84 @@ export class OrderProvider {
     private readonly customerService: CustomerService,
     private readonly merchantService: MerchantService,
     private readonly productService: ProductService,
-    private readonly notificationProvider: NotificationProvider
+    private readonly notificationProvider: NotificationProvider,
+    private readonly userService: UserService,
   ) { }
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string) {
-    const groupId = v4();
-    const customer: CustomerDocument = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
+    try {
 
-    const itemsByMerchant = new Map<string, typeof createOrderDto.products>();
+      const customer = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
+      if (!customer) throw new NotFoundException('Customer not found');
 
-    for (const item of createOrderDto.products) {
-      const product: ProductDocument = await this.productService.getProduct({ _id: item.productId });
-      if (!product) throw new BadRequestException(`Product not found`);
+      const groupId = v4();
 
-      const merchantId = product.merchant.toString();
-
-      if (!itemsByMerchant.has(merchantId)) {
-        itemsByMerchant.set(merchantId, []);
-      }
-      itemsByMerchant.get(merchantId)!.push(item);
-    }
-
-    const createdOrders: OrderDocument[] = [];
-
-    for (const [merchantId, items] of itemsByMerchant.entries()) {
-      for (const item of items) {
-        const product: ProductDocument = await this.productService.getProduct({ _id: item.productId })
-        const variant = product.variants.find(variant =>
-          variant.size === item.variant.size && variant.color === item.variant.color
-        )
-
-        if (!variant) throw new BadRequestException(`Variant not found`);
-
-        if (variant.stock < item.quantity) {
-          throw new BadRequestException(`Insufficient stock for product ${product.name}`);
-        }
-      }
-
-      const order = await this.orderService.createOrder({
-        ...createOrderDto,
-        merchant: merchantId,
-        customer: customer._id,
-        products: items,
-        groupId
+      const allProductIds = createOrderDto.products.map(product => new Types.ObjectId(product.productId));
+      const { data: products
+      } = await this.productService.getProducts({
+        _id: { $in: allProductIds }
       });
 
-      await Promise.all(items.map(item =>
-        this.productService.updateProduct(
-          {
-            _id: item.productId, 'variants.size': item.variant.size,
-            'variants.color': item.variant.color
-          },
-          { $inc: { 'variants.$.stock': -item.quantity } },
-        )
-      ));
+      const productMap = new Map(products.map(product => [product._id.toString(), product]));
 
-      createdOrders.push(order);
+      const merchantGroup = new Map<string, any[]>();
+      for (const item of createOrderDto.products) {
+        const product = productMap.get(item.productId);
+        if (!product) throw new NotFoundException(`Product ${item.productId} not found`);
 
-      const merchant: MerchantDocument = await this.merchantService.getMerchant({ _id: merchantId });
+        const merchantId = product.merchant._id.toString();
+        if (!merchantGroup.has(merchantId)) {
+          merchantGroup.set(merchantId, []);
+        }
+        merchantGroup.get(merchantId).push({ ...item, product });
+      }
 
-      await this.notificationProvider.createNotification({
-        message: `New order ${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
-        type: 'order_placed'
-      }, merchant.user._id.toString());
+      const orders = await Promise.all(
+        Array.from(merchantGroup.entries()).map(async ([merchantId, items]) => {
+          const totalPrice = items.reduce(
+            (sum, item) => sum + (item.variant?.price || item.product.price) * item.quantity, 0
+          );
+
+          const order = await this.orderService.createOrder({
+            groupId,
+            customer: customer._id,
+            merchant: new Types.ObjectId(merchantId),
+            status: OrderStatus.PROCESSING,
+            price: totalPrice,
+            address: createOrderDto.address,
+            products: items.map(item => ({
+              product: item.productId,
+              quantity: item.quantity,
+              price: item.price,
+              variant: item.variant
+            }))
+          });
+
+          const merchant: MerchantDocument = await this.merchantService.getMerchant({ _id: new Types.ObjectId(merchantId) });
+
+          const user = await this.userService.getUser({ _id: merchant.user._id });
+
+          if (user && !user.notificationsDisabled) {
+            await this.notificationProvider.createNotification({
+              message: `New order #${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
+              type: 'order_placed',
+            }, merchant.user._id.toString());
+          }
+
+          return order;
+        })
+      );
+
+      return {
+        success: true,
+        message: 'Order created successfully',
+        data: orders,
+      };
+    } catch (error) {
+      console.log(error)
     }
-
-    return {
-      success: true,
-      message: 'Order created successfully',
-      data: { _id: groupId, orders: createdOrders },
-    };
   }
+
 
   async getCustomerOrder(groupId: string, userId: string) {
     const customer: CustomerDocument = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
@@ -118,10 +127,10 @@ export class OrderProvider {
         merchantOrders: orders.map((order) => ({
           orderId: order._id,
           merchant: order.merchant,
-          items: order.items,
+          items: order.products,
           status: order.status,
         })),
-        products: orders.map((order) => order.items.map((item) => { item.product, item.quantity })),
+        products: orders.map((order) => order.products?.map((item) => { item.product, item.quantity })),
         price: orders.reduce((acc, curr) => acc + curr.price, 0)
       }
     }
@@ -204,10 +213,10 @@ export class OrderProvider {
             name: order.merchant.storeName,
             logo: order.merchant.storeLogo
           },
-          items: order.items,
+          items: order.products,
           status: order.status,
         })),
-        products: groupOrders.map((order) => order.items.map((item) => { item.product, item.quantity })),
+        products: groupOrders.map((order) => order.products?.map((item) => { item.product, item.quantity })),
         price: groupOrders.reduce((acc, curr) => acc + curr.price, 0)
       });
     }
@@ -283,10 +292,14 @@ export class OrderProvider {
 
     const customer: CustomerDocument = await this.customerService.getCustomer({ _id: data.customer })
 
-    await this.notificationProvider.createNotification({
-      message: `Order ${data._id} has been updated to ${data.status}`,
-      type: 'order_updated'
-    }, customer.user._id.toString());
+    const user = await this.userService.getUser({ _id: customer.user._id });
+
+    if (user && !user.notificationsDisabled) {
+      await this.notificationProvider.createNotification({
+        message: `Order ${data._id} has been updated to ${data.status}`,
+        type: 'order_updated'
+      }, customer.user._id.toString());
+    }
 
     return {
       success: true,

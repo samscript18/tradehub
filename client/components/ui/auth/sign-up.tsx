@@ -118,7 +118,7 @@ const SignUpPage = () => {
 								state: '',
 								city: '',
 								streetAddress: '',
-								zipcode: '',
+								postalcode: '',
 							},
 							email: '',
 							phoneNumber: '',
@@ -318,12 +318,12 @@ const SignUpPage = () => {
 							/>
 
 							<TextField
-								label="Zip Code"
+								label="Postal Code"
 								className="col-span-2"
 								InputProps={{
 									type: 'tel',
-									placeholder: 'e.g your address zipcode',
-									...register('address.zipcode', {
+									placeholder: 'e.g your address postalcode',
+									...register('address.postalcode', {
 										required: {
 											value: true,
 											message: 'This field is required',
@@ -331,7 +331,7 @@ const SignUpPage = () => {
 									}),
 									className: 'text-sm',
 								}}
-								helperText={errors?.address?.zipcode?.message}
+								helperText={errors?.address?.postalcode?.message}
 							/>
 						</>
 					) : (
@@ -395,12 +395,12 @@ const SignUpPage = () => {
 							/>
 
 							<TextField
-								label="Zip Code"
+								label="Postal Code"
 								className="col-span-2"
 								InputProps={{
 									type: 'tel',
 									placeholder: 'e.g your store address',
-									...register('address.zipcode', {
+									...register('address.postalcode', {
 										required: {
 											value: true,
 											message: 'This field is required',
@@ -408,7 +408,7 @@ const SignUpPage = () => {
 									}),
 									className: 'text-sm',
 								}}
-								helperText={errors?.address?.zipcode?.message}
+								helperText={errors?.address?.postalcode?.message}
 							/>
 
 							<div className="space-y-4 col-span-2">

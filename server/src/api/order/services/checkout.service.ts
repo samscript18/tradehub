@@ -4,6 +4,8 @@ import { PaymentService } from 'src/api/payment/services/payment.service';
 import { PaystackService } from 'src/api/payment/services/paystack.service';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateOrderDto } from '../dto/create-order.dto';
+import { CustomerDocument } from 'src/api/customer/schema/customer.schema';
+import { Types } from 'mongoose';
 
 
 @Injectable()
@@ -15,11 +17,12 @@ export class CheckoutService {
   ) { }
 
   async initiateCheckout(createOrderDto: CreateOrderDto, userId: string) {
-    const customer = await this.customerService.getCustomer({
-      user: userId
+
+    const customer: CustomerDocument = await this.customerService.getCustomer({
+      user: new Types.ObjectId(userId)
     });
 
-    const totalAmount = createOrderDto.products.reduce(
+    const totalAmount = 3000 + createOrderDto.products.reduce(
       (sum, item) => sum + (item.price * item.quantity),
       0
     );
@@ -37,7 +40,7 @@ export class CheckoutService {
       email: customer.user.email,
       amount: totalAmount,
       reference,
-      redirect_url: `/order/verify/${reference}`
+      redirect_url: `/customer/order/verify/${reference}`
     });
 
     return {

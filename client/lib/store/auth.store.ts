@@ -31,14 +31,14 @@ export const useAuth = create<AuthStore>()(
           const user = await getUser();
 
           if (user.role === 'customer') {
-            const { firstName, lastName, addresses: customerAddresses, dateOfBirth, gender } = await getCustomer()
+            const { firstName, lastName, addresses: customerAddresses, dateOfBirth, gender, defaultAddress } = await getCustomer()
 
-            set({ user: { ...user, firstName, lastName, addresses: customerAddresses, dateOfBirth, gender } as User & Customer });
+            set({ user: { ...user, firstName, lastName, addresses: customerAddresses, dateOfBirth, gender, defaultAddress, notificationsDisabled: user.notificationsDisabled } as User & Customer });
 
           } else if (user.role === 'merchant') {
             const { storeName, storeLogo, storeDescription, storeCategory, isVerified, addresses: merchantAddresses } = await getMerchant()
-            
-            set({ user: { ...user, storeName, storeLogo, storeDescription, storeCategory, isVerified, addresses: merchantAddresses } as User & Merchant });
+
+            set({ user: { ...user, storeName, storeLogo, storeDescription, storeCategory, isVerified, addresses: merchantAddresses, notificationsDisabled: user.notificationsDisabled } as User & Merchant });
           }
 
         } catch {

@@ -3,6 +3,7 @@ import { UserService } from '../user/user.service';
 import { Types } from 'mongoose';
 import { CustomerService } from './customer.service';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
+import { AddressDto } from './dto/address.dto';
 
 @Injectable()
 export class CustomerProvider {
@@ -72,15 +73,21 @@ export class CustomerProvider {
       };
    }
 
-   // async addAddress(customerId: string, address: Address) {
-   //    return this.customerModel.findByIdAndUpdate(
-   //       customerId,
-   //       {
-   //          $push: { addresses: address }
-   //       },
-   //       { new: true }
-   //    );
-   // }
+   async addAddress(userId: string, address: AddressDto) {
+      const data = await this.customerService.updateCustomer(
+         { user: new Types.ObjectId(userId) },
+         {
+            $push: { addresses: address }
+         },
+         { new: true }
+      );
+
+      return {
+         success: true,
+         message: 'Customer address added',
+         data,
+      };
+   }
 
    // async setDefaultAddress(customerId: string, addressIndex: number) {
    //    const customer = await this.customerModel.findById(customerId);

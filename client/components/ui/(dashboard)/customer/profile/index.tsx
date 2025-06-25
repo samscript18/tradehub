@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ChevronRight, Shield, ShieldCheck, Globe, Bell, Moon } from 'lucide-react';
+import { ChevronRight, Shield, Globe, Bell } from 'lucide-react';
 import { Switch } from '@/components/common/switch';
 import { useAuth } from '@/lib/store/auth.store';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,7 +11,16 @@ import { UpdateProfile } from '@/lib/types/auth';
 import Button from '@/components/common/button';
 import TextField, { PasswordTextField } from '@/components/common/inputs/text-field';
 import { REGEX } from '@/lib/utils/regex';
-import { convertUrl } from '@/lib/utils/file';
+import { convertBase64, convertUrl } from '@/lib/utils/file';
+import { useMutation } from '@tanstack/react-query';
+import { updateCustomer } from '@/lib/services/customer.service';
+import {
+	changeNotificationStatus,
+	changePassword,
+	changeProfilePicture,
+} from '@/lib/services/user.service';
+import { toastSuccess } from '@/lib/utils/toast';
+import { BiLoaderAlt } from 'react-icons/bi';
 
 interface SettingItem {
 	icon: React.ReactNode;
@@ -28,34 +37,71 @@ const ProfilePage = () => {
 	const { user } = useAuth();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
 	const [profileImage, setProfileImage] = useState<File>();
-	const [notifications, setNotifications] = useState(true);
-	const [darkMode, setDarkMode] = useState(true);
+	const [notifications, setNotifications] = useState(!user?.notificationsDisabled);
+	// const [darkMode, setDarkMode] = useState(true);
 	const [confirmPassword, setConfirmPassword] = useState<string>();
+	const { fetchUser } = useAuth();
+	const { mutateAsync: _updateCustomerInfo, isPending: _isUpdatingCustomerInfo } = useMutation({
+		mutationFn: updateCustomer,
+		mutationKey: ['update-customer-info'],
+	});
+	const { mutateAsync: _changePassword, isPending: _isChangingPassword } = useMutation({
+		mutationFn: changePassword,
+		mutationKey: ['change-password'],
+		onSuccess(data) {
+			toastSuccess(data.message);
+		},
+	});
+	const { mutateAsync: _changeProfilePicture, isPending: _isChangingProfilePicture } = useMutation({
+		mutationFn: changeProfilePicture,
+		mutationKey: ['change-profile-picture'],
+		onSuccess(data) {
+			toastSuccess(data.message);
+		},
+	});
+	const { mutateAsync: _changeNotificationStatus, isPending: _isChangingNotificationStatus } =
+		useMutation({
+			mutationFn: changeNotificationStatus,
+			mutationKey: ['change-notification-status'],
+			onSuccess(data) {
+				toastSuccess(data.message);
+			},
+		});
+
+	const handleNotificationToggle = async () => {
+		await _changeNotificationStatus();
+		setNotifications(!notifications);
+		fetchUser();
+		setIsEdit(false);
+	};
+
+	console.log(user?.notificationsDisabled);
+	console.log(notifications);
 
 	const personalInfo: SettingItem[] = [
 		{
 			icon: null,
 			title: 'Full Name',
 			value: `${user?.firstName} ${user?.lastName}`,
-			onClick: () => console.log('Edit full name'),
+			onClick: () => setIsEdit(true),
 		},
 		{
 			icon: null,
 			title: 'Email Address',
 			value: user?.email,
-			onClick: () => console.log('Edit email'),
+			onClick: () => setIsEdit(true),
 		},
 		{
 			icon: null,
 			title: 'Phone Number',
 			value: user?.phoneNumber,
-			onClick: () => console.log('Edit phone'),
+			onClick: () => setIsEdit(true),
 		},
 		{
 			icon: null,
 			title: 'Location',
-			value: 'Abeokuta, Ogun State',
-			onClick: () => console.log('Edit location'),
+			value: `${user?.defaultAddress?.streetAddress}, ${user?.defaultAddress?.city}, ${user?.defaultAddress?.state}`,
+			onClick: () => setIsEdit(true),
 		},
 	];
 
@@ -64,14 +110,14 @@ const ProfilePage = () => {
 			icon: <Shield className="w-5 h-5 text-primary" />,
 			title: 'Change Password',
 			subtitle: 'Update your password',
-			onClick: () => console.log('Change password'),
+			onClick: () => setIsEdit(true),
 		},
-		{
-			icon: <ShieldCheck className="w-5 h-5 text-primary" />,
-			title: 'Two-Factor Authentication',
-			subtitle: 'Add an extra layer of security',
-			onClick: () => console.log('Setup 2FA'),
-		},
+		// {
+		// 	icon: <ShieldCheck className="w-5 h-5 text-primary" />,
+		// 	title: 'Two-Factor Authentication',
+		// 	subtitle: 'Add an extra layer of security',
+		// 	onClick: () => console.log('Setup 2FA'),
+		// },
 	];
 
 	const accountPreferences: SettingItem[] = [
@@ -87,16 +133,16 @@ const ProfilePage = () => {
 			value: notifications ? 'Enabled' : 'Disabled',
 			switch: true,
 			checked: notifications,
-			onToggle: () => setNotifications(!notifications),
+			onToggle: handleNotificationToggle,
 		},
-		{
-			icon: <Moon className="w-5 h-5 text-primary" />,
-			title: 'Dark Mode',
-			value: darkMode ? 'On' : 'Off',
-			switch: true,
-			checked: darkMode,
-			onToggle: () => setDarkMode(!darkMode),
-		},
+		// {
+		// 	icon: <Moon className="w-5 h-5 text-primary" />,
+		// 	title: 'Dark Mode',
+		// 	value: darkMode ? 'On' : 'Off',
+		// 	switch: true,
+		// 	checked: darkMode,
+		// 	onToggle: () => setDarkMode(!darkMode),
+		// },
 	];
 
 	const {
@@ -118,10 +164,25 @@ const ProfilePage = () => {
 	const newPassword = watch('newPassword');
 
 	const submit = async (e: UpdateProfile) => {
-		console.log(e);
+		await _updateCustomerInfo({
+			firstName: e.firstName,
+			lastName: e.lastName,
+			// email: e.email,
+			// phoneNumber: e.phoneNumber,
+		});
+		fetchUser();
+		setIsEdit(false);
+	};
+
+	const updateProfilePicture = async (e: UpdateProfile['profilePicture']) => {
+		if (e || profileImage) {
+			const picture = await convertBase64((e as File) || profileImage);
+			await _changeProfilePicture(picture);
+		}
 	};
 
 	useEffect(() => {
+		if (user?.notificationsDisabled) setNotifications(!user?.notificationsDisabled);
 		const handleProfileImage = async () => {
 			if (user?.profilePicture) {
 				const profileImage = await convertUrl(user?.profilePicture);
@@ -130,6 +191,13 @@ const ProfilePage = () => {
 		};
 		handleProfileImage();
 	}, [user]);
+
+	useEffect(() => {
+		if (isEdit) {
+			setValue('currentPassword', '');
+			setValue('newPassword', '');
+		}
+	}, [isEdit, setValue]);
 
 	const SettingSection = ({ title, items }: { title: string; items: SettingItem[] }) => (
 		<div className="bg-[#181A20] rounded-lg shadow-lg p-4 md:p-6 space-y-4">
@@ -156,11 +224,16 @@ const ProfilePage = () => {
 						</div>
 						<div className="flex items-center gap-2">
 							{item.switch ? (
-								<Switch
-									checked={item.checked}
-									onCheckedChange={item.onToggle}
-									className="data-[state=checked]:bg-primary"
-								/>
+								<>
+									<Switch
+										checked={item.checked}
+										onCheckedChange={item.onToggle}
+										className="data-[state=checked]:bg-primary"
+									/>
+									{_isChangingNotificationStatus && item.title === 'Notifications' && (
+										<BiLoaderAlt size={20} className="text-white animate-spin" />
+									)}
+								</>
 							) : (
 								<>
 									{item.value && item.subtitle && <span className="text-gray-400 text-sm">{item.value}</span>}
@@ -186,12 +259,14 @@ const ProfilePage = () => {
 									onUploadImage={(file: File) => {
 										setProfileImage(file);
 										setValue('profilePicture', file);
+										updateProfilePicture(file);
 									}}
 									onRemoveImage={() => {
 										setProfileImage(undefined);
 										setValue('profilePicture', undefined);
 									}}
 									className={'w-24 h-24 rounded-full! p-0!'}
+									loading={_isChangingProfilePicture}
 								/>
 							</div>
 						</div>
@@ -267,28 +342,7 @@ const ProfilePage = () => {
 							helperText={errors?.lastName?.message}
 						/>
 
-						<TextField
-							label="Email Address"
-							className="col-span-2 md:col-span-1"
-							InputProps={{
-								placeholder: 'e.g johndoe@gmail.com',
-								type: 'email',
-								...register('email', {
-									required: {
-										value: true,
-										message: 'This field is required',
-									},
-									pattern: {
-										value: REGEX.EMAIL,
-										message: 'Enter a valid email address',
-									},
-								}),
-								className: 'text-sm',
-							}}
-							helperText={errors?.email?.message}
-						/>
-
-						<TextField
+						{/* <TextField
 							label="Phone number"
 							className="col-span-2 md:col-span-1"
 							InputProps={{
@@ -307,7 +361,7 @@ const ProfilePage = () => {
 								className: 'text-sm',
 							}}
 							helperText={errors?.phoneNumber?.message}
-						/>
+						/> */}
 					</div>
 				) : (
 					<SettingSection title="Personal Information" items={personalInfo} />
@@ -321,10 +375,6 @@ const ProfilePage = () => {
 							label="Current Password"
 							InputProps={{
 								...register('currentPassword', {
-									required: {
-										value: true,
-										message: 'This field is required',
-									},
 									minLength: {
 										value: 8,
 										message: 'Password must not be less than 8 characters',
@@ -343,10 +393,6 @@ const ProfilePage = () => {
 							label="New Password"
 							InputProps={{
 								...register('newPassword', {
-									required: {
-										value: true,
-										message: 'This field is required',
-									},
 									minLength: {
 										value: 8,
 										message: 'Password must not be less than 8 characters',
@@ -373,6 +419,11 @@ const ProfilePage = () => {
 
 						<Button
 							fullWidth
+							loading={_isChangingPassword}
+							onClick={handleSubmit(async (data) => {
+								await _changePassword({ oldPassword: data.currentPassword!, newPassword: data.newPassword! });
+								setIsEdit(false);
+							})}
 							variant="filled"
 							className="py-3 text-sm font-semibold max-md:mt-4 mb-4 col-span-2">
 							Update Password
@@ -387,6 +438,7 @@ const ProfilePage = () => {
 				{isEdit && (
 					<Button
 						fullWidth
+						loading={_isUpdatingCustomerInfo}
 						onClick={handleSubmit(submit)}
 						variant="filled"
 						className="py-3 text-sm font-semibold mb-4">
