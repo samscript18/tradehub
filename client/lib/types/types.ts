@@ -80,7 +80,15 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
 }
+export type CreateProductDto = Products
 
+export interface Products {
+  name: string
+  description: string
+  images: string[]
+  category: string
+  variants: ProductVariant[]
+}
 export interface ProductVariant {
   _id?: string;
   size: string;
