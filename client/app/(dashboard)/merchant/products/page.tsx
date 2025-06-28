@@ -52,7 +52,7 @@ import { storeCategories } from '@/lib/data'
 import { FaNairaSign } from 'react-icons/fa6'
 import { useMutation } from '@tanstack/react-query'
 import { createProduct } from '@/lib/services/merchant.service'
-import type { CreateProductDto, ProductVariant } from '@/lib/types/types' // adjust import as needed
+import type { CreateProductDto } from '@/lib/types/types' 
 
 const AddProductPage = () => {
   const router = useRouter()
@@ -332,8 +332,9 @@ const AddProductPage = () => {
         router.push('/merchant/products')
       }, 2000)
     },
-    onError: (error: any) => {
+    onError: (error) => {
       setErrors({ publish: error.message || 'Failed to publish product.' })
+      console.error('Failed to publish:', error)
     },
   })
 
@@ -371,6 +372,7 @@ const AddProductPage = () => {
       })
     } catch (error) {
       setErrors({ publish: 'Failed to process images.' })
+       console.error('Failed to publish:', error)
       setIsLoading(false)
     }
   }
@@ -425,23 +427,7 @@ const AddProductPage = () => {
     setVariants([...variants, duplicated])
   }
 
-  const getVariantIcon = (type: string) => {
-    const group = variantGroups.find((g) => g.type === type)
-    return group?.icon || <Package className="w-4 h-4" />
-  }
 
-  const getVariantColor = (type: string) => {
-    const colors = {
-      Size: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-      Color: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-      Material: 'bg-green-500/10 text-green-400 border-green-500/20',
-      Style: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-    }
-    return (
-      colors[type as keyof typeof colors] ||
-      'bg-gray-500/10 text-gray-400 border-gray-500/20'
-    )
-  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
