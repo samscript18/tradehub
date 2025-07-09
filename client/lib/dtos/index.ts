@@ -79,3 +79,10 @@ export interface GetProductsQueryDto {
   rating?: number;
   status?: ProductStatus;
 }
+
+export interface GetCustomerOrdersQueryDto {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: OrderStatus;
+}

@@ -1,9 +1,9 @@
 import { AxiosErrorShape, errorHandler } from "../config/axios-error";
 import { authApi } from "../config/axios-instance";
-import { CheckoutDto, GetProductsQueryDto } from "../dtos";
+import { CheckoutDto, GetCustomerOrdersQueryDto, GetProductsQueryDto } from "../dtos";
 import { ApiResponse } from "../types";
 import { UpdateProfile } from "../types/auth";
-import { Customer, DeliveryAddress, Order, Product, ProductFilters } from "../types/types";
+import { Customer, CustomerOrder, DeliveryAddress, Order, Product, ProductFilters } from "../types/types";
 
 export const getCustomer = async () => {
   try {
@@ -93,11 +93,17 @@ export const initiateCheckout = async (data: CheckoutDto) => {
   }
 };
 
-export const getCustomerOrders = async () => {
+export const getCustomerOrders = async (params?: GetCustomerOrdersQueryDto) => {
   try {
-    const response = await authApi.get<ApiResponse<Order[]>>('/order/customer');
+    const searchParams = new URLSearchParams();
+    if (params?.search) searchParams.append('search', params.search);
+    if (params?.page) searchParams.append('page', String(params.page));
+    if (params?.limit) searchParams.append('limit', String(params.limit));
+    if (params?.status) searchParams.append('status', params.status);
 
-    return response?.data?.data;
+    const response = await authApi.get<ApiResponse<CustomerOrder[]>>(`/order/customer?${searchParams}`);
+
+    return response?.data;
   } catch (error) {
     errorHandler(error as AxiosErrorShape | string);
     throw error;

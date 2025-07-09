@@ -63,6 +63,41 @@ export interface OrderAddress {
   postalcode: string;
 }
 
+export interface CustomerOrderProduct {
+  product: string;
+  quantity: number;
+}
+
+export interface CustomerOrderMerchant {
+  _id: string;
+  name: string;
+  logo: string;
+}
+
+export interface CustomerOrderMerchantOrder {
+  orderId: string;
+  merchant: CustomerOrderMerchant;
+  items: {
+    product: string;
+    variant: {
+      size?: string;
+      color?: string;
+    };
+    quantity: number;
+    price: number;
+  }[];
+  status: string;
+  products: CustomerOrderProduct[];
+}
+
+export interface CustomerOrder {
+  orderId: string;
+  status: string;
+  address: string;
+  merchantOrders: CustomerOrderMerchantOrder[];
+  price: number;
+}
+
 export interface Order {
   _id: string;
   customer: {

@@ -18,6 +18,7 @@ export class OrderService {
     return await model.populate([
       { path: 'merchant', select: 'storeName storeLogo storeDescription storeCategory isVerified defaultAddress' },
       { path: 'customer', select: 'firstName lastName' },
+      { path: 'products.product', select: 'name' },
     ]);
   }
 

@@ -161,7 +161,8 @@ export class OrderProvider {
       const search = query.search.trim();
 
       _query.$or = [
-        { _id: { $regex: search, $options: 'i' } },
+        { 'products.product.name': { $regex: search, $options: 'i' } },
+        { 'merchant.storeName': { $regex: search, $options: 'i' } },
       ];
 
       delete query.search;
@@ -215,8 +216,8 @@ export class OrderProvider {
           },
           items: order.products,
           status: order.status,
+          products: order.products?.map((item) => ({ product: item.product.name, quantity: item.quantity })),
         })),
-        products: groupOrders.map((order) => order.products?.map((item) => { item.product, item.quantity })),
         price: groupOrders.reduce((acc, curr) => acc + curr.price, 0)
       });
     }

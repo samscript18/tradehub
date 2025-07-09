@@ -41,7 +41,7 @@ authApi.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { resetUser } = useAuth()
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 || error.response?.status === 403) {
       try {
         const refreshToken = Cookies.get('refresh_token') || sessionStorage.getItem('refresh_token');
 
@@ -58,6 +58,7 @@ authApi.interceptors.response.use(
         resetUser()
         Cookies.remove('access_token');
         Cookies.remove('refresh_token');
+        delete authApi.defaults.headers.common['Authorization'];
         errorHandler(error as AxiosErrorShape | string)
         window.location.href = '/login';
       }

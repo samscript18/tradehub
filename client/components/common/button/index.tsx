@@ -125,11 +125,11 @@ const Button: FC<Props> = (props) => {
 					<BiLoaderAlt size={loaderSize ? 20 : 30} className="text-white animate-spin" />
 				</span>
 			) : (
-				<>
+				<div className="flex justify-center items-center mx-auto">
 					{iconPosition === 'left' && <div className="flex items-center">{icon}</div>}
 					{children && <span className={`flex-shrink-0 ${icon && 'mt-0.5'}`}>{children}</span>}
 					{iconPosition === 'right' && <div className="flex items-center">{icon}</div>}
-				</>
+				</div>
 			)}
 		</motion.button>
 	);

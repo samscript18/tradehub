@@ -52,7 +52,7 @@ export class AuthGuard implements CanActivate {
 
    private async validateToken(req: Request) {
       try {
-         const token = req.cookies['access_token'] || this.extractBearerToken(req.headers['authorization']);
+         const token = this.extractBearerToken(req.headers['authorization']) || req.cookies['access_token'];
          if (!token) {
             throw new UnauthorizedException('Unauthorized!');
          }

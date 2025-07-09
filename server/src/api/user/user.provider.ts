@@ -5,7 +5,6 @@ import { UtilService } from 'src/shared/services/utils.service';
 import { FileService } from 'src/shared/file/file.service';
 import DEFAULT_IMAGES from 'src/shared/constants/images.const';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { Profile } from 'passport-google-oauth20';
 
 @Injectable()
 export class UserProvider {

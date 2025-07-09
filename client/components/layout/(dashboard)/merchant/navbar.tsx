@@ -31,6 +31,7 @@ const MerchantDashboardNavbar = () => {
 				{user?.profilePicture ? (
 					<Image
 						src={user?.profilePicture as string}
+						onClick={() => router.push('/merchant/profile')}
 						alt="profile-img"
 						width={25}
 						height={25}
