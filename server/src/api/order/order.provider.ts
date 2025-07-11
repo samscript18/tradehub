@@ -59,7 +59,7 @@ export class OrderProvider {
 
       const orders = await Promise.all(
         Array.from(merchantGroup.entries()).map(async ([merchantId, items]) => {
-          const totalPrice = items.reduce(
+          const totalPrice = 3000 + items.reduce(
             (sum, item) => sum + (item.variant?.price || item.product.price) * item.quantity, 0
           );
 

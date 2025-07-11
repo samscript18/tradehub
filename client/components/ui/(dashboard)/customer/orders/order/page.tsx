@@ -23,7 +23,7 @@ export default function TrackOrderDeliveryPage() {
 			{isLoading ? (
 				<div className="flex justify-center items-center gap-4">
 					<Loader />
-					<p className="font-medium">Fetching orders...</p>
+					<p className="font-medium">Fetching order details...</p>
 				</div>
 			) : (
 				<div className="px-4 py-4">
