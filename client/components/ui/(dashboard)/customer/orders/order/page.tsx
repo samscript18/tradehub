@@ -57,10 +57,10 @@ export default function TrackOrderDeliveryPage() {
 									<div className="w-3 h-3 bg-white rounded-full"></div>
 								</div>
 							</div>
-							<div className="flex-1 h-0.5 bg-primary"></div>
+							<div className="flex-1 h-0.5 bg-gray-600"></div>
 							<div className="flex flex-col items-center">
-								<div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-									<div className="w-3 h-3 bg-white rounded-full"></div>
+								<div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+									<div className="w-3 h-3 bg-gray-400 rounded-full"></div>
 								</div>
 							</div>
 							<div className="flex-1 h-0.5 bg-gray-600"></div>
