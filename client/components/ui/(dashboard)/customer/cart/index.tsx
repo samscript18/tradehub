@@ -315,14 +315,14 @@ const CartPage = () => {
 							<Button
 								loading={isPending}
 								onClick={() => {
-									if (!user?.defaultAddress) return;
+									if (!user?.addresses || selectedAddress) return;
 									const data = {
 										address: {
-											country: user.defaultAddress.country || '',
-											state: user.defaultAddress.state || '',
-											street: user.defaultAddress.streetAddress || '',
-											city: user.defaultAddress.city || '',
-											postalcode: user.defaultAddress.postalcode || '',
+											country: user.addresses[Number(selectedAddress)].country || '',
+											state: user.addresses[Number(selectedAddress)].state || '',
+											street: user.addresses[Number(selectedAddress)].streetAddress || '',
+											city: user.addresses[Number(selectedAddress)].city || '',
+											postalcode: user.addresses[Number(selectedAddress)].postalcode || '',
 										},
 										price: total(),
 										products: cartItems.map((item) => ({
