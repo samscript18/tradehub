@@ -95,7 +95,7 @@ export class WebhookService {
 
     if (user && !user.notificationsDisabled) {
       await this.notificationProvider.createNotification({
-        message: `Your payment to process the order ${order.data?.[0].groupId} was successful.`,
+        message: `Your payment to process the order ORD-${order.data?.[0].groupId.toUpperCase()} was successful.`,
         type: 'payment_successful',
       }, customer.user._id.toString());
     }
@@ -106,7 +106,7 @@ export class WebhookService {
       template: 'order-success',
       context: {
         customerName: customer.firstName,
-        orderId: order.data?.[0].groupId,
+        orderId: order.data?.[0].groupId.toUpperCase(),
         amount: (attempt.metadata as OrderMetadata).price,
         transactionRef: attempt.reference,
       },

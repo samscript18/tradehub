@@ -14,6 +14,7 @@ const MerchantDashboardNavbar = () => {
 	const { data: unreadNotificationsCount } = useQuery({
 		queryFn: () => getUnreadNotificationsCount(),
 		queryKey: ['get-unread-notifications-count'],
+		refetchInterval: 3600,
 	});
 
 	return (
