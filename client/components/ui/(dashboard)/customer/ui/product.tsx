@@ -7,11 +7,12 @@ import { Product as IProduct } from '@/lib/types/types';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
 
 const Product = (product: IProduct) => {
-	const { addItem } = useCart();
-	const [isDisabled, setIsDisabled] = useState<boolean>(false);
+	const { addItem, items } = useCart();
+
+	const isInCart = items.some((item) => item._id === product._id);
+
 	return (
 		<Link href={`/customer/products/${product._id}`}>
 			<motion.div
@@ -45,10 +46,9 @@ const Product = (product: IProduct) => {
 							<Button
 								onClick={() => {
 									addItem(product, 1);
-									setIsDisabled(true);
 								}}
 								variant="filled"
-								disabled={isDisabled}
+								disabled={isInCart}
 								className="px-4 py-1.5 w-full font-normal mt-1 text-xs">
 								Add to cart
 							</Button>
@@ -57,10 +57,9 @@ const Product = (product: IProduct) => {
 							<Button
 								onClick={() => {
 									addItem(product, 1);
-									setIsDisabled(true);
 								}}
 								fullWidth
-								disabled={isDisabled}
+								disabled={isInCart}
 								variant="filled"
 								className="px-4 py-1.5 w-full font-normal mt-1 text-xs">
 								Add to cart

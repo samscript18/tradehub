@@ -22,8 +22,7 @@ import { ProductVariant } from '@/lib/types/types';
 
 const ProductPage = () => {
 	const { productId } = useParams<{ productId: string }>();
-	const { addItem, updateQuantity } = useCart();
-	const [isDisabled, setIsDisabled] = useState<boolean>(false);
+	const { addItem, updateQuantity, items } = useCart();
 	const [selectedVariant, setSelectedVariant] = useState<ProductVariant>();
 	const [selectedSize, setSelectedSize] = useState<string>('S');
 	const [selectedImage, setSelectedImage] = useState<number>(0);
@@ -82,7 +81,7 @@ const ProductPage = () => {
 		return formatNaira(defaultVariant?.price || product?.variants?.[0]?.price || 0);
 	};
 
-	console.log(selectedVariant);
+	const isInCart = items.some((item) => item._id === productId);
 
 	return (
 		<div className="min-h-screen">
@@ -159,9 +158,7 @@ const ProductPage = () => {
 								</div>
 
 								<div className="flex items-center gap-2 mb-4">
-									<div className="flex">
-										{Rating(4)}
-									</div>
+									<div className="flex">{Rating(4)}</div>
 									<span className="text-xs text-gray-400">4.0 (5 reviews)</span>
 								</div>
 
@@ -237,10 +234,9 @@ const ProductPage = () => {
 									<Button
 										onClick={() => {
 											addItem(product!, quantity);
-											setIsDisabled(true);
 										}}
 										fullWidth
-										disabled={isDisabled}
+										disabled={isInCart}
 										variant="outline"
 										className="border-gray-600 text-xs py-3 text-white disabled:text-white hover:bg-gray-800">
 										Add to Cart
