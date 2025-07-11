@@ -41,8 +41,8 @@ export class OrderController {
   @Roles([RoleNames.CUSTOMER])
   @ApiOperation({ summary: 'Get customer order' })
   @ApiBearerAuth()
-  getOrder(@Auth('_id') userId: string, @Param('groupId') groupId: string) {
-    return this.orderProvider.getCustomerOrder(groupId, userId);
+  getOrder(@Auth('_id') userId: string, @Param('orderId') orderId: string) {
+    return this.orderProvider.getCustomerOrder(orderId, userId);
   }
 
   @Get('/:orderId/merchant')

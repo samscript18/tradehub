@@ -14,7 +14,6 @@ import { Badge } from '@/components/ui/badge';
 import {
 	Search,
 	Filter,
-	// Calendar,
 	CheckCircle,
 	Clock,
 	XCircle,
@@ -22,43 +21,13 @@ import {
 	ChevronLeft,
 } from 'lucide-react';
 import Image from 'next/image';
-// import { cartProduct1, cartProduct2, cartProduct3 } from '@/public/images';
 import { useQuery } from '@tanstack/react-query';
 import { getCustomerOrders } from '@/lib/services/customer.service';
 import { useState } from 'react';
 import Loader from '@/components/common/loaders';
 import { motion } from 'framer-motion';
 import { formatNaira } from '@/lib/helpers';
-
-// const orders = [
-// 	{
-// 		id: 'ORD-20240115-001',
-// 		date: 'Jan 15, 2024',
-// 		restaurant: 'Fresh & Local Market',
-// 		items: ['Organic Vegetables Bundle (2x)', 'Fresh Baked Bread', 'Local Honey Jar'],
-// 		amount: '$89.99',
-// 		status: 'delivered',
-// 		image: cartProduct2,
-// 	},
-// 	{
-// 		id: 'ORD-20240112-002',
-// 		date: 'Jan 12, 2024',
-// 		restaurant: 'Community Foods',
-// 		items: ['Weekly Meal Prep Package', 'Fresh Fruits Basket', 'Organic Dairy Products'],
-// 		amount: '$156.50',
-// 		status: 'in-progress',
-// 		image: cartProduct3,
-// 	},
-// 	{
-// 		id: 'ORD-20240110-003',
-// 		date: 'Jan 10, 2024',
-// 		restaurant: 'Soul Food Kitchen',
-// 		items: ['Family Dinner Package', 'Sweet Potato Pie', 'Cornbread Mix'],
-// 		amount: '$45.75',
-// 		status: 'cancelled',
-// 		image: cartProduct1,
-// 	},
-// ];
+import { useRouter } from 'next/navigation';
 
 const getStatusBadge = (status: string) => {
 	switch (status) {
@@ -89,6 +58,7 @@ const getStatusBadge = (status: string) => {
 };
 
 export default function OrderHistoryPage() {
+	const router = useRouter();
 	const [params, setParams] = useState<{
 		search?: string;
 	}>({});
@@ -118,10 +88,10 @@ export default function OrderHistoryPage() {
 
 			<div className="flex flex-col sm:flex-row gap-4 mb-8">
 				<Select defaultValue="today">
-					<SelectTrigger className="w-full sm:w-48 bg-[#262626] border-gray-700">
+					<SelectTrigger className="w-full sm:w-48 bg-[#181A20] border-gray-700">
 						<SelectValue className="cursor-pointer" />
 					</SelectTrigger>
-					<SelectContent className="bg-[#262626] border-gray-700 cursor-pointer">
+					<SelectContent className="bg-[#181A20] border-gray-700 cursor-pointer">
 						<SelectItem value="today" className="text-white">
 							Today
 						</SelectItem>
@@ -141,7 +111,7 @@ export default function OrderHistoryPage() {
 					<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
 					<Input
 						placeholder="Search orders..."
-						className="pl-10 bg-[#262626] border-gray-700 text-white placeholder-gray-400"
+						className="pl-10 bg-[#181A20] border-gray-700 text-white placeholder-gray-400 focus:outline-none focus-visible:ring-0 focus-visible:border-primary focus-visible:ring-offset-0"
 						value={searchValue}
 						onChange={(e) => setSearchValue(e.target.value)}
 						onKeyDown={(e) => {
@@ -152,7 +122,7 @@ export default function OrderHistoryPage() {
 
 				<Button
 					variant="outline"
-					className="border-gray-700 text-sm text-gray-300 hover:bg-[#262626] hover:text-white cursor-pointer bg-transparent"
+					className="border-gray-700 text-sm text-gray-300 hover:bg-[#181A20] hover:text-white cursor-pointer bg-transparent"
 					onClick={() => setParams({ search: searchValue })}
 					icon={<Filter className="w-4 h-4 mr-2" />}
 					iconPosition="left">
@@ -174,7 +144,10 @@ export default function OrderHistoryPage() {
 						viewport={{ once: true, amount: 0.5 }}
 						transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
 						{data?.data?.map((order) => (
-							<Card key={order.orderId} className="bg-[#262626] border-[#262626] rounded-xl shadow-md">
+							<Card
+								key={order.orderId}
+								className="bg-[#181A20] border-[#181A20] rounded-xl shadow-md cursor-pointer"
+								onClick={() => router.push(`/customer/orders/${order.orderId}`)}>
 								<CardContent className="px-6">
 									<div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
 										<div className="">

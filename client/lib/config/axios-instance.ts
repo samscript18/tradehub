@@ -41,7 +41,7 @@ authApi.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { resetUser } = useAuth()
-    if (error.response?.status === 401 || error.response?.status === 403) {
+    if (error.response?.status === 403 || error.response?.status === 401) {
       try {
         const refreshToken = Cookies.get('refresh_token') || sessionStorage.getItem('refresh_token');
 

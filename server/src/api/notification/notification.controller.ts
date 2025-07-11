@@ -26,6 +26,14 @@ export class NotificationController {
     return this.notificationProvider.getNotifications(userId);
   }
 
+  @Get('/unread')
+  @Roles([RoleNames.CUSTOMER, RoleNames.MERCHANT])
+  @ApiOperation({ summary: 'Get unread notifications count' })
+  @ApiBearerAuth()
+  getUnreadNotificationsCount(@Auth('_id') userId: string) {
+    return this.notificationProvider.getUnreadNotificationsCount(userId);
+  }
+
   @Patch(':notificationId/read')
   @Roles([RoleNames.CUSTOMER, RoleNames.MERCHANT])
   @ApiOperation({ summary: 'Mark notification as read' })

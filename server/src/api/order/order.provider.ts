@@ -129,8 +129,8 @@ export class OrderProvider {
           merchant: order.merchant,
           items: order.products,
           status: order.status,
+          products: order.products?.map((item) => ({ product: item.product.name, quantity: item.quantity }))
         })),
-        products: orders.map((order) => order.products?.map((item) => { item.product, item.quantity })),
         price: orders.reduce((acc, curr) => acc + curr.price, 0)
       }
     }

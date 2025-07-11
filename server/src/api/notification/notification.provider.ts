@@ -36,6 +36,16 @@ export class NotificationProvider {
     };
   }
 
+  async getUnreadNotificationsCount(userId: string) {
+    const notifications = await this.notificationService.getNotifications({ user: new Types.ObjectId(userId), isRead: false }
+    );
+    return {
+      success: true,
+      message: 'Unread notifications count fetched successfully',
+      data: notifications.length
+    };
+  }
+
   async markNotificationAsRead(notificationId: string) {
     const data = await this.notificationService.updateNotification(
       { _id: notificationId },

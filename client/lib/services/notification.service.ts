@@ -17,6 +17,17 @@ export const getNotifications = async (query?: GetNotificationsQueryDto) => {
   }
 };
 
+export const getUnreadNotificationsCount = async () => {
+  try {
+    const response = await authApi.get<ApiResponse<number>>('/notification/unread');
+
+    return response?.data?.data;
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+    throw error;
+  }
+};
+
 export const markAsRead = async (notificationId: string) => {
   try {
     const response = await authApi.patch(`/notification/${notificationId}/read`);

@@ -93,7 +93,7 @@ export interface CustomerOrderMerchantOrder {
 export interface CustomerOrder {
   orderId: string;
   status: string;
-  address: string;
+  address: OrderAddress;
   merchantOrders: CustomerOrderMerchantOrder[];
   price: number;
 }

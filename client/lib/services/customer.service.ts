@@ -3,7 +3,7 @@ import { authApi } from "../config/axios-instance";
 import { CheckoutDto, GetCustomerOrdersQueryDto, GetProductsQueryDto } from "../dtos";
 import { ApiResponse } from "../types";
 import { UpdateProfile } from "../types/auth";
-import { Customer, CustomerOrder, DeliveryAddress, Order, Product, ProductFilters } from "../types/types";
+import { Customer, CustomerOrder, DeliveryAddress, Product, ProductFilters } from "../types/types";
 
 export const getCustomer = async () => {
   try {
@@ -112,7 +112,7 @@ export const getCustomerOrders = async (params?: GetCustomerOrdersQueryDto) => {
 
 export const getCustomerOrder = async (orderId: string) => {
   try {
-    const response = await authApi.get<ApiResponse<Order>>(`/order/${orderId}/customer`);
+    const response = await authApi.get<ApiResponse<CustomerOrder>>(`/order/${orderId}/customer`);
 
     return response?.data?.data;
   } catch (error) {
