@@ -27,8 +27,8 @@ export default function TrackOrderDeliveryPage() {
 				</div>
 			) : (
 				<div className="px-4 py-4">
-					<BackButton text='Back' />
-					<div className="flex items-center justify-between mb-8">
+					<BackButton text="Back" />
+					<div className="flex max-md:flex-col items-end md:items-center md:justify-between mb-8">
 						<div>
 							<h1 className="text-2xl font-bold my-4">Track Your Delivery</h1>
 							<p className="text-sm">
@@ -38,7 +38,7 @@ export default function TrackOrderDeliveryPage() {
 						<Button
 							variant="ghost"
 							size="sm"
-							className="text-gray-200 text-xs hover:bg-[#181A20] hover:text-[#ffffff90] cursor-pointer">
+							className="text-gray-200 text-xs max-md:mt-2.5 hover:bg-[#181A20] hover:text-[#ffffff90] cursor-pointer">
 							<Share2 className="w-4 h-4 mr-2" />
 							Share
 						</Button>
@@ -71,10 +71,10 @@ export default function TrackOrderDeliveryPage() {
 							</div>
 						</div>
 						<div className="flex items-center justify-between mt-2">
-							<span className="text-sm text-gray-300">Confirmed</span>
-							<span className="text-sm text-gray-300">Processing</span>
-							<span className="text-sm text-white font-medium">On the way</span>
-							<span className="text-sm text-gray-300">Delivered</span>
+							<span className="max-md:text-[12px] text-sm text-gray-300">Confirmed</span>
+							<span className="max-md:text-[12px] text-sm text-white font-medium">Processing</span>
+							<span className="max-md:text-[12px] text-sm text-gray-300">On the way</span>
+							<span className="max-md:text-[12px] text-sm text-gray-300">Delivered</span>
 						</div>
 					</div>
 
@@ -104,9 +104,9 @@ export default function TrackOrderDeliveryPage() {
 										<span className="text-gray-400">Order ID: </span>
 										<span>ORD-{order?.orderId.toUpperCase()}</span>
 									</div>
-									<div className="flex gap-1">
+									<div className="md:flex md:gap-1">
 										<span className="text-gray-400">Products: </span>
-										<span className="space-y-1">
+										<span className="space-y-2 md:space-y-1">
 											{order?.merchantOrders?.map((order, index) => (
 												<div key={index}>
 													{order.products.map((item, idx) => {
@@ -142,9 +142,9 @@ export default function TrackOrderDeliveryPage() {
 					</Card>
 
 					<Card className="bg-[#181A20] border-[#181A20] mt-4">
-						<CardContent className="p-4">
+						<CardContent className="max-md:py-2 p-4">
 							<p className="text-white font-semibold mb-3">Delivery Agent</p>
-							<div className="flex items-center justify-between">
+							<div className="flex max-md:flex-col md:items-center md:justify-between">
 								<div className="flex items-center">
 									<Avatar className="w-12 h-12 mr-4">
 										<AvatarImage src={String(avatar1)} alt="Michael Johnson" />
@@ -164,7 +164,7 @@ export default function TrackOrderDeliveryPage() {
 										</p>
 									</div>
 								</div>
-								<Button className="bg-primary hover:bg-primary text-sm cursor-pointer">
+								<Button className="bg-primary hover:bg-primary text-sm cursor-pointer max-md:mt-4">
 									<Phone className="w-4 h-4 mr-2" />
 									Contact Driver
 								</Button>

@@ -15,7 +15,7 @@ export default function NotificationsPage() {
 		queryKey: ['get-notifications'],
 	});
 
-	const { mutateAsync: _markAsRead, isPending: _isMarkingAsRead } = useMutation({
+	const { mutateAsync: _markAsRead } = useMutation({
 		mutationKey: ['mark-as-read'],
 		mutationFn: markAsRead,
 		onSuccess() {
@@ -73,9 +73,7 @@ export default function NotificationsPage() {
 										<div className="flex-1">
 											<div className="flex items-center md:gap-2">
 												<p className="text-white font-medium text-[13px]">{notification.message}</p>
-												{(!notification.isRead || _isMarkingAsRead) && (
-													<div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-												)}
+												{!notification.isRead && <div className="w-2 h-2 bg-blue-500 rounded-full"></div>}
 											</div>
 											<p className="text-[13px] text-gray-400 mt-1">
 												{formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}

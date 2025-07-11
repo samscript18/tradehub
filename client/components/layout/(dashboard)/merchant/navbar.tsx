@@ -46,7 +46,7 @@ const MerchantDashboardNavbar = () => {
 						alt="profile-img"
 						width={35}
 						height={35}
-						className="w-[35px] h-[35px] object-center object-cover rounded-full cursor-pointer"
+						className="w-[35px] h-[35px] object-center object-cover rounded-full cursor-pointer max-md:w-[25px] max-md:h-[25px]"
 					/>
 				) : (
 					<Button
@@ -54,7 +54,7 @@ const MerchantDashboardNavbar = () => {
 						variant="ghost"
 						size="icon"
 						className="hover:bg-primary hover:text-white cursor-pointer">
-						<User className="w-8 h-8" />
+						<User className="w-8 h-8 max-md:w-5 max-md:h-5" />
 					</Button>
 				)}
 			</div>

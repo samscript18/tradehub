@@ -20,60 +20,60 @@ const CustomerDashboardNavbar = () => {
 	});
 
 	return (
-		<nav className="flex justify-between items-center bg-background/60 py-4 px-4 md:px-6">
-			<div className="flex-1 max-w-md md:mx-8">
-				<div className="relative">
-					<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-					<Input
-						placeholder="Search for products"
-						className="pl-10 bg-[#181A20] border-gray-600 text-white placeholder-gray-400 focus:outline-none focus-visible:ring-0 focus-visible:border-primary focus-visible:ring-offset-0"
-						onKeyDown={() => router.push('/customer/home/search')}
-					/>
-				</div>
+	<nav className="flex justify-between items-center bg-background/60 py-4 px-4 md:px-6">
+		<div className="flex-1 max-w-md md:mx-8">
+			<div className="relative">
+				<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+				<Input
+					placeholder="Search for products"
+					className="pl-10 bg-[#181A20] border-gray-600 text-white placeholder-gray-400 focus:outline-none focus-visible:ring-0 focus-visible:border-primary focus-visible:ring-offset-0"
+					onKeyDown={() => router.push('/customer/home/search')}
+				/>
 			</div>
-			<div className="flex items-center space-x-1.5 md:space-x-4 max-md:ml-4">
-				<Button
-					onClick={() => router.push('/notifications')}
-					variant="ghost"
-					size="icon"
-					className="hover:bg-primary hover:text-white cursor-pointer relative">
-					<Bell className="w-5 h-5" />
-					{typeof unreadNotificationsCount === 'number' && unreadNotificationsCount > 0 && (
-						<span className="absolute top-1 right-1.5 bg-primary text-white text-xs font-bold rounded-full w-3 h-3 flex items-center justify-center border-2 border-background"></span>
-					)}
-				</Button>
-				<Button
-					onClick={() => router.push('/customer/cart')}
-					variant="ghost"
-					size="icon"
-					className="hover:bg-primary hover:text-white cursor-pointer relative">
-					<ShoppingCart className="w-5 h-5" />
-					{items.length > 0 && (
-						<span className="absolute -top-[3px] -right-[3px] bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-background">
-							{items.length}
-						</span>
-					)}
-				</Button>
-				{user?.profilePicture ? (
-					<Image
-						src={user?.profilePicture as string}
-						alt="profile-img"
-						onClick={() => router.push('/customer/profile')}
-						width={35}
-						height={35}
-						className="w-[35px] h-[35px] object-center object-cover rounded-full cursor-pointer"
-					/>
-				) : (
-					<Button
-						onClick={() => router.push('/customer/profile')}
-						variant="ghost"
-						size="icon"
-						className="hover:bg-primary hover:text-white cursor-pointer">
-						<User className="w-8 h-8" />
-					</Button>
+		</div>
+		<div className="flex items-center space-x-1.5 md:space-x-4 max-md:ml-4">
+			<Button
+				onClick={() => router.push('/notifications')}
+				variant="ghost"
+				size="icon"
+				className="hover:bg-primary hover:text-white cursor-pointer relative">
+				<Bell className="w-5 h-5" />
+				{typeof unreadNotificationsCount === 'number' && unreadNotificationsCount > 0 && (
+					<span className="absolute top-1 right-1.5 bg-primary text-white text-xs font-bold rounded-full w-3 h-3 flex items-center justify-center border-2 border-background"></span>
 				)}
-			</div>
-		</nav>
-	);
+			</Button>
+			<Button
+				onClick={() => router.push('/customer/cart')}
+				variant="ghost"
+				size="icon"
+				className="hover:bg-primary hover:text-white cursor-pointer relative">
+				<ShoppingCart className="w-5 h-5" />
+				{items.length > 0 && (
+					<span className="absolute -top-[3px] -right-[3px] bg-red-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-background">
+						{items.length}
+					</span>
+				)}
+			</Button>
+			{user?.profilePicture ? (
+				<Image
+					src={user?.profilePicture as string}
+					alt="profile-img"
+					onClick={() => router.push('/customer/profile')}
+					width={35}
+					height={35}
+					className="w-[35px] h-[35px] object-center object-cover rounded-full cursor-pointer max-md:w-[25px] max-md:h-[25px]"
+				/>
+			) : (
+				<Button
+					onClick={() => router.push('/customer/profile')}
+					variant="ghost"
+					size="icon"
+					className="hover:bg-primary hover:text-white cursor-pointer">
+					<User className="w-8 h-8 max-md:w-5 max-md:h-5" />
+				</Button>
+			)}
+		</div>
+	</nav>
+);
 };
 export default CustomerDashboardNavbar;
