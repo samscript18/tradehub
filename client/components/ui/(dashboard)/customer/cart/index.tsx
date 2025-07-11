@@ -315,7 +315,7 @@ const CartPage = () => {
 							<Button
 								loading={isPending}
 								onClick={() => {
-									if (!user?.addresses || selectedAddress) return;
+									if (!user?.addresses || !selectedAddress) return;
 									const data = {
 										address: {
 											country: user.addresses[Number(selectedAddress)].country || '',
