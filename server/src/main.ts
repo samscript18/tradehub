@@ -57,7 +57,8 @@ async function bootstrap() {
    const swaggerDoc = SwaggerModule.createDocument(app, swaggerConfig);
    SwaggerModule.setup('api/docs', app, swaggerDoc);
 
-   app.use('health-check', (_, res: express.Response) => {
+   const expressApp = app.getHttpAdapter().getInstance();
+   expressApp.get('/health-check', (_, res: express.Response) => {
       res.json({ status: 'OK' });
    });
 
