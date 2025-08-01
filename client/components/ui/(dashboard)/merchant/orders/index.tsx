@@ -14,12 +14,12 @@ import { Badge } from '@/components/ui/badge';
 import { Search, Filter, ChevronRight, ChevronLeft } from 'lucide-react';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
-import { getCustomerOrders } from '@/lib/services/customer.service';
 import { useState } from 'react';
 import Loader from '@/components/common/loaders';
 import { motion } from 'framer-motion';
 import { formatNaira } from '@/lib/helpers';
 import { useRouter } from 'next/navigation';
+import { getMerchantOrders } from '@/lib/services/merchant.service';
 
 const statusStyles: Record<string, { variant: 'default' | 'secondary'; className: string }> = {
 	pending: {
@@ -66,7 +66,7 @@ export default function OrderHistoryPage() {
 		search?: string;
 	}>({});
 	const [page, setPage] = useState<number>(1);
-	const [searchValue, setSearchValue] = useState<string>();
+	const [searchValue, setSearchValue] = useState<string>('');
 	const queryParams: {
 		search?: string;
 	} = {};
@@ -75,16 +75,17 @@ export default function OrderHistoryPage() {
 
 	const { data, isLoading } = useQuery({
 		queryFn: () =>
-			getCustomerOrders({
+			getMerchantOrders({
 				page,
 				limit: Number(10),
 				...queryParams,
 			}),
 
-		queryKey: ['get-customer-orders', params.search, page],
+		queryKey: ['get-merchant-orders', params.search, page],
 	});
 
 	const totalPages = data?.meta?.totalPages || 0;
+
 	return (
 		<div className="px-4 py-4">
 			<h1 className="text-2xl font-bold mb-8">Order History</h1>
@@ -113,7 +114,7 @@ export default function OrderHistoryPage() {
 				<div className="relative flex-1">
 					<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
 					<Input
-						placeholder="Search order id"
+						placeholder="Search order id..."
 						className="pl-10 bg-[#181A20] border-gray-700 text-white placeholder-gray-400 focus:outline-none focus-visible:ring-0 focus-visible:border-primary focus-visible:ring-offset-0"
 						value={searchValue}
 						onChange={(e) => setSearchValue(e.target.value)}
@@ -139,6 +140,8 @@ export default function OrderHistoryPage() {
 						<Loader />
 						<p className="font-medium">Fetching orders...</p>
 					</div>
+				) : data?.data?.length === 0 ? (
+					<p className="text-gray-400 text-center">No orders found.</p>
 				) : (
 					<motion.div
 						className="grid grid-cols-1 gap-8"
@@ -151,22 +154,21 @@ export default function OrderHistoryPage() {
 
 							return (
 								<Card
-									key={order.orderId}
+									key={order._id}
 									className="bg-[#181A20] border-[#181A20] rounded-xl shadow-md cursor-pointer"
-									onClick={() => router.push(`/customer/orders/${order.orderId}`)}>
+									onClick={() => router.push(`/merchant/orders/${order._id}`)}>
 									<CardContent className="px-6">
 										<div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
 											<div className="">
-												<div className="flex gap-4">
-
-												<h3 className="text-sm max-md:text-center text-gray-400 mb-4">ORDER ID:</h3>
-												<h3 className="text-sm max-md:text-center text-gray-400 mb-4">{order.orderId.toUpperCase()}</h3>
+												<div className="flex gap-2">
+													<h3 className="text-sm max-md:text-center text-gray-400 mb-4">ORDER ID:</h3>
+													<h3 className="text-sm max-md:text-center text-gray-400 mb-4">{order._id.toUpperCase()}</h3>
 												</div>
 												<div className="flex max-md:flex-col max-md:items-center items-start gap-4">
 													<div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
 														<Image
-															src={order.merchantOrders[0].merchant.logo || ''}
-															alt={order.merchantOrders[0].merchant.name || ''}
+															src={order.merchant.storeLogo || ''}
+															alt={order.merchant.storeName || ''}
 															width={64}
 															height={64}
 															className="w-full h-full object-cover rounded-full"
@@ -175,27 +177,25 @@ export default function OrderHistoryPage() {
 
 													<div className="flex-1 max-md:text-center">
 														<div className="flex gap-4 flex-wrap max-md:justify-center max-md:items-center">
-															{order.merchantOrders?.map((order) => {
-																return (
-																	<h3 key={order.merchant._id} className="font-semibold text-white text-lg mb-2">
-																		{order.merchant.name}
-																	</h3>
-																);
-															})}
+															<h3 className="font-semibold text-white text-lg mb-2">{order.merchant.storeName}</h3>
 														</div>
 
 														<div className="text-sm text-gray-400 space-y-1">
-															{order.merchantOrders?.map((order, index) => {
+															{order?.products.map((item, idx) => {
+																if (!item.product) return;
 																return (
-																	<div key={index}>
-																		{order.products.map((item, idx) => {
-																			return (
-																				<div key={idx}>
-																					{item.product}
-																					{` (${item.quantity}${item.quantity > 1 ? 'x' : ''})`}
-																				</div>
-																			);
-																		})}
+																	<div key={idx} className="flex items-center gap-4">
+																		<Image
+																			src={item?.product?.images[0]}
+																			alt={item?.product?.name}
+																			width={50}
+																			height={50}
+																			className="object-cover w-[50px] h-[50px] rounded-full"
+																		/>
+																		<div>
+																			{item?.product?.name}
+																			{` (${item?.quantity}${item?.quantity > 1 ? 'x' : ''})`}
+																		</div>
 																	</div>
 																);
 															})}
@@ -221,7 +221,6 @@ export default function OrderHistoryPage() {
 				)}
 			</div>
 
-			{/* Pagination */}
 			<div className="flex max-md:flex-col max-md:gap-4 items-center justify-between">
 				<p className="text-sm text-gray-400">
 					Showing {data?.meta?.page} - {data?.meta?.totalPages} of {data?.meta?.count} orders

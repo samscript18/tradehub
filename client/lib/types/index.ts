@@ -1,3 +1,6 @@
+import { Customer, Merchant, OrderAddress, Product } from './types';
+
+
 export interface ApiResponse<T, M = { page: number, count: number, totalPages: number }> {
   success: boolean;
   message: string;
@@ -21,4 +24,29 @@ export interface User {
   storeDescription?: string;
   storeCategories: string[];
   role: 'customer' | 'merchant';
+}
+
+
+
+export interface OrderProduct {
+  product: Product;
+  variant: {
+    size?: string;
+    color?: string;
+  };
+  quantity: number;
+  price: number;
+}
+
+export interface MerchantOrder {
+  _id: string;
+  groupId: string;
+  customer: Customer;
+  merchant: Merchant;
+  products: OrderProduct[];
+  status: string;
+  price: number;
+  address: OrderAddress;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -1,15 +1,17 @@
 "use client";
 
-import SessionCheckLoader from "@/components/common/loaders/session-check";
-import { useSession } from "next-auth/react";
-import React from "react";
+import React,{useEffect} from "react";
+import { useAuth } from '@/lib/store/auth.store';
+import { setLogoutHandler } from '@/lib/config/axios-instance';
 
 type Props = React.PropsWithChildren;
 
 const AuthProvider: React.FC<Props> = ({ children }) => {
-  const { status } = useSession();
+  const { resetUser } = useAuth();
 
-  if (status === "loading") return <SessionCheckLoader />;
+  useEffect(() => {
+    setLogoutHandler(resetUser);
+  }, [resetUser]);
 
   return <>{children}</>;
 };

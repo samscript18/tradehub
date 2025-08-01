@@ -3,20 +3,25 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Phone, MapPin, Star, Share2, Car } from 'lucide-react';
-import { DeliveryMap } from '../delivery-map';
-import { useQuery } from '@tanstack/react-query';
+import { Phone, MapPin, Star, Car } from 'lucide-react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import { getCustomerOrder } from '@/lib/services/customer.service';
 import Loader from '@/components/common/loaders';
 import { avatar1 } from '@/public/images';
 import BackButton from '@/components/common/button/back-button';
+import { DeliveryMap } from '../../../customer/orders/delivery-map';
+import { getMerchantOrder, updateMerchantOrder } from '@/lib/services/merchant.service';
+import Image from 'next/image';
 
 export default function TrackOrderDeliveryPage() {
 	const { orderId } = useParams<{ orderId: string }>();
 	const { data: order, isLoading } = useQuery({
-		queryFn: () => getCustomerOrder(orderId),
-		queryKey: ['get-customer-order', orderId],
+		queryFn: () => getMerchantOrder(orderId),
+		queryKey: ['get-merchant-order', orderId],
+	});
+	const { mutateAsync, isPending } = useMutation({
+		mutationFn: () => updateMerchantOrder(orderId, { status: 'processing' }),
+		mutationKey: ['update-merchant-order', orderId],
 	});
 	return (
 		<>
@@ -32,15 +37,15 @@ export default function TrackOrderDeliveryPage() {
 						<div>
 							<h1 className="text-2xl font-bold my-4">Track Your Delivery</h1>
 							<p className="text-sm">
-								ORDER ID: <span className="text-primary">{order?.orderId.toUpperCase()}</span>
+								ORDER ID: <span className="text-primary">{order?._id.toUpperCase()}</span>
 							</p>
 						</div>
 						<Button
 							variant="ghost"
 							size="sm"
-							className="text-gray-200 text-xs max-md:mt-2.5 hover:bg-[#181A20] hover:text-[#ffffff90] cursor-pointer">
-							<Share2 className="w-4 h-4 mr-2" />
-							Share
+							className="text-white bg-primary p-4 text-xs max-md:mt-2.5 cursor-pointer"
+							onClick={() => mutateAsync()}>
+							{isPending ? 'Initiating' : 'Initiate Order Processing'}
 						</Button>
 					</div>
 
@@ -102,23 +107,29 @@ export default function TrackOrderDeliveryPage() {
 								<div className="space-y-3 text-gray-300 text-xs">
 									<div>
 										<span className="text-gray-400">Order ID: </span>
-										<span>{order?.orderId.toUpperCase()}</span>
+										<span>{order?._id.toUpperCase()}</span>
 									</div>
 									<div className="md:flex md:gap-1">
 										<span className="text-gray-400">Products: </span>
 										<span className="space-y-2 md:space-y-1">
-											{order?.merchantOrders?.map((order, index) => (
-												<div key={index}>
-													{order.products.map((item, idx) => {
-														return (
-															<div key={idx}>
-																{item.product}
-																{` (${item.quantity}${item.quantity > 1 ? 'x' : ''})`}
-															</div>
-														);
-													})}
-												</div>
-											))}
+											{order?.products.map((item, idx) => {
+												if (!item.product) return;
+												return (
+													<div key={idx} className="flex items-center gap-4">
+														<Image
+															src={item.product.images[0] || ''}
+															alt={item.product.name || ''}
+															width={50}
+															height={50}
+															className="w-[50px] h-[50px] object-cover rounded-full"
+														/>
+														<div>
+															{item.product.name}
+															{` (${item.quantity}${item.quantity > 1 ? 'x' : ''})`}
+														</div>
+													</div>
+												);
+											})}
 										</span>
 									</div>
 								</div>

@@ -46,7 +46,7 @@ export interface CheckoutDto extends CreateOrderDto {
 }
 
 export interface UpdateOrderDto {
-  status?: OrderStatus;
+  status: string;
   trackingNumber?: string;
 }
 
@@ -86,3 +86,10 @@ export interface GetCustomerOrdersQueryDto {
   search?: string;
   status?: OrderStatus;
 }
+export interface GetMerchantOrdersQueryDto {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: OrderStatus;
+}
+

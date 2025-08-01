@@ -7,52 +7,55 @@ import { Toaster as SonnerToaster } from 'sonner';
 import { useEffect } from 'react';
 import { useTheme } from '../store/global.store';
 import { useAuth } from '../store/auth.store';
+import AuthProvider from './auth.provider';
 
 export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {},
-  },
+	defaultOptions: {
+		queries: {},
+	},
 });
 
 const Providers = ({ children }: React.PropsWithChildren) => {
-  const { isDark: isDarkMode } = useTheme();
-  const { fetchUser, user, accessToken } = useAuth();
+	const { isDark: isDarkMode } = useTheme();
+	const { fetchUser, user, accessToken } = useAuth();
 
-  const styleOptions = isDarkMode
-    ? {
-        backgroundColor: '#131921',
-        color: 'white',
-        fontSize: '14px',
-        borderColor: '#181f29',
-      }
-    : {};
+	const styleOptions = isDarkMode
+		? {
+				backgroundColor: '#131921',
+				color: 'white',
+				fontSize: '14px',
+				borderColor: '#181f29',
+		  }
+		: {};
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
+	useEffect(() => {
+		if (isDarkMode) {
+			document.documentElement.classList.add('dark');
+		} else {
+			document.documentElement.classList.remove('dark');
+		}
+	}, [isDarkMode]);
 
-  useEffect(() => {
-    if (!user && accessToken) {
-      fetchUser();
-    }
-  }, []);
+	useEffect(() => {
+		if (!user && accessToken) {
+			fetchUser();
+		}
+	}, []);
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <SonnerToaster
-        toastOptions={{
-          style: styleOptions,
-        }}
-        // richColors={true}
-      />
-      <ModalProvider>{children}</ModalProvider>
-      <ReactQueryDevtools client={queryClient} />
-    </QueryClientProvider>
-  );
+	return (
+		<QueryClientProvider client={queryClient}>
+			<SonnerToaster
+				toastOptions={{
+					style: styleOptions,
+				}}
+				// richColors={true}
+			/>
+			<AuthProvider>
+				<ModalProvider>{children}</ModalProvider>
+			</AuthProvider>
+			<ReactQueryDevtools client={queryClient} />
+		</QueryClientProvider>
+	);
 };
 
 export default Providers;

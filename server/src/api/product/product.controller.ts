@@ -61,19 +61,19 @@ export class ProductController {
     return this.productProvider.getMerchantProduct(userId, productId);
   }
 
-  @Patch(':productId')
+  @Patch('/:productId/merchant')
   @Roles([RoleNames.MERCHANT])
-  @ApiOperation({ summary: 'Update product' })
+  @ApiOperation({ summary: 'Update merchant product' })
   @ApiBearerAuth()
-  updateProduct(@Param('productId') productId: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productProvider.updateProduct(productId, updateProductDto);
+  updateProduct(@Auth('_id') userId: string, @Param('productId') productId: string, @Body() updateProductDto: UpdateProductDto) {
+    return this.productProvider.updateProduct(userId, productId, updateProductDto);
   }
 
-  @Delete(':productId')
+  @Delete('/:productId/merchant')
   @Roles([RoleNames.MERCHANT])
-  @ApiOperation({ summary: 'Delete product' })
+  @ApiOperation({ summary: 'Delete merchant product' })
   @ApiBearerAuth()
-  deleteProduct(@Param('productId') productId: string) {
-    return this.productProvider.deleteProduct(productId);
+  deleteProduct(@Auth('_id') userId: string, @Param('productId') productId: string) {
+    return this.productProvider.deleteProduct(userId, productId);
   }
 }

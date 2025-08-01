@@ -1,4 +1,6 @@
+import OrderHistoryPage from '@/components/ui/(dashboard)/merchant/orders';
+
 const page = () => {
-	return <div>orders page</div>;
+	return <OrderHistoryPage />;
 };
 export default page;

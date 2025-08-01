@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { LuLayoutDashboard, LuSettings, LuShoppingBag, LuShoppingCart } from 'react-icons/lu';
 import { CgNotes } from 'react-icons/cg';
-import { FaRegUser, FaUsers } from 'react-icons/fa';
+import { FaRegUser } from 'react-icons/fa';
 
 interface SidebarItem {
 	name: string;
@@ -54,9 +54,9 @@ export const merchantSidebarLinks: SidebarItem[] = [
 		href: '/merchant/orders',
 	},
 	{
-		name: 'Customers',
-		icon: <FaUsers />,
-		href: '/merchant/customers',
+		name: 'Profile',
+		icon: <FaRegUser />,
+		href: '/merchant/profile',
 	},
 	{
 		name: 'Settings',

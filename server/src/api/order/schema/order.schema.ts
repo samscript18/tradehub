@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument, Types } from 'mongoose';
+import {  HydratedDocument, Types } from 'mongoose';
 import { OrderStatus } from '../enums/order.enum';
 import { CustomerDocument } from 'src/api/customer/schema/customer.schema';
 import { MerchantDocument } from 'src/api/merchant/schema/merchant.schema';
@@ -39,7 +39,7 @@ export class Order {
     price: number;
   }[];
 
-  @Prop({ enum: Object.values(OrderStatus), default: OrderStatus.PROCESSING })
+  @Prop({ enum: Object.values(OrderStatus), default: OrderStatus.CONFIRMED })
   status: string;
 
   @Prop({ type: Number, required: true })

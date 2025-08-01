@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { FilterQuery, Types } from 'mongoose';
+import { FilterQuery, isValidObjectId, Types } from 'mongoose';
 import { PaginationQuery } from 'src/shared/interfaces/pagination.interface';
 import { MerchantService } from '../merchant/merchant.service';
 import { MerchantDocument } from '../merchant/schema/merchant.schema';
@@ -139,7 +139,7 @@ export class OrderProvider {
 
   async getMerchantOrder(userId: string, orderId: string) {
     const merchant: MerchantDocument = await this.merchantService.getMerchant({ user: new Types.ObjectId(userId) });
-    const data = await this.orderService.getOrder({ _id: orderId, merchant: merchant._id.toString() });
+    const data = await this.orderService.getOrder({ _id: new Types.ObjectId(orderId), merchant: merchant._id });
 
     if (!data) {
       throw new NotFoundException('Order not found');
@@ -154,15 +154,14 @@ export class OrderProvider {
 
   async getCustomerOrders(userId: string, query: GetOrdersDto) {
     const customer: CustomerDocument = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
-    const _query: FilterQuery<ProductDocument> = { customer: customer._id };
+    const _query: FilterQuery<OrderDocument> = { customer: customer._id };
     const paginationQuery: Partial<PaginationQuery> = {};
 
     if (query.search) {
       const search = query.search.trim();
 
       _query.$or = [
-        { 'products.product.name': { $regex: search, $options: 'i' } },
-        { 'merchant.storeName': { $regex: search, $options: 'i' } },
+        { 'groupId': { $regex: search, $options: 'i' } },
       ];
 
       delete query.search;
@@ -216,7 +215,7 @@ export class OrderProvider {
           },
           items: order.products,
           status: order.status,
-          products: order.products?.map((item) => ({ product: item.product.name, quantity: item.quantity })),
+          products: order.products?.map((item) => ({ product: item?.product?.name, quantity: item.quantity })),
         })),
         price: groupOrders.reduce((acc, curr) => acc + curr.price, 0)
       });
@@ -236,15 +235,15 @@ export class OrderProvider {
 
   async getMerchantOrders(userId: string, query: GetOrdersDto) {
     const merchant: MerchantDocument = await this.merchantService.getMerchant({ user: new Types.ObjectId(userId) });
-    const _query: FilterQuery<ProductDocument> = { merchant: merchant._id };
+    const _query: FilterQuery<OrderDocument> = { merchant: merchant._id };
     const paginationQuery: Partial<PaginationQuery> = {};
 
     if (query.search) {
       const search = query.search.trim();
 
-      _query.$or = [
-        { _id: { $regex: search, $options: 'i' } },
-      ];
+      if (isValidObjectId(search)) {
+        _query._id = new Types.ObjectId(search);
+      }
 
       delete query.search;
     }
@@ -283,7 +282,7 @@ export class OrderProvider {
 
   async updateOrderStatus(orderId: string, updateOrderDto: UpdateOrderDto) {
     const data: OrderDocument = await this.orderService.updateOrder(
-      { _id: orderId },
+      { _id: new Types.ObjectId(orderId) },
       { status: updateOrderDto.status },
     );
 
@@ -310,7 +309,7 @@ export class OrderProvider {
   }
 
   async deleteOrder(orderId: string) {
-    const data = await this.orderService.deleteOrder({ _id: orderId });
+    const data = await this.orderService.deleteOrder({ _id: new Types.ObjectId(orderId) });
 
     if (!data) {
       throw new NotFoundException('Order not found');

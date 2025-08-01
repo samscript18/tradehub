@@ -54,7 +54,7 @@ export class ProductProvider {
 
   async getMerchantProduct(userId: string, productId: string) {
     const merchant: MerchantDocument = await this.merchantService.getMerchant({ user: new Types.ObjectId(userId) });
-    const data = await this.productService.getProduct({ _id: productId, merchant: merchant._id.toString() });
+    const data = await this.productService.getProduct({ _id: new Types.ObjectId(productId), merchant: merchant._id });
 
     if (!data) {
       throw new NotFoundException('Product not found');
@@ -228,14 +228,16 @@ export class ProductProvider {
     };
   }
 
-  async updateProduct(productId: string, updateProductDto: UpdateProductDto) {
+  async updateProduct(userId: string, productId: string, updateProductDto: UpdateProductDto) {
     if (updateProductDto.images) {
       const imagesUrl = await this.fileService.uploadMultipleResources(updateProductDto.images, { resource_type: 'image' })
       updateProductDto.images = imagesUrl.map((image) => image.url);
     }
 
+    const merchant: MerchantDocument = await this.merchantService.getMerchant({ user: new Types.ObjectId(userId) });
+
     const data = await this.productService.updateProduct(
-      { _id: productId },
+      { _id: new Types.ObjectId(productId), merchant: merchant._id },
       updateProductDto,
     );
 
@@ -250,8 +252,9 @@ export class ProductProvider {
     };
   }
 
-  async deleteProduct(productId: string) {
-    const data = await this.productService.deleteProduct({ _id: productId });
+  async deleteProduct(userId: string, productId: string) {
+    const merchant: MerchantDocument = await this.merchantService.getMerchant({ user: new Types.ObjectId(userId) });
+    const data = await this.productService.deleteProduct({ _id: new Types.ObjectId(productId), merchant: merchant._id });
 
     if (!data) {
       throw new NotFoundException('Product not found');
