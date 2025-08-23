@@ -151,33 +151,16 @@ export class AuthController {
       return data;
    }
 
-   // @IsPublic()
-   // @HttpCode(HttpStatus.OK)
-   // @Post('token-sign-in')
-   // @ApiOperation({ summary: 'Sign in with token' })
-   // async signInWithToken(
-   //    @Res() res: Response,
-   //    @Body() verifyEmailDto: VerifyEmailDto,
-   // ) {
-   //    const data = await this.authService.signInWithToken(verifyEmailDto);
-   //    const access_token = data.data.meta.accessToken;
-   //    const refresh_token = data.data.meta.refreshToken;
-   //    res.cookie('access_token', access_token, {
-   //       maxAge: 3600000,
-   //       httpOnly: true,
-   //       secure: true,
-   //       sameSite: 'none',
-   //    });
-
-   //    res.cookie('refresh_token', refresh_token, {
-   //       maxAge: 604800000,
-   //       httpOnly: true,
-   //       secure: true,
-   //       sameSite: 'none',
-   //    });
-
-   //    return data;
-   // }
+   @IsPublic()
+   @HttpCode(HttpStatus.OK)
+   @Post('token-sign-in')
+   @ApiOperation({ summary: 'Sign in with token' })
+   async signInWithToken(
+      @Body() verifyEmailDto: VerifyEmailDto,
+   ) {
+      const data = await this.authService.signInWithToken(verifyEmailDto);
+      return data;
+   }
 
    @Get('init-google')
    @IsPublic()
@@ -209,28 +192,10 @@ export class AuthController {
          const role = req.cookies['user_role'] || RoleNames.CUSTOMER;
          const data = await this.authService.googleSignIn({ ...req.user as GoogleUser, role });
 
-         // Clear the role cookie
          res.clearCookie('user_role');
 
-         // Set auth cookies
-         res.cookie('access_token', data.data.meta.accessToken, {
-            maxAge: 86400000,
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none',
-            path: '/'
-         });
-
-         res.cookie('refresh_token', data.data.meta.refreshToken, {
-            maxAge: 604800000,
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none',
-            path: '/'
-         });
-
          return res.redirect(
-            `${this.configService.get<string>('FRONTEND_URL')}/${data.data.user.role}/${data.data.user.role === 'customer' ? 'home' : 'dashboard'}?auth=success`
+            `${this.configService.get<string>('FRONTEND_URL')}/auth-callback?accessToken=${data.data.value}&email=${data.data.email}`
          );
       } catch (error) {
          return res.redirect(

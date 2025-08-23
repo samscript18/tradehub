@@ -309,21 +309,21 @@ export class AuthService {
       };
    }
 
-   // async signInWithToken(verifyEmailDto: VerifyEmailDto) {
-   //    await this.verifyEmail(verifyEmailDto);
-   //    const user: UserDocument = await this.userService.getUser({ email: verifyEmailDto.email });
-   //    if (!user) {
-   //       throw new NotFoundException('User does not exist');
-   //    }
+   async signInWithToken(verifyEmailDto: VerifyEmailDto) {
+      await this.verifyEmail(verifyEmailDto);
+      const user: UserDocument = await this.userService.getUser({ email: verifyEmailDto.email });
+      if (!user) {
+         throw new NotFoundException('User does not exist');
+      }
 
-   //    const data = await this.auth(this.utilService.excludePassword(user));
+      const data = await this.auth(this.utilService.excludePassword(user));
 
-   //    return {
-   //       success: true,
-   //       message: 'sign in successful',
-   //       data,
-   //    };
-   // }
+      return {
+         success: true,
+         message: 'Sign in successful',
+         data,
+      };
+   }
 
    async refreshSession(refreshToken: string) {
       const verifiedToken = await this.jwtService.verifyAsync(refreshToken);
@@ -381,7 +381,7 @@ export class AuthService {
    // }
 
    async googleSignIn(googleUser: { email: string, firstName: string, lastName: string, profilePicture: string, role: string }) {
-      const user = await this.userService.findOrCreateUser({ email: googleUser.email }, { email: googleUser.email, profilePicture: googleUser.profilePicture, role: googleUser.role, emailVerified: true });
+      const user = await this.userService.findOrCreateUser({ email: googleUser.email }, { email: googleUser.email, profilePicture: googleUser.profilePicture, role: googleUser.role });
 
       let existingUser: CustomerDocument | MerchantDocument;
       if (user.role === RoleNames.CUSTOMER) {
@@ -394,12 +394,16 @@ export class AuthService {
          throw new Error('Invalid role');
       }
 
-      const data = await this.auth(this.utilService.excludePassword(user));
+      const token = await this.tokenService.findOrCreateToken({
+         email: user.email,
+         value: this.utilService.generateToken(),
+         type: TokenTypes.accountVerification,
+      });
 
       return {
          success: true,
          message: 'sign in successful',
-         data,
+         data: token,
       };
    }
 }

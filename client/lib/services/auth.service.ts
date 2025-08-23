@@ -67,7 +67,7 @@ export const getUser = async () => {
 };
 
 export const signOut = async () => {
-  
+
   // try {
   //   await authApi.get('/auth/sign-out');
   // } catch (error) {
@@ -91,11 +91,11 @@ export const googleSignIn = async (role?: 'customer' | 'merchant') => {
   window.location.href = `${API_URL}${role ? `/auth/init-google?role=${role}` : '/auth/init-google'}`;
 };
 
-// export const signInWithAccessToken = async (data: { token: string, email: string }) => {
-//   const response = await publicApi.post<ApiResponse<{ user: User, meta: { accessToken: string, refreshToken: string, lifeSpan: number } }>>('/auth/token-sign-in', data);
-//   if (response?.data.data.meta.refreshToken) {
-//     localStorage.setItem("refreshToken", response.data.data.meta.refreshToken);
-//   }
+export const signInWithAccessToken = async (data: { token: string, email: string }) => {
+  const response = await publicApi.post<ApiResponse<{ user: User, meta: { accessToken: string, refreshToken: string, lifeSpan: number } }>>('/auth/token-sign-in', data);
+  // if (response?.data.data.meta.refreshToken) {
+  //   localStorage.setItem("refreshToken", response.data.data.meta.refreshToken);
+  // }
 
-//   return response?.data.data;
-// }
+  return response.data;
+}
