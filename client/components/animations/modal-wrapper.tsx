@@ -1,4 +1,3 @@
-// components/ModalWrapper.tsx
 'use client'
 
 import { motion } from 'framer-motion'
@@ -13,7 +12,6 @@ export default function ModalWrapper({
 
   return (
     <>
-      {/* Overlay */}
       <motion.div
         className="fixed inset-0 bg-black/50 z-40"
         initial={{ opacity: 0 }}

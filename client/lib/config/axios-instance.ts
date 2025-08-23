@@ -45,45 +45,14 @@ export function setLogoutHandler(fn: () => void) {
 authApi.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
-    if ([401, 403].includes(error.response?.status) && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const refreshToken = Cookies.get('refresh_token') || sessionStorage.getItem('refresh_token');
-
-        if (refreshToken) {
-          const response = await publicApi.post('/auth/session/refresh', { refreshToken });
-          const newAccessToken = response.data?.data?.accessToken;
-
-          if (newAccessToken) {
-            const userStore = sessionStorage.getItem('user-store');
-            if (userStore) {
-              const parsed = JSON.parse(userStore);
-              parsed.state.accessToken = newAccessToken;
-              sessionStorage.setItem('user-store', JSON.stringify(parsed));
-            }
-
-            Cookies.set('access_token', newAccessToken);
-            authApi.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-
-            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-            return authApi(originalRequest);
-          }
-        }
-
-        throw new Error("Refresh token failed or missing");
-      } catch (err) {
-        if (logoutHandler) logoutHandler();
-        Cookies.remove('access_token');
-        Cookies.remove('refresh_token');
-        delete authApi.defaults.headers.common['Authorization'];
-        errorHandler(err as AxiosErrorShape | string);
-        window.location.href = '/login';
-        return Promise.reject(err);
-      }
+    if ([401, 403].includes(error.response?.status)) {
+      if (logoutHandler) logoutHandler();
+      Cookies.remove('access_token');
+      Cookies.remove('refresh_token');
+      delete authApi.defaults.headers.common['Authorization'];
+      errorHandler(error as AxiosErrorShape | string);
+      window.location.href = '/login';
     }
-
     return Promise.reject(error);
   }
 );
