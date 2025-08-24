@@ -145,3 +145,14 @@ export const deleteMerchantOrder = async (orderId: string) => {
     throw error
   }
 }
+
+export const getWalletBalance = async () => {
+  try {
+    const response = await authApi.get<{ balance: number }>(`/wallet/balance`);
+
+    return response?.data;
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+    throw error;
+  }
+};

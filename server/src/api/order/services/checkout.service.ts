@@ -34,7 +34,7 @@ export class CheckoutService {
       amount: totalAmount,
       reference,
       metadata: createOrderDto
-    });
+    }); 
 
     const paymentUrl = await this.paystackService.initiateTransaction({
       email: customer.user.email,

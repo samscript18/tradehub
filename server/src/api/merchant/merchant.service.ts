@@ -6,6 +6,7 @@ import { KycVerification, KycVerificationDocument } from './schema/kyc-verificat
 import { Merchant, MerchantDocument } from './schema/merchant.schema';
 import { UtilService } from 'src/shared/services/utils.service';
 import { PaginationQuery } from 'src/shared/interfaces/pagination.interface';
+import { WalletService } from '../wallet/wallet.service';
 
 @Injectable()
 export class MerchantService {
@@ -14,7 +15,8 @@ export class MerchantService {
       private readonly _MerchantModel: Model<MerchantDocument>,
       @InjectModel(KycVerification.name)
       private readonly _kycModel: Model<KycVerificationDocument>,
-      private readonly utilService: UtilService
+      private readonly utilService: UtilService,
+      private readonly walletService: WalletService
    ) { }
 
    private async populate(model: Query<any, MerchantDocument>) {
@@ -28,10 +30,11 @@ export class MerchantService {
    }
 
    async findOrCreateMerchant<T>(filter: FilterQuery<MerchantDocument>, data: T) {
-      let merchant = await this.populate(this._MerchantModel.findOne(filter));
+      let merchant: MerchantDocument = await this.populate(this._MerchantModel.findOne(filter));
 
       if (!merchant) {
          merchant = await this._MerchantModel.create(data);
+         await this.walletService.createWallet(merchant._id);
       }
 
       return merchant;

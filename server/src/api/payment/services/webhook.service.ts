@@ -18,6 +18,7 @@ import { CustomerService } from 'src/api/customer/customer.service';
 import { CustomerDocument } from 'src/api/customer/schema/customer.schema';
 import { NotificationProvider } from 'src/api/notification/notification.provider';
 import { UserService } from 'src/api/user/user.service';
+import { WalletService } from 'src/api/wallet/wallet.service';
 
 @Injectable()
 export class WebhookService {
@@ -29,6 +30,7 @@ export class WebhookService {
     private readonly customerService: CustomerService,
     private readonly notificationProvider: NotificationProvider,
     private readonly userService: UserService,
+    private readonly walletService: WalletService
   ) { }
 
   private validateWebhookSignature(signature: string, webhookResponse: WebhookResponse) {
@@ -85,7 +87,7 @@ export class WebhookService {
 
     const metadata = attempt.metadata as OrderMetadata;
 
-    const order = await this.orderProvider.createOrder({
+    const orders = await this.orderProvider.createOrder({
       ...metadata
     }, attempt.user.id);
 
@@ -95,7 +97,7 @@ export class WebhookService {
 
     if (user && !user.notificationsDisabled) {
       await this.notificationProvider.createNotification({
-        message: `Your payment to process the order ORD-${order.data?.[0].groupId.toUpperCase()} was successful.`,
+        message: `Your payment to process the order ORD-${orders.data?.[0].groupId.toUpperCase()} was successful.`,
         type: 'payment_successful',
       }, customer.user._id.toString());
     }
@@ -106,13 +108,17 @@ export class WebhookService {
       template: 'order-success',
       context: {
         customerName: customer.firstName,
-        orderId: order.data?.[0].groupId.toUpperCase(),
+        orderId: orders.data?.[0].groupId.toUpperCase(),
         amount: (attempt.metadata as OrderMetadata).price,
         transactionRef: attempt.reference,
       },
     });
 
-    return order;
+    for (const order of orders.data) {
+      await this.walletService.processPayment(order.merchant._id, order.price, order._id, attempt.reference, attempt.metadata);
+    }
+
+    return orders;
   }
 
   async handleFailedOrderPayment(chargeResponse: ChargeResponse) {

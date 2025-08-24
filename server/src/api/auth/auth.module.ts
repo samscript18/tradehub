@@ -12,6 +12,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { CustomerModule } from '../customer/customer.module';
 import { MerchantModule } from '../merchant/merchant.module';
 import { GoogleOAuthStrategy } from './strategies/google-oauth.strategy';
+import { WalletModule } from '../wallet/wallet.module';
 
 
 @Module({
@@ -44,7 +45,8 @@ import { GoogleOAuthStrategy } from './strategies/google-oauth.strategy';
       SharedModule,
       UserModule,
       CustomerModule,
-      MerchantModule
+      MerchantModule,
+      WalletModule
    ],
    providers: [AuthService, AuthGuard, GoogleOAuthStrategy],
    controllers: [AuthController],

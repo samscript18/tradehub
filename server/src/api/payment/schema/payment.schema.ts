@@ -12,7 +12,7 @@ export class PaymentAttempt {
   })
   user: UserDocument;
 
-  @Prop()
+  @Prop({ unique: true })
   reference: string;
 
   @Prop({

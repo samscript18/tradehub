@@ -7,6 +7,7 @@ import { Merchant, MerchantSchema } from './schema/merchant.schema';
 import { MerchantService } from './merchant.service';
 import { MerchantController } from './merchant.controller';
 import { MerchantProvider } from './merchant.provider';
+import { WalletModule } from '../wallet/wallet.module';
 
 @Module({
    imports: [
@@ -36,10 +37,11 @@ import { MerchantProvider } from './merchant.provider';
          },
       ]),
       UserModule,
+      WalletModule,
       SharedModule,
    ],
    providers: [MerchantService, MerchantProvider],
    controllers: [MerchantController],
-   exports: [MerchantService],
+   exports: [MerchantService, MerchantProvider],
 })
 export class MerchantModule { }

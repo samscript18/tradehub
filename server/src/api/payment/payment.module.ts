@@ -12,6 +12,7 @@ import { PaymentAttempt, PaymentAttemptSchema } from './schema/payment.schema';
 import { WebhookService } from './services/webhook.service';
 import { CustomerModule } from '../customer/customer.module';
 import { NotificationModule } from '../notification/notification.module';
+import { WalletModule } from '../wallet/wallet.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { NotificationModule } from '../notification/notification.module';
     CustomerModule,
     forwardRef(() => OrderModule),
     NotificationModule,
-    UserModule
+    UserModule,
+    WalletModule
   ],
   controllers: [PaymentController],
   providers: [PaymentProvider, PaymentService, WebhookService, PaystackService, PaystackProvider],

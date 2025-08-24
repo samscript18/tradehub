@@ -23,7 +23,7 @@ export class NotificationService {
   }
 
   async getNotifications(filter: FilterQuery<NotificationDocument>) {
-    const notification = await this._notificationModel.find(filter);
+    const notification = await this._notificationModel.find(filter).sort({ createdAt: -1 });
 
     return notification;
   }

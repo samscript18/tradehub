@@ -47,7 +47,7 @@ export class OrderService {
       count,
     });
 
-    const order = await this.populate(this._orderModel.find(filter).limit(limit).skip(skip));
+    const order = await this.populate(this._orderModel.find(filter).limit(limit).skip(skip).sort({ createdAt: -1 }));
 
     return {
       data: order,

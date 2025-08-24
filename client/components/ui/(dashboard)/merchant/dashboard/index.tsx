@@ -16,7 +16,7 @@ import { Plus, DollarSign, Package, ShoppingCart, Banknote } from 'lucide-react'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
-import { getMerchantOrders, getProducts } from '@/lib/services/merchant.service';
+import { getMerchantOrders, getProducts, getWalletBalance } from '@/lib/services/merchant.service';
 import DotLoader from '@/components/ui/dot-loader';
 import { formatNaira } from '@/lib/helpers';
 import { useMemo } from 'react';
@@ -63,6 +63,11 @@ const statusStyles: Record<string, { variant: 'default' | 'secondary'; className
 const MerchantDashboard = () => {
 	const router = useRouter();
 
+	const { data: wallet } = useQuery({
+		queryFn: () => getWalletBalance(),
+		queryKey: ['get-merchant-wallet-balance'],
+	});
+
 	const { data, isLoading } = useQuery({
 		queryFn: () => getProducts({ page: 1, limit: 4 }),
 		queryKey: ['get-merchant-products'],
@@ -75,7 +80,7 @@ const MerchantDashboard = () => {
 				limit: Number(10),
 			}),
 
-		queryKey: ['get-customer-orders'],
+		queryKey: ['get-merchant-orders'],
 	});
 
 	const totalSales = merchantOrders?.data.reduce((acc, order) => acc + order.price, 0) || 0;
@@ -99,7 +104,7 @@ const MerchantDashboard = () => {
 	const stats = [
 		{
 			title: 'Wallet Balance',
-			value: '₦0',
+			value: `${wallet?.balance ? formatNaira(wallet.balance) : formatNaira(0)}`,
 			icon: <DollarSign className="w-5 h-5" />,
 		},
 		{

@@ -31,6 +31,7 @@ import { MerchantService } from '../merchant/merchant.service';
 import { FileService } from 'src/shared/file/file.service';
 import { CustomerDocument } from '../customer/schema/customer.schema';
 import { MerchantDocument } from '../merchant/schema/merchant.schema';
+import { WalletService } from '../wallet/wallet.service';
 
 @Injectable()
 export class AuthService {
@@ -45,6 +46,7 @@ export class AuthService {
       private readonly jwtService: JwtService,
       private readonly CustomerService: CustomerService,
       private readonly MerchantService: MerchantService,
+      private readonly walletService: WalletService
    ) { }
 
    private async auth(user: UserDocument, rememberMe?: boolean) {
@@ -136,10 +138,12 @@ export class AuthService {
       onBoardMerchantDto.role = RoleNames.MERCHANT;
       const user = await this.signUp(onBoardMerchantDto, { role: RoleNames.MERCHANT, MerchantStoreName: onBoardMerchantDto.storeName });
 
-      await this.MerchantService.createMerchant({
+      const merchant = await this.MerchantService.createMerchant({
          ...onBoardMerchantDto, addresses: [onBoardMerchantDto.defaultAddress],
          user: user._id,
       });
+
+      await this.walletService.createWallet(merchant._id);
 
       return {
          success: true,
