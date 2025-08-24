@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { Merchant } from 'src/api/merchant/schema/merchant.schema';
+import { Merchant, MerchantDocument } from 'src/api/merchant/schema/merchant.schema';
 import { schemaOptions } from 'src/shared/constants/db.const';
 
 @Schema(schemaOptions)
 export class Wallet {
   @Prop({ type: Types.ObjectId, ref: Merchant.name, required: true, unique: true, index: true })
-  merchant: Types.ObjectId;
+  merchant: Types.ObjectId | MerchantDocument;
 
   @Prop({ type: Number, default: 0, min: 0 })
   balance: number;

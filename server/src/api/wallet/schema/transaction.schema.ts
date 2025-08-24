@@ -2,13 +2,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { schemaOptions } from 'src/shared/constants/db.const';
 import { TransactionStatus, TransactionType } from '../enums/transaction.enum';
-import { Wallet } from './wallet.schema';
+import { Wallet, WalletDocument } from './wallet.schema';
 
 @Schema(schemaOptions)
 export class Transaction {
 
   @Prop({ type: Types.ObjectId, ref: Wallet.name, required: true, index: true })
-  wallet: Types.ObjectId;
+  wallet: Types.ObjectId | WalletDocument;
 
   @Prop({ type: Number, required: true })
   amount: number;

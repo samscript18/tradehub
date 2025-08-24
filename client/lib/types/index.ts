@@ -50,3 +50,23 @@ export interface MerchantOrder {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface WalletHistory {
+  _id: string;
+  wallet: string;
+  amount: number;
+  type: 'credit' | 'debit';
+  status: 'pending' | 'successful' | 'failed';
+  description: string;
+  reference: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Bank {
+  name: string;
+  slug: string;
+  code: string;
+  type: string;
+  country: string;
+}

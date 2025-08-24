@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { LuLayoutDashboard, LuSettings, LuShoppingBag, LuShoppingCart } from 'react-icons/lu';
+import { LuLayoutDashboard, LuShoppingBag, LuShoppingCart } from 'react-icons/lu';
 import { CgNotes } from 'react-icons/cg';
 import { FaRegUser } from 'react-icons/fa';
 
@@ -58,9 +58,9 @@ export const merchantSidebarLinks: SidebarItem[] = [
 		icon: <FaRegUser />,
 		href: '/merchant/profile',
 	},
-	{
-		name: 'Settings',
-		icon: <LuSettings />,
-		href: '/merchant/settings',
-	},
+	// {
+	// 	name: 'Settings',
+	// 	icon: <LuSettings />,
+	// 	href: '/merchant/settings',
+	// },
 ];

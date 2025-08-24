@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { OrderService } from './services/order.service';
 import { OrderController } from './order.controller';
 import { OrderProvider } from './order.provider';
@@ -27,10 +27,10 @@ import { UserModule } from '../user/user.module';
     ]),
     SharedModule,
     CustomerModule,
-    MerchantModule,
+    forwardRef(() => MerchantModule),
     ProductModule,
     NotificationModule,
-    PaymentModule,
+    forwardRef(() => PaymentModule),
     UserModule
   ],
   controllers: [OrderController],

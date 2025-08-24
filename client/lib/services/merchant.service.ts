@@ -1,7 +1,7 @@
 import { AxiosErrorShape, errorHandler } from '../config/axios-error'
-import { authApi } from '../config/axios-instance'
+import { authApi, publicApi } from '../config/axios-instance'
 import { GetMerchantOrdersQueryDto, GetProductsQueryDto, UpdateOrderDto, UpdateProductDto } from '../dtos'
-import { ApiResponse, MerchantOrder } from '../types'
+import { ApiResponse, Bank, MerchantOrder, WalletHistory } from '../types'
 import {
   Merchant,
   CreateProductDto,
@@ -156,3 +156,59 @@ export const getWalletBalance = async () => {
     throw error;
   }
 };
+
+export const getWalletHistory = async () => {
+  try {
+    const response = await authApi.get<WalletHistory[]>(`/wallet/history`);
+
+    return response?.data;
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+    throw error;
+  }
+};
+
+export const getBanks = async (search: string) => {
+  try {
+    const response = await publicApi.get<Bank[]>(`/payment/banks?search=${search}`);
+
+    return response?.data;
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+    throw error;
+  }
+};
+
+export const validateAccountInfo = async ({ bankCode, accountNumber }: { bankCode: string; accountNumber: string }) => {
+  try {
+    const response = await publicApi.get<{
+      account_number: string;
+      account_name: string;
+      bank_id: number
+    }>(`/payment/resolve-account?bank_code=${bankCode}&account_number=${accountNumber}`);
+
+    return response?.data;
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+    throw error;
+  }
+};
+
+export const initiateWithdraw = async (data: {
+  amount: string;
+  account_number: string;
+  account_name: string;
+  bank_code: string
+}) => {
+  try {
+    const response = await authApi.post<{
+      reference: string
+    }>(`/wallet/withdraw`, data);
+
+    return response?.data;
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+    throw error;
+  }
+};
+

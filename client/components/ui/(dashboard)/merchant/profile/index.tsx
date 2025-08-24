@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,66 +18,112 @@ import {
 	Upload,
 	Check,
 	Globe,
-	Instagram,
 	ChevronDown,
 	Pipette,
 	FileText,
 	AlertTriangle,
-	Clock,
 	X,
 	Home,
-	Settings,
 	Badge,
 	DollarSign,
+	// Linkedin,
 } from 'lucide-react';
 import Image from 'next/image';
 import bannerImg from '@/public/images/background-banner.png';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+	getBanks,
+	getMerchant,
+	getWalletBalance,
+	initiateWithdraw,
+	validateAccountInfo,
+} from '@/lib/services/merchant.service';
+import Loader from '@/components/common/loaders';
+import TextField from '@/components/common/inputs/text-field';
+import { useDebounce } from 'use-debounce';
+import { deFormatValue, formatValue } from '@/lib/helpers';
+import { Bank } from '@/lib/types';
+import { errorHandler } from '@/lib/config/axios-error';
+import { toast } from 'sonner';
 
 const MerchantProfilePage = () => {
 	const router = useRouter();
+	const queryClient = useQueryClient();
+	const searchParams = useSearchParams();
+	const activeTabParams = searchParams.get('activeTab');
+	const [amount, setAmount] = useState<string>('');
+	const [searchQuery, setSearchQuery] = useState<string>('');
+	const [debouncedSearch] = useDebounce(searchQuery, 500);
+	const [selectedBank, setSelectedBank] = useState<string>('');
+	const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
+	const [accountNumber, setAccountNumber] = useState<string>('');
+	const [bankCode, setBankCode] = useState<string>('');
+	const [accountDetails, setAccountDetails] = useState<Bank>();
+	const isAccountNumberValid = /^\d{10}$/.test(accountNumber);
+
+	const { data: wallet } = useQuery({
+		queryFn: () => getWalletBalance(),
+		queryKey: ['get-merchant-wallet-balance'],
+	});
+
+	const { data: merchant } = useQuery({
+		queryFn: () => getMerchant(),
+		queryKey: ['get-merchant'],
+	});
+
+	const { data: banks, isPending: searchingBanks } = useQuery({
+		queryFn: () => getBanks(debouncedSearch),
+		queryKey: ['useGetBanks', { debouncedSearch }],
+		enabled: debouncedSearch.length > 2,
+		staleTime: 1000 * 60 * 5,
+		refetchOnWindowFocus: false,
+	});
+
+	const { data: accountInfo, isPending: resolvingAccountInfo } = useQuery({
+		queryFn: () => validateAccountInfo({ bankCode, accountNumber }),
+		queryKey: ['validate-account-info', { bankCode, accountNumber }],
+		enabled: bankCode.length != 0 && isAccountNumberValid,
+		staleTime: 1000 * 60 * 5,
+		refetchOnWindowFocus: false,
+	});
+
+	const AccountWithdrawDetails =
+		accountInfo?.account_number && accountInfo?.account_name && accountDetails?.code
+			? {
+					amount: deFormatValue(amount),
+					account_number: accountInfo.account_number,
+					account_name: accountInfo.account_name,
+					bank_code: accountDetails.code,
+			  }
+			: null;
+
+	const mutation = useMutation({
+		mutationKey: ['merchant-withdraw'],
+		mutationFn: () => {
+			if (!AccountWithdrawDetails) throw new Error('Missing withdrawal details');
+			return initiateWithdraw(AccountWithdrawDetails);
+		},
+		onSuccess: () => {
+			toast.success('Withdrawal Placed');
+			queryClient.invalidateQueries({ queryKey: ['get-merchant-wallet-balance'] });
+			router.push('/merchant/dashboard');
+		},
+		onError: (error: Error) => {
+			errorHandler(error);
+		},
+	});
+
 	const [formData, setFormData] = useState({
-		businessName: 'Marcus & Sons Grocery',
-		storeCategory: 'grocery-food',
-		businessEmail: 'marcus@marcusandsons.com',
-		phoneNumber: '(555) 123-4567',
-		businessAddress: '123 Market Street, Brooklyn, NY 11201',
-		websiteUrl: 'www.marcusandsons.com',
-		instagramHandle: '@marcusandsons',
-		facebookHandle: 'Marcus & Sons Grocery',
-		twitterHandle: '@marcusandsons',
-		storeDescription:
-			'Marcus & Sons Grocery is a family-owned business serving the Brooklyn community since 1985. We specialize in fresh produce, organic goods, and culturally diverse products.',
-		features: {
-			deliveryAvailable: true,
-			inStorePickup: true,
-			blackOwnedBusiness: true,
-			communityPartner: true,
-			acceptEBT: false,
-			wheelchairAccessible: false,
-		},
-		operatingHours: {
-			monday: { open: '09:00', close: '18:00' },
-			tuesday: { open: '09:00', close: '18:00' },
-			wednesday: { open: '09:00', close: '18:00' },
-			thursday: { open: '09:00', close: '18:00' },
-			friday: { open: '09:00', close: '18:00' },
-			saturday: { open: '09:00', close: '18:00' },
-			sunday: { open: '', close: '' },
-		},
-		bankingDetails: {
-			accountHolderName: 'John Smith',
-			bankName: 'Chase Bank',
-			accountNumber: '****-****-4567',
-			routingNumber: '021000021',
-			accountType: 'Checking',
-			currency: 'NGN - Naira',
-			lastVerified: 'Jan 22, 2024',
-		},
-		businessMetrics: {
-			memberSince: 'January 2020',
-			totalSales: '₦125,430',
-			averageRating: '4.8/5.0 (234 reviews)',
-		},
+		businessName: merchant?.storeName || '',
+		storeCategory: merchant?.storeCategory || '',
+		businessEmail: merchant?.user.email || '',
+		phoneNumber: merchant?.user.phoneNumber || '',
+		businessAddress: merchant?.defaultAddress || '',
+		websiteUrl: merchant?.website || '',
+		// instagramHandle: merchant?.socials.linkedin || '',
+		// facebookHandle: merchant?.socials.facebook || '',
+		// twitterHandle: merchant?.socials.twitter || '',
+		storeDescription: merchant?.storeDescription || '',
 	});
 
 	const [activeTab, setActiveTab] = useState('basic-info');
@@ -90,28 +136,31 @@ const MerchantProfilePage = () => {
 		{ id: 'basic-info', label: 'Basic Info', icon: <Home className="w-4 h-4 mr-2" /> },
 		{ id: 'documents', label: 'Documents', icon: <FileText className="w-4 h-4 mr-2" /> },
 		{ id: 'banking', label: 'Banking', icon: <DollarSign className="w-4 h-4 mr-2" /> },
-		{ id: 'settings', label: 'Settings', icon: <Settings className="w-4 h-4 mr-2" /> },
 	];
+
+	useEffect(() => {
+		if (activeTabParams) setActiveTab(activeTabParams);
+	}, [activeTabParams]);
 
 	return (
 		<div className="min-h-screen bg-[#0a0a0a] text-white">
 			<div className="relative h-64 w-full overflow-hidden rounded-lg">
 				<Image src={bannerImg} alt="Store Banner" className="w-full h-full object-cover" />
 				<div className="absolute inset-0 bg-black/40" />
-				<Button
+				{/* <Button
 					variant="secondary"
 					size="sm"
 					className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-lg border-white/10 text-white hover:bg-black/60 flex items-center gap-2">
 					<Upload className="w-4 h-4" />
 					Update Store Banner
-				</Button>
+				</Button> */}
 			</div>
 
 			<div className="relative -mt-12 mb-8">
 				<div className="flex items-end gap-4 px-6">
 					<div className="relative">
 						<Avatar className="w-24 h-24 border-4 border-[#0a0a0a]">
-							<AvatarImage src={'/images/avatar1.png'} alt="Marcus Johnson" />
+							<AvatarImage src={merchant?.storeLogo} alt={merchant?.storeName} />
 							<AvatarFallback className="text-2xl bg-blue-600 text-white">MJ</AvatarFallback>
 						</Avatar>
 						<div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center border-2 border-[#0a0a0a]">
@@ -120,7 +169,7 @@ const MerchantProfilePage = () => {
 					</div>
 					<div className="pb-2">
 						<div className="flex items-center gap-2 mb-1">
-							<h1 className="text-2xl font-semibold text-white">Marcus & Sons Grocery</h1>
+							<h1 className="text-2xl font-semibold text-white">{merchant?.storeName}</h1>
 							<Check className="w-5 h-5 text-blue-500" />
 						</div>
 						<div className="flex items-center gap-2">
@@ -137,13 +186,13 @@ const MerchantProfilePage = () => {
 				</div>
 			</div>
 
-			<div className="border-b border-gray-800 mb-8">
-				<div className="flex space-x-8 px-6">
+			<div className="w-full border-b border-gray-800 mb-8">
+				<div className="w-full flex space-x-8 px-6">
 					{tabs.map((tab) => (
 						<button
 							key={tab.id}
 							onClick={() => setActiveTab(tab.id)}
-							className={`pb-4 px-1 text-sm font-medium transition-colors relative flex items-center ${
+							className={`w-full pb-4 px-1 text-sm font-medium transition-colors relative flex justify-center items-center cursor-pointer ${
 								activeTab === tab.id ? 'text-blue-500' : 'text-gray-400 hover:text-gray-300'
 							}`}>
 							{tab.icon}
@@ -175,7 +224,11 @@ const MerchantProfilePage = () => {
 									Store Category
 								</Label>
 								<Select
-									value={formData.storeCategory}
+									value={
+										Array.isArray(formData.storeCategory)
+											? formData.storeCategory[0] || ''
+											: formData.storeCategory || ''
+									}
 									onValueChange={(value) => handleInputChange('storeCategory', value)}>
 									<SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white h-12 rounded-lg">
 										<SelectValue />
@@ -223,18 +276,14 @@ const MerchantProfilePage = () => {
 								</Label>
 								<Input
 									id="businessAddress"
-									value={formData.businessAddress}
+									value={
+										typeof formData.businessAddress === 'string'
+											? formData.businessAddress
+											: formData.businessAddress?.streetAddress ?? ''
+									}
 									onChange={(e) => handleInputChange('businessAddress', e.target.value)}
 									className="bg-[#1a1a1a] border-gray-700 text-white h-12 rounded-lg"
 								/>
-							</div>
-
-							<div className="space-y-2">
-								<Label className="text-white text-sm">Operating Hours</Label>
-								<div className="flex items-center gap-2 text-gray-400 text-sm bg-[#1a1a1a] border border-gray-700 rounded-lg h-12 px-3">
-									<Clock className="w-4 h-4" />
-									<span>Mon-Sat: 8:00 AM - 8:00 PM</span>
-								</div>
 							</div>
 
 							<div className="space-y-2">
@@ -252,13 +301,13 @@ const MerchantProfilePage = () => {
 								</div>
 							</div>
 
-							<div className="space-y-4">
+							{/* <div className="space-y-4">
 								<Label className="text-white text-sm">Social Media</Label>
 								<div className="space-y-3">
 									<div className="relative">
-										<Instagram className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-pink-500" />
+										<Linkedin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-pink-500" />
 										<Input
-											value={formData.instagramHandle}
+											value={formData.instagramHandle || ''}
 											onChange={(e) => handleInputChange('instagramHandle', e.target.value)}
 											className="bg-[#1a1a1a] border-gray-700 text-white h-12 rounded-lg pl-10"
 											placeholder="@username"
@@ -270,7 +319,7 @@ const MerchantProfilePage = () => {
 											<span className="text-white text-xs font-bold">f</span>
 										</div>
 										<Input
-											value={formData.facebookHandle}
+											value={formData.facebookHandle || ''}
 											onChange={(e) => handleInputChange('facebookHandle', e.target.value)}
 											className="bg-[#1a1a1a] border-gray-700 text-white h-12 rounded-lg pl-10"
 											placeholder="Page name"
@@ -282,14 +331,14 @@ const MerchantProfilePage = () => {
 											<span className="text-white text-xs font-bold">𝕏</span>
 										</div>
 										<Input
-											value={formData.twitterHandle}
+											value={formData.twitterHandle || ''}
 											onChange={(e) => handleInputChange('twitterHandle', e.target.value)}
 											className="bg-[#1a1a1a] border-gray-700 text-white h-12 rounded-lg pl-10"
 											placeholder="@username"
 										/>
 									</div>
 								</div>
-							</div>
+							</div> */}
 						</div>
 					</div>
 
@@ -311,11 +360,6 @@ const MerchantProfilePage = () => {
 							onClick={() => console.log('Saving changes:', formData)}
 							className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
 							Save Changes
-						</Button>
-						<Button
-							variant="outline"
-							className="border-gray-600 text-gray-300 hover:bg-gray-800 px-6 py-2 rounded-lg">
-							Cancel
 						</Button>
 					</div>
 				</div>
@@ -422,153 +466,108 @@ const MerchantProfilePage = () => {
 					<h2 className="text-xl font-medium">Banking Details</h2>
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-						<div className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="accountHolderName" className="text-white text-sm">
-									Account Holder Name
-								</Label>
-								<Input
-									id="accountHolderName"
-									value={formData.bankingDetails.accountHolderName}
-									onChange={(e) => {
-										const newBankingDetails = { ...formData.bankingDetails };
-										newBankingDetails.accountHolderName = e.target.value;
-										setFormData({
-											...formData,
-											bankingDetails: newBankingDetails,
-										});
+						<TextField
+							label="Withdrawal Amount(₦)"
+							InputProps={{
+								placeholder: 'Enter amount to withdraw',
+								type: 'text',
+								value: amount,
+								onChange: (e) => setAmount(formatValue(e.target.value)),
+								className: 'focus:border-primary py-3 text-[.75rem]',
+							}}
+							helperText={Number(deFormatValue(amount)) > (wallet?.balance ?? 0) ? 'Insufficient balance' : ''}
+							LabelProps={{ className: 'text-[.65rem] font-[500]' }}
+							className="mb-4"
+						/>
+
+						<>
+							<TextField
+								label="Search bank name"
+								InputProps={{
+									placeholder: 'Enter your bank name',
+									type: 'text',
+									value: searchQuery,
+									onChange: (e) => {
+										setSearchQuery(e.target.value);
+										setIsDropDownOpen(true);
+									},
+									className: 'focus:border-primary py-3 text-[.75rem]',
+								}}
+								LabelProps={{ className: 'text-[.65rem] font-[500]' }}
+							/>
+
+							{isDropDownOpen && searchQuery && (
+								<div className="w-full max-h-[200px] bg-[#242424] shadow-md p-4 overflow-y-scroll">
+									{searchingBanks || (!banks && debouncedSearch) ? (
+										<div className="flex justify-center items-center">
+											<Loader text="Fetching banks" />
+										</div>
+									) : (
+										banks?.map((bank) => (
+											<div
+												key={bank.code}
+												className="py-2 px-3 mb-2 bg-black shadow-md rounded-md cursor-pointer"
+												onClick={() => {
+													setSelectedBank(bank.name);
+													setSearchQuery(bank.name);
+													setBankCode(bank.code);
+													setAccountDetails(bank);
+													setIsDropDownOpen(false);
+												}}>
+												<p className="text-[.85rem] text-primary">{bank.name}</p>
+											</div>
+										))
+									)}
+								</div>
+							)}
+						</>
+
+						{selectedBank && (
+							<div className="mt-4">
+								<p className="text-[.85rem]">
+									<span className="font-bold">Selected Bank:</span> {selectedBank}
+								</p>
+
+								<TextField
+									label="Enter Account Number"
+									InputProps={{
+										placeholder: 'Enter your 10 digits account number',
+										type: 'text',
+										value: accountNumber,
+										onChange: (e) => setAccountNumber(e.target.value),
+										className: 'focus:border-primary py-3 text-[.75rem]',
 									}}
-									className="bg-[#1a1a1a] border-gray-700 text-white h-12 rounded-lg"
+									helperText={accountNumber.length > 10 ? 'Incorrect account number' : ''}
+									LabelProps={{ className: 'text-[.65rem] font-[500]' }}
+									className="mt-3"
 								/>
-							</div>
 
-							<div className="space-y-2">
-								<Label htmlFor="accountNumber" className="text-white text-sm">
-									Account Number
-								</Label>
-								<Input
-									id="accountNumber"
-									value={formData.bankingDetails.accountNumber}
-									onChange={(e) => {
-										const newBankingDetails = { ...formData.bankingDetails };
-										newBankingDetails.accountNumber = e.target.value;
-										setFormData({
-											...formData,
-											bankingDetails: newBankingDetails,
-										});
-									}}
-									className="bg-[#1a1a1a] border-gray-700 text-white h-12 rounded-lg"
-								/>
+								{isAccountNumberValid && (
+									<div className="mt-2">
+										<p className="text-[.85rem] font-bold">Account Name</p>
+										<p className="text-[.85rem] pt-1">
+											{resolvingAccountInfo ? <Loader text="Fetching account name..." /> : accountInfo?.account_name}
+										</p>
+									</div>
+								)}
 							</div>
-
-							<div className="space-y-2">
-								<Label htmlFor="accountType" className="text-white text-sm">
-									Account Type
-								</Label>
-								<Select
-									value={formData.bankingDetails.accountType}
-									onValueChange={(value) => {
-										const newBankingDetails = { ...formData.bankingDetails };
-										newBankingDetails.accountType = value;
-										setFormData({
-											...formData,
-											bankingDetails: newBankingDetails,
-										});
-									}}>
-									<SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white h-12 rounded-lg">
-										<SelectValue />
-										<ChevronDown className="w-4 h-4" />
-									</SelectTrigger>
-									<SelectContent className="bg-[#1a1a1a] border-gray-700">
-										<SelectItem value="Checking">Checking</SelectItem>
-										<SelectItem value="Savings">Savings</SelectItem>
-										<SelectItem value="Business">Business</SelectItem>
-									</SelectContent>
-								</Select>
-							</div>
-						</div>
-
-						<div className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="bankName" className="text-white text-sm">
-									Bank Name
-								</Label>
-								<Input
-									id="bankName"
-									value={formData.bankingDetails.bankName}
-									onChange={(e) => {
-										const newBankingDetails = { ...formData.bankingDetails };
-										newBankingDetails.bankName = e.target.value;
-										setFormData({
-											...formData,
-											bankingDetails: newBankingDetails,
-										});
-									}}
-									className="bg-[#1a1a1a] border-gray-700 text-white h-12 rounded-lg"
-								/>
-							</div>
-
-							<div className="space-y-2">
-								<Label htmlFor="routingNumber" className="text-white text-sm">
-									Routing Number
-								</Label>
-								<Input
-									id="routingNumber"
-									value={formData.bankingDetails.routingNumber}
-									onChange={(e) => {
-										const newBankingDetails = { ...formData.bankingDetails };
-										newBankingDetails.routingNumber = e.target.value;
-										setFormData({
-											...formData,
-											bankingDetails: newBankingDetails,
-										});
-									}}
-									className="bg-[#1a1a1a] border-gray-700 text-white h-12 rounded-lg"
-								/>
-							</div>
-
-							<div className="space-y-2">
-								<Label htmlFor="currency" className="text-white text-sm">
-									Currency
-								</Label>
-								<Select
-									value={formData.bankingDetails.currency}
-									onValueChange={(value) => {
-										const newBankingDetails = { ...formData.bankingDetails };
-										newBankingDetails.currency = value;
-										setFormData({
-											...formData,
-											bankingDetails: newBankingDetails,
-										});
-									}}>
-									<SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white h-12 rounded-lg">
-										<SelectValue />
-										<ChevronDown className="w-4 h-4" />
-									</SelectTrigger>
-									<SelectContent className="bg-[#1a1a1a] border-gray-700">
-										<SelectItem value="USD - US Dollar">USD - US Dollar</SelectItem>
-										<SelectItem value="EUR - Euro">EUR - Euro</SelectItem>
-										<SelectItem value="GBP - British Pound">GBP - British Pound</SelectItem>
-										<SelectItem value="CAD - Canadian Dollar">CAD - Canadian Dollar</SelectItem>
-									</SelectContent>
-								</Select>
-							</div>
-						</div>
+						)}
 					</div>
-
-					<div className="flex items-center justify-between pt-4 border-t border-gray-800">
-						<p className="text-sm text-gray-400">Last verified: {formData.bankingDetails.lastVerified}</p>
-						<Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
-							Update Banking Info
+					<div className="flex justify-center items-center">
+						<Button
+							disabled={
+								!accountNumber ||
+								!amount ||
+								!accountInfo?.account_name ||
+								Number(deFormatValue(amount)) > (wallet?.balance ?? 0)
+							}
+							onClick={async () => {
+								if (!AccountWithdrawDetails) return;
+								await mutation.mutateAsync();
+							}}
+							className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+							Withdraw
 						</Button>
-					</div>
-				</div>
-			)}
-
-			{activeTab === 'reviews' && (
-				<div className="px-6 py-12">
-					<div className="text-center">
-						<p className="text-gray-400">Reviews section coming soon...</p>
 					</div>
 				</div>
 			)}

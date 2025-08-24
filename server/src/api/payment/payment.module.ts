@@ -13,6 +13,8 @@ import { WebhookService } from './services/webhook.service';
 import { CustomerModule } from '../customer/customer.module';
 import { NotificationModule } from '../notification/notification.module';
 import { WalletModule } from '../wallet/wallet.module';
+import { HttpModule } from '@nestjs/axios';
+import { Transaction, TransactionSchema } from '../wallet/schema/transaction.schema';
 
 @Module({
   imports: [
@@ -21,6 +23,10 @@ import { WalletModule } from '../wallet/wallet.module';
         name: PaymentAttempt.name,
         schema: PaymentAttemptSchema,
       },
+      {
+        name: Transaction.name,
+        schema: TransactionSchema
+      }
     ]),
     SharedModule,
     UserModule,
@@ -28,7 +34,8 @@ import { WalletModule } from '../wallet/wallet.module';
     forwardRef(() => OrderModule),
     NotificationModule,
     UserModule,
-    WalletModule
+    forwardRef(() => WalletModule),
+    HttpModule
   ],
   controllers: [PaymentController],
   providers: [PaymentProvider, PaymentService, WebhookService, PaystackService, PaystackProvider],

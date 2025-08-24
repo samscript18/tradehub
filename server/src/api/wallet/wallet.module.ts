@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Wallet, WalletSchema } from './schema/wallet.schema';
 import { Transaction, TransactionSchema } from './schema/transaction.schema';
 import { MerchantModule } from '../merchant/merchant.module';
+import { PaymentModule } from '../payment/payment.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { MerchantModule } from '../merchant/merchant.module';
         schema: TransactionSchema
       }
     ]),
-    forwardRef(() => MerchantModule)
+    forwardRef(() => MerchantModule),
+    PaymentModule
   ],
   controllers: [WalletController],
   providers: [WalletService],

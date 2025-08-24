@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ProductController } from './product.controller';
 import { SharedModule } from 'src/shared/shared.module';
@@ -20,7 +20,7 @@ import { MerchantModule } from '../merchant/merchant.module';
       },
     ]),
     SharedModule,
-    MerchantModule
+    forwardRef(() => MerchantModule)
   ],
   controllers: [ProductController],
   providers: [ProductService, ProductProvider],
