@@ -84,6 +84,9 @@ export class WebhookService {
 
     if (!attempt) throw new NotFoundException('Payment not found');
 
+    if (attempt.status === PaymentStatus.SUCCESSFUL && attempt.ordersCreated) {
+      return;
+    }
 
     const metadata = attempt.metadata as OrderMetadata;
 
@@ -117,6 +120,11 @@ export class WebhookService {
     for (const order of orders.data) {
       await this.walletService.processPayment(order.merchant._id, order.price, order._id, attempt.reference, attempt.metadata);
     }
+
+    await this.paymentService.updatePaymentAttempt(
+      { reference: chargeResponse.reference },
+      { ordersCreated: true }
+    );
 
     return orders;
   }

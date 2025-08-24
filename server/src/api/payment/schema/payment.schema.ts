@@ -28,6 +28,9 @@ export class PaymentAttempt {
     type: Object,
   })
   metadata: object;
+
+  @Prop({ type: Boolean, default: false })
+  ordersCreated: boolean;
 }
 
 export type PaymentAttemptDocument = HydratedDocument<PaymentAttempt>;
