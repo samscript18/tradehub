@@ -29,7 +29,7 @@ export class WalletService {
         wallet = newWallet;
       }
 
-      const paymentAttempt = await this._transactionModel.create({
+      const [transaction] = await this._transactionModel.create([{
         wallet: wallet._id,
         amount,
         type: TransactionType.CREDIT,
@@ -37,9 +37,8 @@ export class WalletService {
         description: `Received payment for order ${orderId}`,
         reference,
         metadata
-      });
+      }], { session });
 
-      await paymentAttempt.save({ session });
 
       await this._walletModel.updateOne(
         { _id: wallet._id },
@@ -48,7 +47,8 @@ export class WalletService {
       );
 
       await session.commitTransaction();
-      return paymentAttempt;
+      console.log(wallet)
+      return transaction;
 
     } catch (error) {
       await session.abortTransaction();
