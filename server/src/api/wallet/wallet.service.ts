@@ -25,8 +25,8 @@ export class WalletService {
       let wallet = await this._walletModel.findOne({ merchant: merchantId }).session(session);
 
       if (!wallet) {
-        wallet = await this._walletModel.create({ merchant: merchantId });
-        await wallet.save({ session });
+        const [newWallet] = await this._walletModel.create([{ merchant: merchantId }], { session });
+        wallet = newWallet;
       }
 
       const paymentAttempt = await this._transactionModel.create({
