@@ -22,16 +22,12 @@ export class WalletService {
     session.startTransaction();
 
     try {
-      const wallet = await this._walletModel.findOneAndUpdate(
-        { merchant: merchantId },
-        { $setOnInsert: { balance: 0 } },
-        {
-          upsert: true,
-          new: true,
-          setDefaultsOnInsert: true,
-          session: session,
-        }
-      );
+      let wallet = await this._walletModel.findOne({ merchant: merchantId }).session(session);
+
+      if (!wallet) {
+        wallet = await this._walletModel.create({ merchant: merchantId });
+        await wallet.save({ session });
+      }
 
       const paymentAttempt = await this._transactionModel.create({
         wallet: wallet._id,
