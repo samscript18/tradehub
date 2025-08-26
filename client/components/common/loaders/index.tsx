@@ -8,7 +8,7 @@ interface Props {
 
 const Loader: FC<Props> = ({ size = 40, text }) => {
 	return (
-		<div className="size-12 flex justify-center items-center rounded-full bg-[#242424] shadow-md animate-pulse">
+		<div className="flex justify-center items-center gap-8 rounded-full bg-[#242424] shadow-md animate-pulse">
 			<LoaderIcon className="animate-spin text-primary" size={size} />
 			<p className="text-sm text-primary">{text}</p>
 		</div>

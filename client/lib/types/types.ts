@@ -31,8 +31,8 @@ export interface Merchant {
   storeName: string;
   storeLogo: string;
   storeDescription: string;
-  defaultAddress: DeliveryAddress | null;
-  addresses: DeliveryAddress[];
+  defaultAddress: OrderAddress | null;
+  addresses: OrderAddress[];
   storeCategory: string[];
   website?: string;
   socials: {
@@ -60,7 +60,7 @@ export interface OrderAddress {
   city: string;
   state: string;
   country: string;
-  postalcode: string;
+  postalcode?: string;
 }
 
 export interface CustomerOrderProduct {

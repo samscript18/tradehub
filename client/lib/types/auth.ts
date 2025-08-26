@@ -1,4 +1,4 @@
-import { Address } from "./types";
+import { Address, OrderAddress } from "./types";
 
 export interface LoginType {
   credential: string;
@@ -24,6 +24,20 @@ export type SignUp = {
   storeName?: string;
   storeDescription?: string;
   address?: Address;
+  storeCategory?: string[];
+}
+
+export type EditMerchantProfile = {
+  email: string;
+  phoneNumber: string;
+  password: string;
+  role: 'customer' | 'merchant',
+  firstName?: string;
+  lastName?: string;
+  storeName?: string;
+  storeDescription?: string;
+  defaultAddress?: OrderAddress;
+  addresses?: OrderAddress[];
   storeCategory?: string[];
 }
 

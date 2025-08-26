@@ -96,7 +96,7 @@ export class WalletService {
         wallet: wallet._id,
         amount,
         type: TransactionType.DEBIT,
-        status: TransactionStatus.PENDING,
+        status: TransactionStatus.SUCCESSFUL, // Change to PENDING after paystack account upgrade
         description: `Withdrawal initiated`,
         reference,
       }], { session });
@@ -108,11 +108,12 @@ export class WalletService {
       );
       await session.commitTransaction();
 
-      await this.paystackService.initiateTransfer({
-        amount,
-        reference,
-        recipient
-      });
+      // Upgrade paystack account to registered business
+      // await this.paystackService.initiateTransfer({
+      //   amount,
+      //   reference,
+      //   recipient
+      // });
 
       return { reference };
     } catch (error) {

@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import SelectField from '../inputs/select-field';
 import ListTile from '../list-tile';
 import { nigerianStatesAndCities } from '@/lib/data';
@@ -10,12 +10,38 @@ interface Props {
 	label?: string;
 	helperText?: string;
 	className?: string;
+	initialCountry?: string;
+	initialState?: string;
+	initialCity?: string;
 }
 
-const SelectCountry: FC<Props> = ({ onLocationSelect, loading = false, className }) => {
-	const [selectedCountry, setSelectedCountry] = useState('');
-	const [selectedState, setSelectedState] = useState('');
-	const [selectedCity, setSelectedCity] = useState('');
+const SelectCountry: FC<Props> = ({
+	onLocationSelect,
+	loading = false,
+	className,
+	initialCountry = '',
+	initialState = '',
+	initialCity = '',
+}) => {
+	const [selectedCountry, setSelectedCountry] = useState<string>('');
+	const [selectedState, setSelectedState] = useState<string>('');
+	const [selectedCity, setSelectedCity] = useState<string>('');
+
+	useEffect(() => {
+    setSelectedCountry(initialCountry);
+    setSelectedState(initialState);
+    setSelectedCity(initialCity);
+  }, [initialCountry, initialState, initialCity]);
+
+  useEffect(() => {
+    if (selectedCountry && selectedState && selectedCity) {
+      onLocationSelect?.({
+        country: selectedCountry,
+        state: selectedState,
+        city: selectedCity,
+      });
+    }
+  }, [selectedCountry, selectedState, selectedCity, onLocationSelect]);
 
 	const handleCountryChange = (option: {
 		value: string | number | { label?: string; min?: number; max?: number | null };

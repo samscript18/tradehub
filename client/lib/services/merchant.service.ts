@@ -2,6 +2,7 @@ import { AxiosErrorShape, errorHandler } from '../config/axios-error'
 import { authApi, publicApi } from '../config/axios-instance'
 import { GetMerchantOrdersQueryDto, GetProductsQueryDto, UpdateOrderDto, UpdateProductDto } from '../dtos'
 import { ApiResponse, Bank, MerchantOrder, WalletHistory } from '../types'
+import { EditMerchantProfile } from '../types/auth'
 import {
   Merchant,
   CreateProductDto,
@@ -20,9 +21,9 @@ export const getMerchant = async () => {
   }
 }
 
-export const updateMerchant = async () => {
+export const updateMerchant = async (data: Partial<EditMerchantProfile>) => {
   try {
-    const response = await authApi.put<ApiResponse<Merchant>>('/merchant')
+    const response = await authApi.put<ApiResponse<Merchant>>('/merchant', data)
 
     return response?.data?.data
   } catch (error) {

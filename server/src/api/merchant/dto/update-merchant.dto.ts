@@ -1,7 +1,9 @@
 import { IsNumber, IsString } from 'src/shared/decorators';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, ValidateNested } from 'class-validator';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsArray, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { OnBoardMerchantDto } from 'src/api/auth/dto/register.dto';
+import { Address } from 'src/api/auth/interfaces';
 
 export class SocialLinks {
    @IsString(true)
@@ -17,25 +19,7 @@ export class SocialLinks {
    linkedin?: string;
 }
 
-export class UpdateMerchantDto {
-   @IsString(true)
-   businessName?: string;
-
-   @IsString(true)
-   businessLogo?: string;
-
-   @IsString(true)
-   businessDescription?: string;
-
-   @IsNumber(true)
-   yearsOfExperience?: number;
-
-   @IsString(true)
-   website?: string;
-
-   @ApiProperty({ type: SocialLinks })
-   @ValidateNested()
-   @Type(() => SocialLinks)
-   @IsOptional()
-   socials?: SocialLinks;
+export class UpdateMerchantDto extends PartialType(OnBoardMerchantDto) {
+   @IsArray()
+   addresses: Address[];
 }

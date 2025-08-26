@@ -53,7 +53,7 @@ export class MerchantProvider {
    async updateMerchant(userId: string, updateMerchantDto: UpdateMerchantDto) {
       const data = await this.MerchantService.updateMerchant(
          { user: new Types.ObjectId(userId) },
-         updateMerchantDto,
+         { ...updateMerchantDto, addresses: [...(updateMerchantDto.addresses || []), updateMerchantDto.defaultAddress] },
       );
 
       if (!data) throw new NotFoundException('Merchant not found');

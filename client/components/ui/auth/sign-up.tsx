@@ -19,7 +19,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaGoogle, FaStore } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
+// import { FaXTwitter } from 'react-icons/fa6';
 import { MdShoppingBag } from 'react-icons/md';
 
 const SignUpPage = () => {
@@ -518,7 +518,7 @@ const SignUpPage = () => {
 
 				<div className="flex flex-col justify-center items-center">
 					<p className="text-sm text-gray-400 mt-3">or</p>
-					<div className="w-full flex gap-12 justify-center items-center mt-3">
+					{/* <div className="w-full flex gap-12 justify-center items-center mt-3"> */}
 						<Button
 							onClick={() => {
 								setIsPending(true);
@@ -531,18 +531,18 @@ const SignUpPage = () => {
 							iconPosition="left"
 							loading={isPending}
 							loaderSize
-							className="flex justify-center items-center">
+							className="flex justify-center items-center mt-3">
 							Google
 						</Button>
-						<Button
+						{/* <Button
 							fullWidth
 							variant="outline"
 							icon={<FaXTwitter />}
 							iconPosition="left"
 							className="flex justify-center items-center">
 							X
-						</Button>
-					</div>
+						</Button> */}
+					{/* </div> */}
 				</div>
 
 				<p className="max-w-fit mx-auto text-[.9rem] mt-6">

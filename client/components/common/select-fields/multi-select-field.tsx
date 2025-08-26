@@ -217,6 +217,7 @@ interface Props {
 	label?: string;
 	helperText?: string;
 	maxSelections?: number;
+	initialOptions?: Option[];
 }
 
 const MultiSelectField: FC<Props> = ({
@@ -234,10 +235,11 @@ const MultiSelectField: FC<Props> = ({
 	label,
 	helperText,
 	maxSelections,
+	initialOptions = [],
 }) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [options, setOptions] = useState<Option[]>(data);
-	const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
+	const [selectedOptions, setSelectedOptions] = useState<Option[]>(initialOptions);
 	const [search, setSearch] = useState<string>('');
 	const [labelFocused, setLabelFocused] = useState<boolean>(false);
 

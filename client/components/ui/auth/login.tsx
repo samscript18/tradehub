@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaGoogle } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
+// import { FaXTwitter } from 'react-icons/fa6';
 
 const LoginPage = () => {
 	const router = useRouter();
@@ -124,31 +124,31 @@ const LoginPage = () => {
 				</form>
 				<div className="flex flex-col justify-center items-center">
 					<p className="text-sm text-gray-400 mt-3">or</p>
-					<div className="w-full flex gap-12 justify-center items-center mt-3">
-						<Button
-							onClick={async () => {
-								setIsPending(true);
-								_googleSignIn();
-								setIsPending(false);
-							}}
-							fullWidth
-							variant="outline"
-							icon={<FaGoogle />}
-							iconPosition="left"
-							loading={isPending}
-							loaderSize
-							className="flex justify-center items-center">
-							Google
-						</Button>
-						<Button
+					{/* <div className="w-full flex gap-12 justify-center items-center mt-3"> */}
+					<Button
+						onClick={async () => {
+							setIsPending(true);
+							_googleSignIn();
+							setIsPending(false);
+						}}
+						fullWidth
+						variant="outline"
+						icon={<FaGoogle />}
+						iconPosition="left"
+						loading={isPending}
+						loaderSize
+						className="flex justify-center items-center mt-3">
+						Google
+					</Button>
+					{/* <Button
 							fullWidth
 							variant="outline"
 							icon={<FaXTwitter />}
 							iconPosition="left"
 							className="flex justify-center items-center">
 							X
-						</Button>
-					</div>
+						</Button> */}
+					{/* </div> */}
 				</div>
 				<p className="max-w-fit mx-auto text-sm mt-6">
 					New to TradeHub?{' '}

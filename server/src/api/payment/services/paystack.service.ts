@@ -111,6 +111,8 @@ export class PaystackService {
         reason: "Withdrawal from wallet",
       });
 
+      console.log(response);
+
       if (!response.status) {
         throw new NotFoundException("unable to make transfer");
       }
