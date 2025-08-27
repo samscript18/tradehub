@@ -22,7 +22,7 @@ export class User extends DbMixins {
    @Prop({ select: false })
    password?: string;
 
-   @Prop({ type: Boolean, default: false })
+   @Prop({ type: Boolean, default: true })
    emailVerified: boolean;
 
    @Prop({ type: String, default: DEFAULT_IMAGES.profilePicture })
