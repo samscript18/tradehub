@@ -65,7 +65,7 @@ export default function NotificationsPage() {
 								<div
 									key={notification._id}
 									onClick={() => _markAsRead(notification._id)}
-									className="bg-gray-800 rounded-lg p-2 md:p-4 cursor-pointer border border-gray-700 flex max-md:flex-col items-center justify-between">
+									className="bg-gray-800 rounded-lg p-2 md:p-4 cursor-pointer border border-gray-700">
 									<div className="flex items-center gap-4">
 										{notification.type === 'order_placed' || notification.type === 'payment_successful' ? (
 											<CheckCircle className="h-5 w-5 text-blue-500" />
