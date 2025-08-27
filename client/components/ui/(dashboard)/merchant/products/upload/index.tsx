@@ -367,7 +367,7 @@ const UploadProductPage = () => {
 						</div>
 						<div>
 							<p className="text-lg text-gray-300 mb-2">Drag and drop product images or click to upload</p>
-							<p className="text-sm text-gray-500">Up to 5 images, max 5MB each</p>
+							<p className="text-sm text-gray-500">You must add up to 5 images, max 5MB each</p>
 						</div>
 						<Button
 							className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"

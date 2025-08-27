@@ -6,10 +6,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getNotifications, markAllAsRead, markAsRead } from '@/lib/services/notification.service';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/lib/store/auth.store';
+// import { useRouter } from 'next/navigation';
 
 export default function NotificationsPage() {
 	const queryClient = useQueryClient();
 	const { user } = useAuth();
+	// const router = useRouter();
 	const { data: notifications, isLoading } = useQuery({
 		queryFn: () => getNotifications(),
 		queryKey: ['get-notifications'],
@@ -80,9 +82,9 @@ export default function NotificationsPage() {
 											</p>
 										</div>
 									</div>
-									<Button size="sm" className="text-[13px] bg-primary hover:bg-primary max-md:ml-auto">
+									{/* <Button onClick={() => router.push(``)} size="sm" className="text-[13px] bg-primary hover:bg-primary max-md:ml-auto">
 										View
-									</Button>
+									</Button> */}
 								</div>
 							))}
 						</div>
