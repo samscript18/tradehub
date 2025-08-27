@@ -100,7 +100,7 @@ const ProfilePage = () => {
 		{
 			icon: null,
 			title: 'Location',
-			value: `${user?.defaultAddress?.streetAddress}, ${user?.defaultAddress?.city}, ${user?.defaultAddress?.state}`,
+			value: `${user?.defaultAddress?.street}, ${user?.defaultAddress?.city}, ${user?.defaultAddress?.state}`,
 			onClick: () => setIsEdit(true),
 		},
 	];

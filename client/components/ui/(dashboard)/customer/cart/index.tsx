@@ -174,7 +174,7 @@ const CartPage = () => {
 										className="col-span-2"
 										InputProps={{
 											placeholder: 'e.g your street address',
-											...register('streetAddress', {
+											...register('street', {
 												required: {
 													value: true,
 													message: 'This field is required',
@@ -182,7 +182,7 @@ const CartPage = () => {
 											}),
 											className: 'text-xs',
 										}}
-										helperText={errors?.streetAddress?.message}
+										helperText={errors?.street?.message}
 									/>
 
 									<TextField
@@ -246,7 +246,7 @@ const CartPage = () => {
 							) : (
 								<>
 									<RadioGroup value={selectedAddress} onValueChange={setSelectedAddress} className="space-y-4">
-										{user?.addresses?.map((address, index) => (
+										{user?.addresses?.map((address: DeliveryAddress, index) => (
 											<div key={index} className="relative bg-[#181A20] rounded-lg shadow-lg">
 												<Label
 													htmlFor={index.toString()}
@@ -264,7 +264,7 @@ const CartPage = () => {
 																{address.fullName ? address.fullName : `${user.firstName} ${user.lastName}`}
 															</div>
 															<div className="text-gray-400 text-xs space-y-1">
-																<div>{address.streetAddress}</div>
+																<div>{address.street}</div>
 																<div>
 																	{address.city}, {address.state}
 																</div>
@@ -320,7 +320,7 @@ const CartPage = () => {
 										address: {
 											country: user.addresses[Number(selectedAddress)].country || '',
 											state: user.addresses[Number(selectedAddress)].state || '',
-											street: user.addresses[Number(selectedAddress)].streetAddress || '',
+											street: user.addresses[Number(selectedAddress)].street || '',
 											city: user.addresses[Number(selectedAddress)].city || '',
 											postalcode: user.addresses[Number(selectedAddress)].postalcode || '',
 										},

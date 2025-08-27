@@ -5,7 +5,7 @@ export interface Address {
   country: string;
   state: string;
   city: string;
-  streetAddress: string;
+  street: string;
   postalcode?: string;
 }
 

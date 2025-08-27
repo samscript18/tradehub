@@ -117,7 +117,7 @@ const SignUpPage = () => {
 								country: '',
 								state: '',
 								city: '',
-								streetAddress: '',
+								street: '',
 								postalcode: '',
 							},
 							email: '',
@@ -297,7 +297,7 @@ const SignUpPage = () => {
 								className="col-span-2"
 								InputProps={{
 									placeholder: 'e.g your street address',
-									...register('address.streetAddress', {
+									...register('address.street', {
 										required: {
 											value: true,
 											message: 'This field is required',
@@ -305,7 +305,7 @@ const SignUpPage = () => {
 									}),
 									className: 'text-sm',
 								}}
-								helperText={errors?.address?.streetAddress?.message}
+								helperText={errors?.address?.street?.message}
 							/>
 
 							<SelectCountry
@@ -374,7 +374,7 @@ const SignUpPage = () => {
 								className="col-span-2"
 								InputProps={{
 									placeholder: 'e.g your street address',
-									...register('address.streetAddress', {
+									...register('address.street', {
 										required: {
 											value: true,
 											message: 'This field is required',
@@ -382,7 +382,7 @@ const SignUpPage = () => {
 									}),
 									className: 'text-sm',
 								}}
-								helperText={errors?.address?.streetAddress?.message}
+								helperText={errors?.address?.street?.message}
 							/>
 
 							<SelectCountry
@@ -519,22 +519,22 @@ const SignUpPage = () => {
 				<div className="flex flex-col justify-center items-center">
 					<p className="text-sm text-gray-400 mt-3">or</p>
 					{/* <div className="w-full flex gap-12 justify-center items-center mt-3"> */}
-						<Button
-							onClick={() => {
-								setIsPending(true);
-								_googleSignIn(role);
-								setIsPending(false);
-							}}
-							fullWidth
-							variant="outline"
-							icon={<FaGoogle />}
-							iconPosition="left"
-							loading={isPending}
-							loaderSize
-							className="flex justify-center items-center mt-3">
-							Google
-						</Button>
-						{/* <Button
+					<Button
+						onClick={() => {
+							setIsPending(true);
+							_googleSignIn(role);
+							setIsPending(false);
+						}}
+						fullWidth
+						variant="outline"
+						icon={<FaGoogle />}
+						iconPosition="left"
+						loading={isPending}
+						loaderSize
+						className="flex justify-center items-center mt-3">
+						Google
+					</Button>
+					{/* <Button
 							fullWidth
 							variant="outline"
 							icon={<FaXTwitter />}

@@ -18,7 +18,7 @@ export class Address {
   country: string;
 
   @Prop({ required: false })
-  streetAddress: string;
+  street: string;
 
   @Prop({ required: false })
   postalcode: string;
