@@ -191,14 +191,14 @@ const MerchantDashboard = () => {
 							</Button>
 						</CardHeader>
 						<CardContent>
-							<div className="grid grid-cols-4 gap-2">
+							<div className="grid grid-cols-4 gap-2 overflow-y-scroll">
 								{isLoading ? (
 									<DotLoader />
 								) : (
 									data?.data?.map((product, index) => (
 										<div
 											key={index}
-											className="aspect-square bg-[#2a2a2a] rounded-lg overflow-y-scroll border border-gray-700">
+											className="aspect-square bg-[#2a2a2a] rounded-lg border border-gray-700">
 											<Image
 												src={product.images[index] || ''}
 												width={100}
