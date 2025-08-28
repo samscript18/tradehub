@@ -24,6 +24,7 @@ import {
 import DotLoader from '@/components/ui/dot-loader';
 import { formatNaira } from '@/lib/helpers';
 import { useMemo } from 'react';
+import Image from 'next/image';
 
 const statusStyles: Record<string, { variant: 'default' | 'secondary'; className: string }> = {
 	pending: {
@@ -72,7 +73,7 @@ const MerchantDashboard = () => {
 		queryKey: ['get-merchant-wallet-balance'],
 	});
 
-	const { data } = useQuery({
+	const { data, isLoading } = useQuery({
 		queryFn: () => getProducts({ page: 1, limit: 4 }),
 		queryKey: ['get-merchant-products'],
 	});
@@ -191,49 +192,23 @@ const MerchantDashboard = () => {
 						</CardHeader>
 						<CardContent>
 							<div className="grid grid-cols-4 gap-2">
-								<Card className="bg-[#1a1a1a] border-gray-800 col-span-4">
-									<CardHeader>
-										<CardTitle className="text-white">Wallet History</CardTitle>
-									</CardHeader>
-									<CardContent>
-										<Table>
-											<TableHeader>
-												<TableRow className="border-gray-800">
-													<TableHead className="text-gray-400">Txn Ref</TableHead>
-													<TableHead className="text-gray-400">Type</TableHead>
-													<TableHead className="text-gray-400">Amount</TableHead>
-													<TableHead className="text-gray-400">Status</TableHead>
-													<TableHead className="text-gray-400">Date</TableHead>
-												</TableRow>
-											</TableHeader>
-											<TableBody>
-												{isLoadingWalletHistory ? (
-													<DotLoader />
-												) : (
-													walletHistory?.map((txn) => (
-														<TableRow key={txn._id} className="border-gray-800">
-															<TableCell className="text-white font-medium">{txn.reference}</TableCell>
-															<TableCell className="text-gray-300 capitalize">{txn.type}</TableCell>
-															<TableCell className="text-gray-300">{formatNaira(txn.amount)}</TableCell>
-															<TableCell>
-																<Badge
-																	variant={txn.status === 'successful' ? 'default' : 'secondary'}
-																	className={
-																		txn.status === 'successful'
-																			? 'bg-green-600/20 text-green-400 border-green-600/30 capitalize'
-																			: 'bg-red-600/20 text-red-400 border-red-600/30 capitalize'
-																	}>
-																	{txn.status}
-																</Badge>
-															</TableCell>
-															<TableCell className="text-gray-400">{new Date(txn.createdAt).toLocaleDateString()}</TableCell>
-														</TableRow>
-													))
-												)}
-											</TableBody>
-										</Table>
-									</CardContent>
-								</Card>
+								{isLoading ? (
+									<DotLoader />
+								) : (
+									data?.data?.map((product, index) => (
+										<div
+											key={index}
+											className="aspect-square bg-[#2a2a2a] rounded-lg overflow-y-scroll border border-gray-700">
+											<Image
+												src={product.images[index] || ''}
+												width={100}
+												height={100}
+												alt={`Product ${index + 1}`}
+												className="w-full h-full object-cover"
+											/>
+										</div>
+									))
+								)}
 							</div>
 						</CardContent>
 					</Card>
@@ -283,6 +258,53 @@ const MerchantDashboard = () => {
 						</CardContent>
 					</Card>
 				</div>
+			</div>
+
+			<div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+				<div className="lg:col-span-4"></div>
+				<Card className="bg-[#1a1a1a] border-gray-800 col-span-4">
+					<CardHeader>
+						<CardTitle className="text-white">Wallet History</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<Table>
+							<TableHeader>
+								<TableRow className="border-gray-800">
+									<TableHead className="text-gray-400">Txn Ref</TableHead>
+									<TableHead className="text-gray-400">Type</TableHead>
+									<TableHead className="text-gray-400">Amount</TableHead>
+									<TableHead className="text-gray-400">Status</TableHead>
+									<TableHead className="text-gray-400">Date</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{isLoadingWalletHistory ? (
+									<DotLoader />
+								) : (
+									walletHistory?.map((txn) => (
+										<TableRow key={txn._id} className="border-gray-800">
+											<TableCell className="text-white font-medium">{txn.reference}</TableCell>
+											<TableCell className="text-gray-300 capitalize">{txn.type}</TableCell>
+											<TableCell className="text-gray-300">{formatNaira(txn.amount)}</TableCell>
+											<TableCell>
+												<Badge
+													variant={txn.status === 'successful' ? 'default' : 'secondary'}
+													className={
+														txn.status === 'successful'
+															? 'bg-green-600/20 text-green-400 border-green-600/30 capitalize'
+															: 'bg-red-600/20 text-red-400 border-red-600/30 capitalize'
+													}>
+													{txn.status}
+												</Badge>
+											</TableCell>
+											<TableCell className="text-gray-400">{new Date(txn.createdAt).toLocaleDateString()}</TableCell>
+										</TableRow>
+									))
+								)}
+							</TableBody>
+						</Table>
+					</CardContent>
+				</Card>
 			</div>
 		</div>
 	);
