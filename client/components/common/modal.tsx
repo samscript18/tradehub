@@ -43,7 +43,7 @@ const Modal: FC<ModalProps> = ({
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        onClose;
+        onClose();
       }
     };
 
@@ -56,7 +56,7 @@ const Modal: FC<ModalProps> = ({
       window.removeEventListener("click", handleOutsideClick);
       document.body.style.overflowY = "auto";
     };
-  }, []);
+  }, [isOpen, onClose]);
 
   return (
     <>

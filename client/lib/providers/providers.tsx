@@ -40,7 +40,7 @@ const Providers = ({ children }: React.PropsWithChildren) => {
 		if (!user && accessToken) {
 			fetchUser();
 		}
-	}, []);
+	}, [user, accessToken, fetchUser]);
 
 	return (
 		<QueryClientProvider client={queryClient}>

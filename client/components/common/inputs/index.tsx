@@ -57,7 +57,7 @@ const SelectField: FC<Props> = ({
       const options = onSearch?.(search);
       setOptions(options);
     }
-  }, [search]);
+  }, [search, onSearch]);
 
   return (
     <div className={cn('relative w-[200px]', className)}>
@@ -165,7 +165,7 @@ export const Option: FC<OptionsProps> = ({
     } else {
       setFocused(false);
     }
-  });
+  }, [selectedId, option.id, index]);
 
   return (
     <div

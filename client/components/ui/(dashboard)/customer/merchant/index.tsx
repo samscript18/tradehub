@@ -21,7 +21,7 @@ const MerchantStoresPage = () => {
 		queryKey: ["get-merchants", page],
 	});
 
-	const merchants = data?.data || [];
+	const merchants = useMemo(() => data?.data ?? [], [data?.data]);
 	const totalPages = data?.meta?.totalPages || 1;
 
 	const categories = useMemo(() => {

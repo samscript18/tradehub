@@ -27,12 +27,13 @@ const AuthCallbackPage = () => {
 			router.push('/login');
 		},
 	});
+	const { mutate } = mutation;
 
 	useEffect(() => {
 		if (accessToken && email) {
-			mutation.mutate({ email, token: accessToken });
+			mutate({ email, token: accessToken });
 		}
-	}, []);
+	}, [accessToken, email, mutate]);
 
 	return (
 		<main className="flex items-center justify-center min-h-screen">

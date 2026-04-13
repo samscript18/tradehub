@@ -53,7 +53,7 @@ const DashboardLayout = ({
 		} else if (user?.role === "merchant" && pathname.startsWith("/customer")) {
 			router.push("/merchant/dashboard");
 		}
-	}, [isPending, user, pathname]);
+	}, [isPending, user, pathname, router]);
 
 	if (isPending) return <SessionCheckLoader />;
 
