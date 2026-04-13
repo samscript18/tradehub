@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { AnimatePresence, Variant, motion } from 'framer-motion';
-import React, { FC, ReactNode, useEffect, useState } from 'react';
-import { BiChevronDown } from 'react-icons/bi';
-import { dropdownVariant } from '@/lib/utils/variants';
-import Loader from '../loaders';
-import { MdClose } from 'react-icons/md';
+import { cn } from "@/lib/utils";
+import { AnimatePresence, Variant, motion } from "framer-motion";
+import React, { FC, ReactNode, useEffect, useState } from "react";
+import { BiChevronDown } from "react-icons/bi";
+import { dropdownVariant } from "@/lib/utils/variants";
+import Loader from "../loaders";
+import { MdClose } from "react-icons/md";
 
 const labelVariants: Record<string, Variant> = {
 	focused: {
-		translateY: '-15px',
+		translateY: "-15px",
 		opacity: 1,
-		visibility: 'visible',
+		visibility: "visible",
 	},
 	unfocused: {
-		color: 'gray',
+		color: "gray",
 		translateY: 0,
 		opacity: 0,
-		visibility: 'hidden',
+		visibility: "hidden",
 	},
 };
 
@@ -45,28 +45,11 @@ interface Props {
 	width?: string;
 }
 
-const SelectField: FC<Props> = ({
-	data = [],
-	value,
-	onClear,
-	width,
-	onSelect,
-	loading,
-	onSearch,
-	className,
-	inputClassName,
-	disabled,
-	placeholder,
-	showDropDownSuffix = true,
-	label,
-	helperText,
-}) => {
+const SelectField: FC<Props> = ({ data = [], value, onClear, width, onSelect, loading, onSearch, className, inputClassName, disabled, placeholder, showDropDownSuffix = true, label, helperText }) => {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [options, setOptions] = useState<Option[]>(data);
-	const [selectedOption, setSelectedOption] = useState<Option | undefined>(
-		data.find((option) => option.value === value)
-	);
-	const [search, setSearch] = useState<string>('');
+	const [selectedOption, setSelectedOption] = useState<Option | undefined>(data.find((option) => option.value === value));
+	const [search, setSearch] = useState<string>("");
 	const [labelFocused, setLabelFocused] = useState<boolean>(false);
 
 	const focusLabel = () => {
@@ -92,7 +75,7 @@ const SelectField: FC<Props> = ({
 				setOptions(filteredOptions);
 			} else {
 				const filtered = data.filter((option) => {
-					const label = typeof option.label === 'string' ? option.label : '';
+					const label = typeof option.label === "string" ? option.label : "";
 					return label.toLowerCase().includes(search.toLowerCase());
 				});
 				setOptions(filtered);
@@ -103,23 +86,16 @@ const SelectField: FC<Props> = ({
 	}, [search, data, onSearch]);
 
 	return (
-		<div className={cn(`relative ${width ? width : 'min-w-[200px]'}`, className)}>
+		<div className={cn(`relative ${width ? width : "min-w-[200px]"}`, className)}>
 			<div className="w-full">
-				<header
-					className={cn(
-						'border-b border-gray-600 focus:border-primary py-[9px] flex items-center h-full',
-						helperText && 'border-b-red-500',
-						(labelFocused || isOpen) && 'border-b-2'
-					)}>
+				<header className={cn("border-b border-gray-600 focus:border-primary py-[9px] flex items-center h-full", helperText && "border-b-red-500", (labelFocused || isOpen) && "border-b-2")}>
 					<AnimatePresence>
 						{label && (
 							<motion.label
-								className={cn(
-									'font-normal absolute top-0 left-0 text-primary text-sm',
-									helperText && '!text-red-500'
-								)}
+								className={cn("font-normal absolute top-0 left-0 text-primary text-sm", helperText && "!text-red-500")}
 								variants={labelVariants}
-								animate={labelFocused || isOpen || value ? 'focused' : 'unfocused'}>
+								animate={labelFocused || isOpen || value ? "focused" : "unfocused"}
+							>
 								{label}
 							</motion.label>
 						)}
@@ -131,19 +107,8 @@ const SelectField: FC<Props> = ({
 							setLabelFocused(false);
 							setTimeout(() => setIsOpen(false), 200);
 						}}
-						className={cn(
-							`outline-none border-none placeholder:text-sm ${
-								selectedOption && 'placeholder:text-white'
-							} text-white capitalize flex-1 w-full`,
-							inputClassName
-						)}
-						placeholder={
-							selectedOption
-								? typeof selectedOption.label === 'string'
-									? selectedOption.label
-									: value
-								: placeholder || label
-						}
+						className={cn(`outline-none border-none placeholder:text-sm ${selectedOption && "placeholder:text-white"} text-white capitalize flex-1 w-full`, inputClassName)}
+						placeholder={selectedOption ? (typeof selectedOption.label === "string" ? selectedOption.label : value) : placeholder || label}
 						value={value || search}
 						onChange={(e) => {
 							setIsOpen(true);
@@ -158,9 +123,10 @@ const SelectField: FC<Props> = ({
 							className="inline-block ml-2 cursor-pointer"
 							onClick={() => {
 								onClear?.();
-								setSearch('');
+								setSearch("");
 								setSelectedOption(undefined);
-							}}>
+							}}
+						>
 							<MdClose size={20} className="text-white" />
 						</span>
 					)}
@@ -169,13 +135,14 @@ const SelectField: FC<Props> = ({
 						<motion.span
 							variants={dropdownVariant}
 							initial="arrowClosed"
-							animate={isOpen ? 'arrowOpen' : 'arrowClosed'}
+							animate={isOpen ? "arrowOpen" : "arrowClosed"}
 							className="min-w-fit cursor-pointer"
 							onClick={() => {
 								if (!disabled) {
 									setIsOpen((prev) => !prev);
 								}
-							}}>
+							}}
+						>
 							<BiChevronDown size={20} className="text-primary" />
 						</motion.span>
 					)}
@@ -185,12 +152,7 @@ const SelectField: FC<Props> = ({
 
 			<AnimatePresence>
 				{isOpen && (
-					<motion.div
-						variants={dropdownVariant}
-						initial="hidden"
-						animate="visible"
-						exit="hidden"
-						className="absolute bg-black shadow-md w-full z-[20] max-h-[200px] overflow-y-scroll">
+					<motion.div variants={dropdownVariant} initial="hidden" animate="visible" exit="hidden" className="absolute bg-black shadow-md w-full z-[20] max-h-[200px] overflow-y-scroll">
 						{loading && (
 							<div className="max-w-fit mx-auto">
 								<Loader size={25} />
@@ -204,23 +166,17 @@ const SelectField: FC<Props> = ({
 									onClick={() => {
 										setSelectedOption(option);
 										onSelect?.(option);
-										setSearch('');
+										setSearch("");
 										setIsOpen(false);
 									}}
-									className={cn(
-										'p-4 flex items-center justify-between cursor-pointer rounded-md hover:bg-primary/50',
-										selectedOption?.id === option.id && 'bg-primary/50'
-									)}>
-									<div className="flex-1">
-										{typeof option.label === 'string' ? <p className="text-sm">{option.label}</p> : option.label}
-									</div>
+									className={cn("p-4 flex items-center justify-between cursor-pointer rounded-md hover:bg-primary/50", selectedOption?.id === option.id && "bg-primary/50")}
+								>
+									<div className="flex-1">{typeof option.label === "string" ? <p className="text-sm">{option.label}</p> : option.label}</div>
 								</div>
 							))}
 						</div>
 
-						{options.length === 0 && (
-							<div className="p-2 text-center text-gray-500 text-sm">No options available</div>
-						)}
+						{options.length === 0 && <div className="p-2 text-center text-gray-500 text-sm">No options available</div>}
 					</motion.div>
 				)}
 			</AnimatePresence>

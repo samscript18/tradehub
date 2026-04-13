@@ -1,8 +1,7 @@
 'use client';
 import Button from '@/components/common/button';
-import { Rating } from '@/components/common/rating';
-import { categories, merchantStores } from '@/lib/data';
-import { homeBgImg } from '@/public/images';
+import { categories } from '@/lib/data';
+import { avatar1, homeBgImg } from '@/public/images';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { FaStore } from 'react-icons/fa';
@@ -10,7 +9,7 @@ import { FaTruck } from 'react-icons/fa6';
 import { IoIosArrowForward } from 'react-icons/io';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { getProducts } from '@/lib/services/customer.service';
+import { getMerchants, getProducts } from '@/lib/services/customer.service';
 import Product from '../ui/product';
 import Loader from '@/components/common/loaders';
 
@@ -18,6 +17,11 @@ const HomeDashboard = () => {
 	const { data, isPending } = useQuery({
 		queryFn: () => getProducts({ page: Number(1), limit: Number(10) }),
 		queryKey: ['get-products'],
+	});
+
+	const { data: merchantsResponse, isPending: isPendingMerchants } = useQuery({
+		queryFn: () => getMerchants({ page: Number(1), limit: Number(8) }),
+		queryKey: ['get-merchants-preview'],
 	});
 	return (
 		<section>
@@ -107,7 +111,7 @@ const HomeDashboard = () => {
 						}}>
 						Top Local Merchants
 					</motion.h2>
-					<Link href={'/customer/products'}>
+					<Link href={'/customer/merchant'}>
 						<motion.p
 							className="text-xs text-primary cursor-pointer"
 							initial="hidden"
@@ -131,11 +135,11 @@ const HomeDashboard = () => {
 					whileInView="visible"
 					viewport={{ once: true, amount: 0.5 }}
 					transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
-					{merchantStores.map((merchant) => {
+					{merchantsResponse?.data?.map((merchant) => {
 						return (
 							<motion.div
 								className="flex flex-col min-w-[155px] sm:min-w-[170px] md:w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md"
-								key={merchant.id}
+								key={merchant._id}
 								variants={{
 									hidden: {
 										opacity: 0,
@@ -150,26 +154,25 @@ const HomeDashboard = () => {
 									},
 								}}>
 								<Image
-									src={merchant.img}
-									alt={merchant.name}
+									src={merchant.storeLogo || avatar1}
+									alt={merchant.storeName}
 									width={350}
 									height={180}
-									className="w-full h-full rounded-t-xl"
+									className="w-full h-full rounded-t-xl object-cover"
 								/>
 								<div className="bg-[#1E2A3B] p-2 space-y-2 shadow-md rounded-b-xl">
-									<h3 className="text-sm font-bold">{merchant.name}</h3>
-									{Rating(merchant.rating)}
+									<h3 className="text-sm font-bold">{merchant.storeName}</h3>
 									<motion.div
 										className="flex gap-4 flex-wrap"
 										initial="hidden"
 										whileInView="visible"
 										viewport={{ once: true, amount: 0.5 }}
 										transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
-										{merchant.categories.map((category) => {
+										{merchant.storeCategory?.slice(0, 2)?.map((category) => {
 											return (
 												<motion.div
 													className="bg-primary/15 p-1.5 rounded-full shadow-md cursor-pointer flex justify-center items-center"
-													key={category.id}
+													key={category}
 													variants={{
 														hidden: {
 															opacity: 0,
@@ -183,19 +186,27 @@ const HomeDashboard = () => {
 															},
 														},
 													}}>
-													<p className="text-[10px] text-primary">{category.name}</p>
+													<p className="text-[10px] text-primary">{category}</p>
 												</motion.div>
 											);
 										})}
 									</motion.div>
-									<Button fullWidth variant="filled" className="px-4 py-1.5 w-full font-normal mt-1 text-xs">
-										View Store
-									</Button>
+									<Link href={`/customer/merchant/${merchant._id}`}>
+										<Button fullWidth variant="filled" className="px-4 py-1.5 w-full font-normal mt-1 text-xs">
+											View Store
+										</Button>
+									</Link>
 								</div>
 							</motion.div>
 						);
 					})}
 				</motion.div>
+				{isPendingMerchants && (
+					<div className="flex justify-center items-center gap-4">
+						<Loader />
+						<p className="font-medium">Fetching stores...</p>
+					</div>
+				)}
 				<div className="flex justify-between items-center mt-6 md:mt-8">
 					<motion.h2
 						className="text-md font-bold"

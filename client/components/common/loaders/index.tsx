@@ -1,16 +1,16 @@
-import { LoaderIcon } from 'lucide-react';
-import { FC } from 'react';
+import { LoaderIcon } from "lucide-react";
+import { FC } from "react";
 
 interface Props {
 	size?: number;
 	text?: string;
 }
 
-const Loader: FC<Props> = ({ size = 40, text }) => {
+const Loader: FC<Props> = ({ size = 22, text }) => {
 	return (
-		<div className="flex justify-center items-center gap-8 rounded-full bg-[#242424] shadow-md animate-pulse">
+		<div role="status" aria-live="polite" className="inline-flex items-center justify-center gap-3 rounded-xl dashboard-input border border-slate-700/70 px-4 py-2.5 shadow-md">
 			<LoaderIcon className="animate-spin text-primary" size={size} />
-			<p className="text-sm text-primary">{text}</p>
+			{text && <p className="text-sm text-slate-100">{text}</p>}
 		</div>
 	);
 };

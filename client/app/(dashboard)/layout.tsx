@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useAuth } from '@/lib/store/auth.store';
-import { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import SessionCheckLoader from '@/components/common/loaders/session-check';
-import CustomerDashboardSidebar from '@/components/layout/(dashboard)/customer/sidebar';
-import CustomerDashboardNavbar from '@/components/layout/(dashboard)/customer/navbar';
-import MerchantDashboardSidebar from '@/components/layout/(dashboard)/merchant/sidebar';
-import MerchantDashboardNavbar from '@/components/layout/(dashboard)/merchant/navbar';
-import { usePathname, useRouter } from 'next/navigation';
-import CustomerDashboardFooter from '@/components/layout/(dashboard)/customer/footer';
-import MerchantDashboardFooter from '@/components/layout/(dashboard)/merchant/footer';
+import { useAuth } from "@/lib/store/auth.store";
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import SessionCheckLoader from "@/components/common/loaders/session-check";
+import CustomerDashboardSidebar from "@/components/layout/(dashboard)/customer/sidebar";
+import CustomerDashboardNavbar from "@/components/layout/(dashboard)/customer/navbar";
+import MerchantDashboardSidebar from "@/components/layout/(dashboard)/merchant/sidebar";
+import MerchantDashboardNavbar from "@/components/layout/(dashboard)/merchant/navbar";
+import { usePathname, useRouter } from "next/navigation";
+import CustomerDashboardFooter from "@/components/layout/(dashboard)/customer/footer";
+import MerchantDashboardFooter from "@/components/layout/(dashboard)/merchant/footer";
 
 const DashboardLayout = ({
 	children,
@@ -25,8 +25,8 @@ const DashboardLayout = ({
 		const init = async () => {
 			try {
 				setIsPending(true);
-				const access_token = Cookies.get('access_token');
-				const refresh_token = Cookies.get('refresh_token');
+				const access_token = Cookies.get("access_token");
+				const refresh_token = Cookies.get("refresh_token");
 				if (access_token && refresh_token) {
 					setToken(access_token, refresh_token);
 				}
@@ -45,13 +45,13 @@ const DashboardLayout = ({
 		if (isPending) return;
 
 		if (!user) {
-			router.push('/login');
+			router.push("/login");
 		}
 
-		if (user?.role === 'customer' && pathname.startsWith('/merchant')) {
-			router.push('/customer/home');
-		} else if (user?.role === 'merchant' && pathname.startsWith('/customer')) {
-			router.push('/merchant/dashboard');
+		if (user?.role === "customer" && pathname.startsWith("/merchant")) {
+			router.push("/customer/home");
+		} else if (user?.role === "merchant" && pathname.startsWith("/customer")) {
+			router.push("/merchant/dashboard");
 		}
 	}, [isPending, user, pathname]);
 
@@ -59,25 +59,25 @@ const DashboardLayout = ({
 
 	return (
 		<>
-			{user?.role === 'customer' && (
-				<main className="flex min-h-screen">
+			{user?.role === "customer" && (
+				<main className="dashboard-shell flex min-h-screen">
 					<CustomerDashboardSidebar />
-					<div className="w-full flex-1 bg-[#B0B0B0]/10 h-screen flex flex-col">
+					<div className="w-full flex-1 min-h-screen flex flex-col">
 						<CustomerDashboardNavbar />
-						<div className="overflow-y-scroll">
-							<div className="flex-1 pb-4">{children}</div>
+						<div className="overflow-y-auto">
+							<div className="flex-1 pb-4 dashboard-enter">{children}</div>
 							<CustomerDashboardFooter />
 						</div>
 					</div>
 				</main>
-			)}{' '}
-			{user?.role === 'merchant' && (
-				<main className="flex min-h-screen">
+			)}{" "}
+			{user?.role === "merchant" && (
+				<main className="dashboard-shell flex min-h-screen">
 					<MerchantDashboardSidebar />
-					<div className="w-full flex-1 bg-[#B0B0B0]/10 h-screen flex flex-col">
+					<div className="w-full flex-1 min-h-screen flex flex-col">
 						<MerchantDashboardNavbar />
-						<div className="overflow-y-scroll">
-							<div className="flex-1 pb-4">{children}</div>
+						<div className="overflow-y-auto">
+							<div className="flex-1 pb-4 dashboard-enter">{children}</div>
 							<MerchantDashboardFooter />
 						</div>
 					</div>

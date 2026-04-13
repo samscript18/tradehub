@@ -3,7 +3,7 @@ import { authApi } from "../config/axios-instance";
 import { CheckoutDto, GetCustomerOrdersQueryDto, GetProductsQueryDto } from "../dtos";
 import { ApiResponse } from "../types";
 import { UpdateProfile } from "../types/auth";
-import { Customer, CustomerOrder, DeliveryAddress, Product, ProductFilters } from "../types/types";
+import { Customer, CustomerOrder, DeliveryAddress, Merchant, Product, ProductFilters } from "../types/types";
 
 export const getCustomer = async () => {
   try {
@@ -65,6 +65,44 @@ export const getProducts = async (query?: GetProductsQueryDto) => {
 
     return response?.data;
   } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+    throw error;
+  }
+};
+
+export const getMerchants = async (params?: { page?: number; limit?: number; search?: string }) => {
+  try {
+    const response = await authApi.get<ApiResponse<Merchant[]>>('/merchant', {
+      params,
+    });
+
+    return response?.data;
+  } catch (error) {
+    errorHandler(error as AxiosErrorShape | string);
+    throw error;
+  }
+};
+
+export const getMerchantById = async (merchantId: string) => {
+  try {
+    const response = await authApi.get<ApiResponse<Merchant>>(`/merchant/${merchantId}`);
+
+    return response?.data?.data;
+  } catch (error) {
+    try {
+      const fallback = await authApi.get<ApiResponse<Merchant[]>>('/merchant', {
+        params: { page: 1, limit: 100 },
+      });
+
+      const merchant = fallback?.data?.data?.find((item) => item._id === merchantId);
+
+      if (merchant) {
+        return merchant;
+      }
+    } catch (fallbackError) {
+      errorHandler(fallbackError as AxiosErrorShape | string);
+    }
+
     errorHandler(error as AxiosErrorShape | string);
     throw error;
   }
