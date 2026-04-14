@@ -7,15 +7,22 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, User, Bell } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const MerchantDashboardNavbar = () => {
 	const router = useRouter();
+	const [search, setSearch] = useState("");
 	const { user } = useAuth();
 	const { data: unreadNotificationsCount } = useQuery({
 		queryFn: () => getUnreadNotificationsCount(),
 		queryKey: ["get-unread-notifications-count"],
 		refetchInterval: 3600,
 	});
+
+	const handleSearch = () => {
+		const query = search.trim();
+		router.push(query ? `/merchant/products?search=${encodeURIComponent(query)}` : "/merchant/products");
+	};
 
 	return (
 		<nav className="sticky top-0 z-20 mx-6 mt-3 rounded-2xl dashboard-panel px-4 py-3 md:px-6 md:py-4 flex justify-between items-center">
@@ -25,6 +32,13 @@ const MerchantDashboardNavbar = () => {
 					<Input
 						placeholder="Search for products"
 						className="pl-10 dashboard-input border-slate-700/60 text-white placeholder:text-slate-400 rounded-xl focus:outline-none focus-visible:ring-0 focus-visible:border-primary focus-visible:ring-offset-0"
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								handleSearch();
+							}
+						}}
 					/>
 				</div>
 			</div>

@@ -1,27 +1,28 @@
-'use client';
+"use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Phone, MapPin, Star, Car } from 'lucide-react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
-import Loader from '@/components/common/loaders';
-import { avatar1 } from '@/public/images';
-import BackButton from '@/components/common/button/back-button';
-import { DeliveryMap } from '../../../customer/orders/delivery-map';
-import { getMerchantOrder, updateMerchantOrder } from '@/lib/services/merchant.service';
-import Image from 'next/image';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Phone, MapPin, Star, Car } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import Loader from "@/components/common/loaders";
+import { avatar1 } from "@/public/images";
+import BackButton from "@/components/common/button/back-button";
+import { DeliveryMap } from "../../../customer/orders/delivery-map";
+import { getMerchantOrder, updateMerchantOrder } from "@/lib/services/merchant.service";
+import Image from "next/image";
+import { OrderStatus } from "@/lib/enums";
 
 export default function TrackOrderDeliveryPage() {
 	const { orderId } = useParams<{ orderId: string }>();
 	const { data: order, isLoading } = useQuery({
 		queryFn: () => getMerchantOrder(orderId),
-		queryKey: ['get-merchant-order', orderId],
+		queryKey: ["get-merchant-order", orderId],
 	});
 	const { mutateAsync, isPending } = useMutation({
-		mutationFn: () => updateMerchantOrder(orderId, { status: 'processing' }),
-		mutationKey: ['update-merchant-order', orderId],
+		mutationFn: () => updateMerchantOrder(orderId, { status: "processing" }),
+		mutationKey: ["update-merchant-order", orderId],
 	});
 	return (
 		<>
@@ -44,8 +45,10 @@ export default function TrackOrderDeliveryPage() {
 							variant="ghost"
 							size="sm"
 							className="text-white bg-primary p-4 text-xs max-md:mt-2.5 cursor-pointer"
-							onClick={() => mutateAsync()}>
-							{isPending ? 'Initiating' : 'Initiate Order Processing'}
+							disabled={order?.status === OrderStatus.PROCESSING || isPending}
+							onClick={() => mutateAsync()}
+						>
+							{isPending ? "Initiating" : "Initiate Order Processing"}
 						</Button>
 					</div>
 
@@ -117,15 +120,15 @@ export default function TrackOrderDeliveryPage() {
 												return (
 													<div key={idx} className="flex items-center gap-4">
 														<Image
-															src={item.product.images[0] || ''}
-															alt={item.product.name || ''}
+															src={item.product.images[0] || ""}
+															alt={item.product.name || ""}
 															width={50}
 															height={50}
 															className="w-[50px] h-[50px] object-cover rounded-full"
 														/>
 														<div>
 															{item.product.name}
-															{` (${item.quantity}${item.quantity > 1 ? 'x' : ''})`}
+															{` (${item.quantity}${item.quantity > 1 ? "x" : ""})`}
 														</div>
 													</div>
 												);

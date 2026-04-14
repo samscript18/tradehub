@@ -6,12 +6,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getNotifications, markAllAsRead, markAsRead } from "@/lib/services/notification.service";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/lib/store/auth.store";
-// import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 export default function NotificationsPage() {
 	const queryClient = useQueryClient();
 	const { user } = useAuth();
-	// const router = useRouter();
+	const router = useRouter();
 	const { data: notifications, isLoading } = useQuery({
 		queryFn: () => getNotifications(),
 		queryKey: ["get-notifications"],
@@ -32,6 +32,60 @@ export default function NotificationsPage() {
 			queryClient.invalidateQueries({ queryKey: ["get-notifications"] });
 		},
 	});
+
+	const getNotificationRoute = (notification: {
+		type: string;
+		relatedOrderId?: string;
+		relatedOrderGroupId?: string;
+	}) => {
+		if (!user?.role) return undefined;
+
+		if (user.role === "merchant") {
+			if (notification.relatedOrderId) {
+				return `/merchant/orders/${notification.relatedOrderId}`;
+			}
+
+			if (notification.relatedOrderGroupId) {
+				return "/merchant/orders";
+			}
+
+			if (notification.type.startsWith("order_") || notification.type.startsWith("payment_")) {
+				return "/merchant/orders";
+			}
+
+			return undefined;
+		}
+
+		if (user.role === "customer") {
+			if (notification.relatedOrderGroupId) {
+				return `/customer/orders/${notification.relatedOrderGroupId}`;
+			}
+
+			if (notification.relatedOrderId) {
+				return "/customer/orders";
+			}
+
+			if (notification.type.startsWith("order_") || notification.type.startsWith("payment_")) {
+				return "/customer/orders";
+			}
+		}
+
+		return undefined;
+	};
+
+	const handleNotificationClick = async (notification: {
+		_id: string;
+		type: string;
+		relatedOrderId?: string;
+		relatedOrderGroupId?: string;
+	}) => {
+		await _markAsRead(notification._id);
+
+		const route = getNotificationRoute(notification);
+		if (route) {
+			router.push(route);
+		}
+	};
 
 	return (
 		<div className="space-y-6 p-4 md:p-6">
@@ -66,7 +120,7 @@ export default function NotificationsPage() {
 							{notifications?.map((notification) => (
 								<div
 									key={notification._id}
-									onClick={() => _markAsRead(notification._id)}
+									onClick={() => handleNotificationClick(notification)}
 									className="dashboard-panel dashboard-glow-hover rounded-2xl p-3 md:p-4 cursor-pointer border border-slate-700/70"
 								>
 									<div className="flex items-center gap-4">

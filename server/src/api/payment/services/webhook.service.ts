@@ -117,6 +117,7 @@ export class WebhookService {
       await this.notificationProvider.createNotification({
         message: `Your payment to process the order ORD-${orders.data?.[0].groupId.toUpperCase()} was successful.`,
         type: 'payment_successful',
+        relatedOrderGroupId: orders.data?.[0].groupId,
       }, customer.user._id.toString());
     }
 

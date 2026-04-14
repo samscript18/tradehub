@@ -48,7 +48,7 @@ export const getProducts = async (query?: GetProductsQueryDto) => {
   try {
     const response = await authApi.get<ApiResponse<Product[]>>('/product/merchant', {
       params: {
-        // ...query,
+        search: query?.search,
         category: query?.category,
         priceRangeMin: query?.priceRange?.min,
 

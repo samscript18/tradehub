@@ -1,45 +1,37 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { Minus, Plus, Trash2, Clock, MapPin, ShieldCheck } from 'lucide-react';
-import Button from '@/components/common/button';
-import { RadioGroup, RadioGroupItem } from '@/components/common/radio-group';
-import { DeliveryAddress } from '@/lib/types/types';
-import { useAuth } from '@/lib/store/auth.store';
-import TextField from '@/components/common/inputs/text-field';
-import { useForm } from 'react-hook-form';
-import { REGEX } from '@/lib/utils/regex';
-import { useCart } from '@/lib/store/cart.store';
-import { Label } from '@/components/ui/label';
-import { formatNaira } from '@/lib/helpers';
-import { addDeliveryAddress, initiateCheckout } from '@/lib/services/customer.service';
-import { useMutation } from '@tanstack/react-query';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Minus, Plus, Trash2, Clock, MapPin, ShieldCheck } from "lucide-react";
+import Button from "@/components/common/button";
+import { RadioGroup, RadioGroupItem } from "@/components/common/radio-group";
+import { DeliveryAddress } from "@/lib/types/types";
+import { useAuth } from "@/lib/store/auth.store";
+import TextField from "@/components/common/inputs/text-field";
+import { useForm } from "react-hook-form";
+import { REGEX } from "@/lib/utils/regex";
+import { useCart } from "@/lib/store/cart.store";
+import { Label } from "@/components/ui/label";
+import { formatNaira } from "@/lib/helpers";
+import { addDeliveryAddress, initiateCheckout } from "@/lib/services/customer.service";
+import { useMutation } from "@tanstack/react-query";
 
 const CartPage = () => {
 	const { user } = useAuth();
-	const {
-		items: cartItems,
-		updateQuantity,
-		removeItem,
-		loadItems,
-		subtotal,
-		deliveryFee,
-		total,
-	} = useCart();
+	const { items: cartItems, updateQuantity, removeItem, loadItems, subtotal, deliveryFee, total } = useCart();
 	const { fetchUser } = useAuth();
 	const [isEdit, setIsEdit] = useState<boolean>(false);
-	const [selectedAddress, setSelectedAddress] = useState<string>('0');
+	const [selectedAddress, setSelectedAddress] = useState<string>("0");
 	const { mutateAsync, isPending } = useMutation({
 		mutationFn: initiateCheckout,
-		mutationKey: ['initiate-checkout'],
+		mutationKey: ["initiate-checkout"],
 		onSuccess(data) {
 			window.location.href = data.paymentUrl;
 		},
 	});
 	const { mutateAsync: _addDeliveryInfo, isPending: _isAddingDeliveryInfo } = useMutation({
 		mutationFn: addDeliveryAddress,
-		mutationKey: ['add-delivery-info'],
+		mutationKey: ["add-delivery-info"],
 	});
 
 	const {
@@ -80,41 +72,36 @@ const CartPage = () => {
 									<div key={item._id} className="bg-[#181A20] rounded-lg shadow-lg p-4">
 										<div className="flex max-md:flex-col items-center gap-4">
 											<div className="w-25 md:w-20 h-25 md:h-20 rounded-lg overflow-hidden flex-shrink-0">
-												<Image
-													src={item.images[0]}
-													alt={item.name}
-													width={80}
-													height={80}
-													className="w-full h-full object-cover"
-												/>
+												<Image src={item.images[0]} alt={item.name} width={80} height={80} className="w-full h-full object-cover" />
 											</div>
 
 											<div className="flex-1 min-w-0">
 												<h3 className="font-semibold text-sm mb-1">{item.name}</h3>
 												<p className="text-xs text-gray-400 mb-2 max-md:text-center">{item.merchant.storeName}</p>
-												<p className="text-primary font-semibold max-md:text-center">
-													{formatNaira(item.variants[0].price)}
-												</p>
+												<p className="text-primary font-semibold max-md:text-center">{formatNaira(item.variants[0].price)}</p>
 											</div>
 
 											<div className="flex items-center gap-8">
 												<div className="flex items-center gap-3">
 													<button
 														onClick={() => updateQuantity(item._id!, item.quantity! - 1)}
-														className="p-2 bg-[#1E2028] rounded-lg shadow-md cursor-pointer">
+														className="p-2 bg-[#1E2028] rounded-lg shadow-md cursor-pointer"
+													>
 														<Minus className="w-4 h-4" />
 													</button>
 													<span className="px-3 py-2 min-w-[3rem] text-sm font-semibold text-center">{item.quantity}</span>
 													<button
 														onClick={() => updateQuantity(item._id!, item.quantity! + 1)}
-														className="p-2 bg-[#1E2028] rounded-lg shadow-md cursor-pointer">
+														className="p-2 bg-[#1E2028] rounded-lg shadow-md cursor-pointer"
+													>
 														<Plus className="w-4 h-4" />
 													</button>
 												</div>
 
 												<button
 													onClick={() => removeItem(item._id!)}
-													className="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-lg cursor-pointer">
+													className="p-2 text-gray-400 hover:text-red-400 hover:bg-gray-800 rounded-lg cursor-pointer"
+												>
 													<Trash2 className="w-4 h-4" />
 												</button>
 											</div>
@@ -130,21 +117,19 @@ const CartPage = () => {
 								<h3 className="text-sm font-bold">Delivery Address</h3>
 							</div>
 							{isEdit ? (
-								<form
-									onSubmit={handleSubmit(submit)}
-									className="mt-8 space-y-4 md:space-y-8 grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#181A20] rounded-lg shadow-lg p-4 md:p-8">
+								<form onSubmit={handleSubmit(submit)} className="mt-8 space-y-4 md:space-y-8 grid grid-cols-1 lg:grid-cols-2 gap-6 bg-[#181A20] rounded-lg shadow-lg p-4 md:p-8">
 									<TextField
 										label="Full Name"
 										className="col-span-2"
 										InputProps={{
-											placeholder: 'e.g John Smilga',
-											...register('fullName', {
+											placeholder: "e.g John Smilga",
+											...register("fullName", {
 												required: {
 													value: true,
-													message: 'This field is required',
+													message: "This field is required",
 												},
 											}),
-											className: 'text-xs',
+											className: "text-xs",
 										}}
 										helperText={errors?.fullName?.message}
 									/>
@@ -153,19 +138,19 @@ const CartPage = () => {
 										label="Phone number"
 										className="col-span-2"
 										InputProps={{
-											placeholder: 'e.g 08012642233',
-											type: 'tel',
-											...register('phoneNumber', {
+											placeholder: "e.g 08012642233",
+											type: "tel",
+											...register("phoneNumber", {
 												required: {
 													value: true,
-													message: 'This field is required',
+													message: "This field is required",
 												},
 												pattern: {
 													value: REGEX.PHONE_NUMBER,
-													message: 'Enter a valid phone number',
+													message: "Enter a valid phone number",
 												},
 											}),
-											className: 'text-xs',
+											className: "text-xs",
 										}}
 										helperText={errors?.phoneNumber?.message}
 									/>
@@ -173,14 +158,14 @@ const CartPage = () => {
 										label="Street Address"
 										className="col-span-2"
 										InputProps={{
-											placeholder: 'e.g your street address',
-											...register('street', {
+											placeholder: "e.g your street address",
+											...register("street", {
 												required: {
 													value: true,
-													message: 'This field is required',
+													message: "This field is required",
 												},
 											}),
-											className: 'text-xs',
+											className: "text-xs",
 										}}
 										helperText={errors?.street?.message}
 									/>
@@ -189,14 +174,14 @@ const CartPage = () => {
 										label="City"
 										className="col-span-2 lg:col-span-1"
 										InputProps={{
-											placeholder: 'e.g your city',
-											...register('city', {
+											placeholder: "e.g your city",
+											...register("city", {
 												required: {
 													value: true,
-													message: 'This field is required',
+													message: "This field is required",
 												},
 											}),
-											className: 'text-xs',
+											className: "text-xs",
 										}}
 										helperText={errors?.city?.message}
 									/>
@@ -205,14 +190,14 @@ const CartPage = () => {
 										label="State"
 										className="col-span-2 lg:col-span-1"
 										InputProps={{
-											placeholder: 'e.g your state',
-											...register('state', {
+											placeholder: "e.g your state",
+											...register("state", {
 												required: {
 													value: true,
-													message: 'This field is required',
+													message: "This field is required",
 												},
 											}),
-											className: 'text-xs',
+											className: "text-xs",
 										}}
 										helperText={errors?.state?.message}
 									/>
@@ -221,25 +206,19 @@ const CartPage = () => {
 										label="Postal Code"
 										className="col-span-2 lg:col-span-1"
 										InputProps={{
-											type: 'tel',
-											placeholder: 'e.g your postalcode',
-											...register('postalcode', {
+											type: "tel",
+											placeholder: "e.g your postalcode",
+											...register("postalcode", {
 												required: {
 													value: true,
-													message: 'This field is required',
+													message: "This field is required",
 												},
 											}),
-											className: 'text-xs',
+											className: "text-xs",
 										}}
 										helperText={errors?.postalcode?.message}
 									/>
-									<Button
-										fullWidth
-										loading={_isAddingDeliveryInfo}
-										variant="filled"
-										size="medium"
-										className="col-span-2 text-xs"
-										type="submit">
+									<Button fullWidth loading={_isAddingDeliveryInfo} variant="filled" size="medium" className="col-span-2 text-xs" type="submit">
 										Save details
 									</Button>
 								</form>
@@ -251,14 +230,11 @@ const CartPage = () => {
 												<Label
 													htmlFor={index.toString()}
 													className={`block p-6 rounded-lg border-1 cursor-pointer transition-all ${
-														selectedAddress === index.toString() ? 'border-primary' : 'border-gray-700 hover:border-gray-600'
-													}`}>
+														selectedAddress === index.toString() ? "border-primary" : "border-gray-700 hover:border-gray-600"
+													}`}
+												>
 													<div className="flex items-start gap-4">
-														<RadioGroupItem
-															value={index.toString()}
-															id={index.toString()}
-															className="border-gray-600 text-primary"
-														/>
+														<RadioGroupItem value={index.toString()} id={index.toString()} className="border-gray-600 text-primary" />
 														<div className="flex-1">
 															<div className="font-medium text-sm mb-1">
 																{address.fullName ? address.fullName : `${user.firstName} ${user.lastName}`}
@@ -284,7 +260,8 @@ const CartPage = () => {
 										fullWidth
 										icon={<Plus className="w-4 h-4" />}
 										iconPosition="left"
-										className="mt-6 w-full bg-[#181A20] text-xs py-3 font-medium border-gray-700 text-primary hover:bg-primary/10 hover:border-primary">
+										className="mt-6 w-full bg-[#181A20] text-xs py-3 font-medium border-gray-700 text-primary hover:bg-primary/10 hover:border-primary"
+									>
 										Add New Address
 									</Button>
 								</>
@@ -318,15 +295,15 @@ const CartPage = () => {
 									if (!user?.addresses || !selectedAddress) return;
 									const data = {
 										address: {
-											country: user.addresses[Number(selectedAddress)].country || '',
-											state: user.addresses[Number(selectedAddress)].state || '',
-											street: user.addresses[Number(selectedAddress)].street || '',
-											city: user.addresses[Number(selectedAddress)].city || '',
-											postalcode: user.addresses[Number(selectedAddress)].postalcode || '',
+											country: user.addresses[Number(selectedAddress)].country || "",
+											state: user.addresses[Number(selectedAddress)].state || "",
+											street: user.addresses[Number(selectedAddress)].street || "",
+											city: user.addresses[Number(selectedAddress)].city || "",
+											postalcode: user.addresses[Number(selectedAddress)].postalcode || "",
 										},
 										price: total(),
 										products: cartItems.map((item) => ({
-											productId: item._id || '',
+											productId: item._id || "",
 											variant: item.selectedVariant,
 											quantity: item.quantity,
 											price: item.selectedVariant.price,
@@ -336,7 +313,9 @@ const CartPage = () => {
 								}}
 								fullWidth
 								variant="filled"
-								className="w-full mb-4 text-sm cursor-pointer">
+								className="w-full mb-4 text-sm cursor-pointer"
+								disabled={cartItems.length === 0 || total() === 0}
+							>
 								Proceed to Checkout
 							</Button>
 

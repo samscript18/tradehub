@@ -86,6 +86,7 @@ export class OrderProvider {
             await this.notificationProvider.createNotification({
               message: `New order #${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
               type: 'order_placed',
+              relatedOrderId: order._id.toString(),
             }, merchant.user._id.toString());
           }
 
@@ -297,7 +298,8 @@ export class OrderProvider {
     if (user && !user.notificationsDisabled) {
       await this.notificationProvider.createNotification({
         message: `Order ${data._id} has been updated to ${data.status}`,
-        type: 'order_updated'
+        type: 'order_updated',
+        relatedOrderGroupId: data.groupId,
       }, customer.user._id.toString());
     }
 

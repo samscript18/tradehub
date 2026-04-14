@@ -107,7 +107,7 @@ export default function OrderHistoryPage() {
 			</section>
 
 			<div className="flex flex-col sm:flex-row gap-4">
-				<Select defaultValue="today">
+				{/* <Select defaultValue="today">
 					<SelectTrigger className="w-full sm:w-48 dashboard-input border-slate-700 rounded-xl">
 						<SelectValue className="cursor-pointer" />
 					</SelectTrigger>
@@ -125,7 +125,7 @@ export default function OrderHistoryPage() {
 							Last 3 months
 						</SelectItem>
 					</SelectContent>
-				</Select>
+				</Select> */}
 
 				<div className="relative flex-1">
 					<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />

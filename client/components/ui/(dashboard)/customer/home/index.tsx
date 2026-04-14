@@ -129,30 +129,12 @@ const HomeDashboard = () => {
 						</motion.p>
 					</Link>
 				</div>
-				<motion.div
-					className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6"
-					initial="hidden"
-					whileInView="visible"
-					viewport={{ once: true, amount: 0.5 }}
-					transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
+				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
 					{merchantsResponse?.data?.map((merchant) => {
 						return (
-							<motion.div
+							<div
 								className="flex flex-col min-w-[155px] sm:min-w-[170px] md:w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md"
-								key={merchant._id}
-								variants={{
-									hidden: {
-										opacity: 0,
-										y: 30,
-									},
-									visible: {
-										opacity: 1,
-										y: 0,
-										transition: {
-											duration: 0.8,
-										},
-									},
-								}}>
+								key={merchant._id}>
 								<Image
 									src={merchant.storeLogo || avatar1}
 									alt={merchant.storeName}
@@ -197,10 +179,15 @@ const HomeDashboard = () => {
 										</Button>
 									</Link>
 								</div>
-							</motion.div>
+							</div>
 						);
 					})}
-				</motion.div>
+				</div>
+				{!isPendingMerchants && !merchantsResponse?.data?.length && (
+					<div className="dashboard-panel rounded-2xl p-8 text-center">
+						<p className="font-semibold text-white">No stores available right now</p>
+					</div>
+				)}
 				{isPendingMerchants && (
 					<div className="flex justify-center items-center gap-4">
 						<Loader />

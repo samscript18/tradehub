@@ -181,6 +181,8 @@ export interface Notification {
   message: string;
   type: string;
   data?: NotificationData;
+  relatedOrderId?: string;
+  relatedOrderGroupId?: string;
   isRead: boolean;
   createdAt: string;
   updatedAt: string;

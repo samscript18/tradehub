@@ -7,6 +7,12 @@ export class CreateNotificationDto {
   @IsString(false)
   message: string;
 
+  @IsString(true)
+  relatedOrderId?: string;
+
+  @IsString(true)
+  relatedOrderGroupId?: string;
+
   @ApiProperty()
   @IsIn([
     'order_placed',

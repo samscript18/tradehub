@@ -40,6 +40,9 @@ export class Notification {
     required: false
   })
   relatedOrderId?: OrderDocument;
+
+  @Prop({ required: false })
+  relatedOrderGroupId?: string;
 }
 
 export type NotificationDocument = HydratedDocument<Notification>

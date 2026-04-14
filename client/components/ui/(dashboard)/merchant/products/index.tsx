@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getProductsFilters } from "@/lib/services/customer.service";
 import { useState } from "react";
 import { getProducts } from "@/lib/services/merchant.service";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ProductGridSkeleton = () => (
 	<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-4">
@@ -34,6 +34,8 @@ const ProductsPage = () => {
 	}>({});
 	const [page, setPage] = useState<number>(1);
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const search = searchParams.get("search")?.trim();
 
 	const { data: filters } = useQuery({
 		queryFn: () => getProductsFilters(),
@@ -41,9 +43,14 @@ const ProductsPage = () => {
 	});
 
 	const queryFilter: {
+		search?: string;
 		category?: string;
 		priceRange?: { min: number; max: number | null };
 	} = {};
+
+	if (search) {
+		queryFilter["search"] = search;
+	}
 
 	if (filter.category) {
 		queryFilter["category"] = String(filter.category);
@@ -61,7 +68,7 @@ const ProductsPage = () => {
 				...queryFilter,
 			}),
 
-		queryKey: ["get-merchant-products", filter, page],
+		queryKey: ["get-merchant-products", search, filter, page],
 	});
 
 	const totalPages = data?.meta?.totalPages || 1;

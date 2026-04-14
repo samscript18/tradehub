@@ -33,10 +33,7 @@ const MerchantStoresPage = () => {
 		const query = search.trim().toLowerCase();
 
 		return merchants.filter((merchant) => {
-			const matchesSearch =
-				!query ||
-				merchant.storeName.toLowerCase().includes(query) ||
-				(merchant.storeDescription || "").toLowerCase().includes(query);
+			const matchesSearch = !query || merchant.storeName.toLowerCase().includes(query) || (merchant.storeDescription || "").toLowerCase().includes(query);
 
 			const matchesCategory = selectedCategory === "all" || (merchant.storeCategory || []).includes(selectedCategory);
 
@@ -68,9 +65,7 @@ const MerchantStoresPage = () => {
 							key={category}
 							onClick={() => setSelectedCategory(category)}
 							className={`px-3 py-1.5 rounded-full text-xs border transition-colors cursor-pointer ${
-								selectedCategory === category
-									? "border-primary bg-primary/20 text-primary"
-									: "border-slate-700 text-slate-300 hover:border-slate-500"
+								selectedCategory === category ? "border-primary bg-primary/20 text-primary" : "border-slate-700 text-slate-300 hover:border-slate-500"
 							}`}
 						>
 							{category === "all" ? "All Categories" : category}
@@ -97,13 +92,7 @@ const MerchantStoresPage = () => {
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
 					{filteredMerchants.map((merchant) => (
 						<div key={merchant._id} className="dashboard-panel rounded-2xl overflow-hidden">
-							<Image
-								src={merchant.storeLogo || avatar1}
-								alt={merchant.storeName}
-								width={500}
-								height={220}
-								className="w-full h-44 object-cover"
-							/>
+							<Image src={merchant.storeLogo || avatar1} alt={merchant.storeName} width={500} height={220} className="w-full h-44 object-cover" />
 							<div className="p-4 space-y-3">
 								<h2 className="text-lg font-semibold text-white">{merchant.storeName}</h2>
 								<p className="text-xs text-slate-300 line-clamp-2">{merchant.storeDescription || "Local merchant store"}</p>
