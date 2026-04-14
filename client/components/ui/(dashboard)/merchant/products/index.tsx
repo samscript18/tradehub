@@ -149,13 +149,7 @@ const ProductsPage = () => {
 					<p className="text-sm text-slate-300 mt-2">Try another filter combination.</p>
 				</div>
 			) : (
-				<motion.div
-					className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-4"
-					initial="hidden"
-					whileInView="visible"
-					viewport={{ once: true, amount: 0.5 }}
-					transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}
-				>
+				<motion.div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
 					{data?.data?.map((product) => {
 						return <Product key={product._id} {...product} />;
 					})}
