@@ -6,177 +6,177 @@ import { UpdateProfile } from "../types/auth";
 import { Customer, CustomerOrder, DeliveryAddress, Merchant, Product, ProductFilters } from "../types/types";
 
 export const getCustomer = async () => {
-  try {
-    const response = await authApi.get<ApiResponse<Customer>>('/customer/user');
+	try {
+		const response = await authApi.get<ApiResponse<Customer>>("/customer/user");
 
-    return response?.data?.data;
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		return response?.data?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const updateCustomer = async (data: Partial<UpdateProfile>) => {
-  try {
-    const response = await authApi.put<ApiResponse<Customer>>('/customer', data);
+	try {
+		const response = await authApi.put<ApiResponse<Customer>>("/customer", data);
 
-    return response?.data?.data;
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		return response?.data?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const addDeliveryAddress = async (data: DeliveryAddress) => {
-  try {
-    const response = await authApi.put<ApiResponse<Customer>>('/customer/address', data);
+	try {
+		const response = await authApi.put<ApiResponse<Customer>>("/customer/address", data);
 
-    return response?.data?.data;
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		return response?.data?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const getProductsFilters = async () => {
-  try {
-    const response = await authApi.get<ApiResponse<ProductFilters>>('/product/filters');
+	try {
+		const response = await authApi.get<ApiResponse<ProductFilters>>("/product/filters");
 
-    return response?.data?.data;
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		return response?.data?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const getProducts = async (query?: GetProductsQueryDto) => {
-  try {
-    const response = await authApi.get<ApiResponse<Product[]>>('/product', {
-      params: {
-        // ...query,
-        category: query?.category,
-        priceRangeMin: query?.priceRange?.min,
+	try {
+		const response = await authApi.get<ApiResponse<Product[]>>("/product", {
+			params: {
+				// ...query,
+				category: query?.category,
+				priceRangeMin: query?.priceRange?.min,
 
-        priceRangeMax: query?.priceRange?.max !== null && query?.priceRange?.max,
-        page: Number(query?.page),
-        limit: Number(query?.limit)
-      }
-    });
+				priceRangeMax: query?.priceRange?.max !== null && query?.priceRange?.max,
+				page: Number(query?.page),
+				limit: Number(query?.limit),
+			},
+		});
 
-    return response?.data;
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		return response?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const getMerchants = async (params?: { page?: number; limit?: number; search?: string }) => {
-  try {
-    const response = await authApi.get<ApiResponse<Merchant[]>>('/merchant', {
-      params,
-    });
+	try {
+		const response = await authApi.get<ApiResponse<Merchant[]>>("/merchant", {
+			params,
+		});
 
-    return response?.data;
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		return response?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const getMerchantById = async (merchantId: string) => {
-  try {
-    const response = await authApi.get<ApiResponse<Merchant>>(`/merchant/${merchantId}`);
+	try {
+		const response = await authApi.get<ApiResponse<Merchant>>(`/merchant/${merchantId}`);
 
-    return response?.data?.data;
-  } catch (error) {
-    try {
-      const fallback = await authApi.get<ApiResponse<Merchant[]>>('/merchant', {
-        params: { page: 1, limit: 100 },
-      });
+		return response?.data?.data;
+	} catch (error) {
+		try {
+			const fallback = await authApi.get<ApiResponse<Merchant[]>>("/merchant", {
+				params: { page: 1, limit: 100 },
+			});
 
-      const merchant = fallback?.data?.data?.find((item) => item._id === merchantId);
+			const merchant = fallback?.data?.data?.find((item) => item._id === merchantId);
 
-      if (merchant) {
-        return merchant;
-      }
-    } catch (fallbackError) {
-      errorHandler(fallbackError as AxiosErrorShape | string);
-    }
+			if (merchant) {
+				return merchant;
+			}
+		} catch (fallbackError) {
+			errorHandler(fallbackError as AxiosErrorShape | string);
+		}
 
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const getProduct = async (productId: string) => {
-  try {
-    const response = await authApi.get<ApiResponse<Product>>(`/product/${productId}`);
+	try {
+		const response = await authApi.get<ApiResponse<Product>>(`/product/${productId}`);
 
-    return response?.data?.data;
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		return response?.data?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const initiateCheckout = async (data: CheckoutDto) => {
-  try {
-    const response = await authApi.post<ApiResponse<{ paymentUrl: string, reference: string }>>('/order/checkout', {
-      ...data
-    });
-    return response?.data?.data
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+	try {
+		const response = await authApi.post<ApiResponse<{ paymentUrl: string; reference: string }>>("/order/checkout", {
+			...data,
+		});
+		return response?.data?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const getCustomerOrders = async (params?: GetCustomerOrdersQueryDto) => {
-  try {
-    const searchParams = new URLSearchParams();
-    if (params?.search) searchParams.append('search', params.search);
-    if (params?.page) searchParams.append('page', String(params.page));
-    if (params?.limit) searchParams.append('limit', String(params.limit));
-    if (params?.status) searchParams.append('status', params.status);
+	try {
+		const searchParams = new URLSearchParams();
+		if (params?.search) searchParams.append("search", params.search);
+		if (params?.page) searchParams.append("page", String(params.page));
+		if (params?.limit) searchParams.append("limit", String(params.limit));
+		if (params?.status) searchParams.append("status", params.status);
 
-    const response = await authApi.get<ApiResponse<CustomerOrder[]>>(`/order/customer?${searchParams}`);
+		const response = await authApi.get<ApiResponse<CustomerOrder[]>>(`/order/customer?${searchParams}`);
 
-    return response?.data;
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		return response?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const getCustomerOrder = async (orderId: string) => {
-  try {
-    const response = await authApi.get<ApiResponse<CustomerOrder>>(`/order/${orderId}/customer`);
+	try {
+		const response = await authApi.get<ApiResponse<CustomerOrder>>(`/order/${orderId}/customer`);
 
-    return response?.data?.data;
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		return response?.data?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const deleteOrder = async (orderId: string) => {
-  try {
-    const response = await authApi.delete(`/order/${orderId}`);
+	try {
+		const response = await authApi.delete(`/order/${orderId}`);
 
-    return response?.data?.data;
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		return response?.data?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };
 
 export const verifyTransaction = async (reference: string) => {
-  try {
-    const response = await authApi.get(`/payment/confirm/${reference}`);
+	try {
+		const response = await authApi.get(`/payment/confirm/${reference}`);
 
-    return response?.data?.data;
-  } catch (error) {
-    errorHandler(error as AxiosErrorShape | string);
-    throw error;
-  }
+		return response?.data?.data;
+	} catch (error) {
+		errorHandler(error as AxiosErrorShape | string);
+		throw error;
+	}
 };

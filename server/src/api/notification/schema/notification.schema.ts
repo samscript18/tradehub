@@ -11,7 +11,8 @@ export class Notification {
   user: UserDocument;
 
   @Prop({
-    type: String, enum: Object.values([
+    type: String,
+    enum: Object.values([
       'order_placed',
       'order_updated',
       'order_cancelled',
@@ -23,8 +24,9 @@ export class Notification {
       'password_changed',
       'profile_updated',
       'new_review',
-      'review_response'
-    ]), required: true
+      'review_response',
+    ]),
+    required: true,
   })
   type: NotificationType;
 
@@ -37,7 +39,7 @@ export class Notification {
   @Prop({
     type: Types.ObjectId,
     ref: 'Order',
-    required: false
+    required: false,
   })
   relatedOrderId?: OrderDocument;
 
@@ -45,5 +47,5 @@ export class Notification {
   relatedOrderGroupId?: string;
 }
 
-export type NotificationDocument = HydratedDocument<Notification>
+export type NotificationDocument = HydratedDocument<Notification>;
 export const NotificationSchema = SchemaFactory.createForClass(Notification);

@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { FilterQuery, isValidObjectId, Types } from 'mongoose';
 import { PaginationQuery } from 'src/shared/interfaces/pagination.interface';
 import { MerchantService } from '../merchant/merchant.service';
@@ -10,13 +14,12 @@ import { CustomerDocument } from '../customer/schema/customer.schema';
 import { ProductService } from '../product/product.service';
 import { ProductDocument } from '../product/schema/product.schema';
 import { OrderDocument } from './schema/order.schema';
-import { v4 } from 'uuid'
+import { v4 } from 'uuid';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { GetOrdersDto } from './dto/get-order.dto';
 import { NotificationProvider } from '../notification/notification.provider';
 import { OrderStatus } from './enums/order.enum';
 import { UserService } from '../user/user.service';
-
 
 @Injectable()
 export class OrderProvider {
@@ -27,28 +30,33 @@ export class OrderProvider {
     private readonly productService: ProductService,
     private readonly notificationProvider: NotificationProvider,
     private readonly userService: UserService,
-  ) { }
+  ) {}
 
   async createOrder(createOrderDto: CreateOrderDto, userId: string) {
     try {
-
-      const customer = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
+      const customer = await this.customerService.getCustomer({
+        user: new Types.ObjectId(userId),
+      });
       if (!customer) throw new NotFoundException('Customer not found');
 
       const groupId = v4();
 
-      const allProductIds = createOrderDto.products.map(product => new Types.ObjectId(product.productId));
-      const { data: products
-      } = await this.productService.getProducts({
-        _id: { $in: allProductIds }
+      const allProductIds = createOrderDto.products.map(
+        (product) => new Types.ObjectId(product.productId),
+      );
+      const { data: products } = await this.productService.getProducts({
+        _id: { $in: allProductIds },
       });
 
-      const productMap = new Map(products.map(product => [product._id.toString(), product]));
+      const productMap = new Map(
+        products.map((product) => [product._id.toString(), product]),
+      );
 
       const merchantGroup = new Map<string, any[]>();
       for (const item of createOrderDto.products) {
         const product = productMap.get(item.productId);
-        if (!product) throw new NotFoundException(`Product ${item.productId} not found`);
+        if (!product)
+          throw new NotFoundException(`Product ${item.productId} not found`);
 
         const merchantId = product.merchant._id.toString();
         if (!merchantGroup.has(merchantId)) {
@@ -59,9 +67,14 @@ export class OrderProvider {
 
       const orders = await Promise.all(
         Array.from(merchantGroup.entries()).map(async ([merchantId, items]) => {
-          const totalPrice = 3000 + items.reduce(
-            (sum, item) => sum + (item.variant?.price || item.product.price) * item.quantity, 0
-          );
+          const totalPrice =
+            3000 +
+            items.reduce(
+              (sum, item) =>
+                sum +
+                (item.variant?.price || item.product.price) * item.quantity,
+              0,
+            );
 
           const order = await this.orderService.createOrder({
             groupId,
@@ -70,28 +83,36 @@ export class OrderProvider {
             status: OrderStatus.PROCESSING,
             price: totalPrice,
             address: createOrderDto.address,
-            products: items.map(item => ({
+            products: items.map((item) => ({
               product: item.productId,
               quantity: item.quantity,
               price: item.price,
-              variant: item.variant
-            }))
+              variant: item.variant,
+            })),
           });
 
-          const merchant: MerchantDocument = await this.merchantService.getMerchant({ _id: new Types.ObjectId(merchantId) });
+          const merchant: MerchantDocument =
+            await this.merchantService.getMerchant({
+              _id: new Types.ObjectId(merchantId),
+            });
 
-          const user = await this.userService.getUser({ _id: merchant.user._id });
+          const user = await this.userService.getUser({
+            _id: merchant.user._id,
+          });
 
           if (user && !user.notificationsDisabled) {
-            await this.notificationProvider.createNotification({
-              message: `New order #${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
-              type: 'order_placed',
-              relatedOrderId: order._id.toString(),
-            }, merchant.user._id.toString());
+            await this.notificationProvider.createNotification(
+              {
+                message: `New order #${order._id} has been received from ${customer.firstName} ${customer.lastName}`,
+                type: 'order_placed',
+                relatedOrderId: order._id.toString(),
+              },
+              merchant.user._id.toString(),
+            );
           }
 
           return order;
-        })
+        }),
       );
 
       return {
@@ -100,22 +121,26 @@ export class OrderProvider {
         data: orders,
       };
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
-
   async getCustomerOrder(groupId: string, userId: string) {
-    const customer: CustomerDocument = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
-    const { count, data: orders } = await this.orderService.getOrders({ groupId, customer: customer._id })
+    const customer: CustomerDocument = await this.customerService.getCustomer({
+      user: new Types.ObjectId(userId),
+    });
+    const { count, data: orders } = await this.orderService.getOrders({
+      groupId,
+      customer: customer._id,
+    });
 
     if (count === 0) {
       throw new NotFoundException('Order not found');
     }
 
     const base = orders[0];
-    const statuses = orders.map((order) => order.status)
-    const status = await this.orderService.computeAggregatedStatus(statuses)
+    const statuses = orders.map((order) => order.status);
+    const status = await this.orderService.computeAggregatedStatus(statuses);
 
     return {
       success: true,
@@ -130,17 +155,24 @@ export class OrderProvider {
           merchant: order.merchant,
           items: order.products,
           status: order.status,
-          products: order.products?.map((item) => ({ product: item.product.name, quantity: item.quantity }))
+          products: order.products?.map((item) => ({
+            product: item.product.name,
+            quantity: item.quantity,
+          })),
         })),
-        price: orders.reduce((acc, curr) => acc + curr.price, 0)
-      }
-    }
+        price: orders.reduce((acc, curr) => acc + curr.price, 0),
+      },
+    };
   }
 
-
   async getMerchantOrder(userId: string, orderId: string) {
-    const merchant: MerchantDocument = await this.merchantService.getMerchant({ user: new Types.ObjectId(userId) });
-    const data = await this.orderService.getOrder({ _id: new Types.ObjectId(orderId), merchant: merchant._id });
+    const merchant: MerchantDocument = await this.merchantService.getMerchant({
+      user: new Types.ObjectId(userId),
+    });
+    const data = await this.orderService.getOrder({
+      _id: new Types.ObjectId(orderId),
+      merchant: merchant._id,
+    });
 
     if (!data) {
       throw new NotFoundException('Order not found');
@@ -154,23 +186,23 @@ export class OrderProvider {
   }
 
   async getCustomerOrders(userId: string, query: GetOrdersDto) {
-    const customer: CustomerDocument = await this.customerService.getCustomer({ user: new Types.ObjectId(userId) });
+    const customer: CustomerDocument = await this.customerService.getCustomer({
+      user: new Types.ObjectId(userId),
+    });
     const _query: FilterQuery<OrderDocument> = { customer: customer._id };
     const paginationQuery: Partial<PaginationQuery> = {};
 
     if (query.search) {
       const search = query.search.trim();
 
-      _query.$or = [
-        { 'groupId': { $regex: search, $options: 'i' } },
-      ];
+      _query.$or = [{ groupId: { $regex: search, $options: 'i' } }];
 
       delete query.search;
     }
 
     if (query.status) {
       _query.status = query.status;
-      delete query.status
+      delete query.status;
     }
 
     if (query.limit) {
@@ -183,7 +215,12 @@ export class OrderProvider {
       delete query.page;
     }
 
-    const { data: orders, page, count, totalPages } = await this.orderService.getOrders(
+    const {
+      data: orders,
+      page,
+      count,
+      totalPages,
+    } = await this.orderService.getOrders(
       _query,
       paginationQuery as PaginationQuery,
     );
@@ -212,13 +249,16 @@ export class OrderProvider {
           merchant: {
             _id: order.merchant._id,
             name: order.merchant.storeName,
-            logo: order.merchant.storeLogo
+            logo: order.merchant.storeLogo,
           },
           items: order.products,
           status: order.status,
-          products: order.products?.map((item) => ({ product: item?.product?.name, quantity: item.quantity })),
+          products: order.products?.map((item) => ({
+            product: item?.product?.name,
+            quantity: item.quantity,
+          })),
         })),
-        price: groupOrders.reduce((acc, curr) => acc + curr.price, 0)
+        price: groupOrders.reduce((acc, curr) => acc + curr.price, 0),
       });
     }
 
@@ -235,7 +275,9 @@ export class OrderProvider {
   }
 
   async getMerchantOrders(userId: string, query: GetOrdersDto) {
-    const merchant: MerchantDocument = await this.merchantService.getMerchant({ user: new Types.ObjectId(userId) });
+    const merchant: MerchantDocument = await this.merchantService.getMerchant({
+      user: new Types.ObjectId(userId),
+    });
     const _query: FilterQuery<OrderDocument> = { merchant: merchant._id };
     const paginationQuery: Partial<PaginationQuery> = {};
 
@@ -251,7 +293,7 @@ export class OrderProvider {
 
     if (query.status) {
       _query.status = query.status;
-      delete query.status
+      delete query.status;
     }
 
     if (query.limit) {
@@ -291,16 +333,21 @@ export class OrderProvider {
       throw new NotFoundException('Order not found');
     }
 
-    const customer: CustomerDocument = await this.customerService.getCustomer({ _id: data.customer })
+    const customer: CustomerDocument = await this.customerService.getCustomer({
+      _id: data.customer,
+    });
 
     const user = await this.userService.getUser({ _id: customer.user._id });
 
     if (user && !user.notificationsDisabled) {
-      await this.notificationProvider.createNotification({
-        message: `Order ${data._id} has been updated to ${data.status}`,
-        type: 'order_updated',
-        relatedOrderGroupId: data.groupId,
-      }, customer.user._id.toString());
+      await this.notificationProvider.createNotification(
+        {
+          message: `Order ${data._id} has been updated to ${data.status}`,
+          type: 'order_updated',
+          relatedOrderGroupId: data.groupId,
+        },
+        customer.user._id.toString(),
+      );
     }
 
     return {
@@ -311,7 +358,9 @@ export class OrderProvider {
   }
 
   async deleteOrder(orderId: string) {
-    const data = await this.orderService.deleteOrder({ _id: new Types.ObjectId(orderId) });
+    const data = await this.orderService.deleteOrder({
+      _id: new Types.ObjectId(orderId),
+    });
 
     if (!data) {
       throw new NotFoundException('Order not found');
@@ -320,6 +369,6 @@ export class OrderProvider {
     return {
       success: true,
       message: 'Order deleted',
-    }
+    };
   }
 }

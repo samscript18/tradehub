@@ -1,7 +1,7 @@
-import { IsString } from "src/shared/decorators";
-import { NotificationType } from "../types/notification.type";
-import { IsIn } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
+import { IsString } from 'src/shared/decorators';
+import { NotificationType } from '../types/notification.type';
+import { IsIn } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateNotificationDto {
   @IsString(false)
@@ -26,9 +26,7 @@ export class CreateNotificationDto {
     'password_changed',
     'profile_updated',
     'new_review',
-    'review_response'
+    'review_response',
   ])
   type: NotificationType;
 }
-
-

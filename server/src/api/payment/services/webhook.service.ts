@@ -20,7 +20,10 @@ import { NotificationProvider } from 'src/api/notification/notification.provider
 import { UserService } from 'src/api/user/user.service';
 import { WalletService } from 'src/api/wallet/wallet.service';
 import { InjectModel } from '@nestjs/mongoose';
-import { Transaction, TransactionDocument } from 'src/api/wallet/schema/transaction.schema';
+import {
+  Transaction,
+  TransactionDocument,
+} from 'src/api/wallet/schema/transaction.schema';
 import { Model } from 'mongoose';
 import { TransactionStatus } from 'src/api/wallet/enums/transaction.enum';
 import { WalletDocument } from 'src/api/wallet/schema/wallet.schema';
@@ -28,7 +31,8 @@ import { WalletDocument } from 'src/api/wallet/schema/wallet.schema';
 @Injectable()
 export class WebhookService {
   constructor(
-    @InjectModel(Transaction.name) private readonly transactionModel: Model<TransactionDocument>,
+    @InjectModel(Transaction.name)
+    private readonly transactionModel: Model<TransactionDocument>,
     private readonly configService: ConfigService,
     private readonly paymentService: PaymentService,
     private readonly orderProvider: OrderProvider,
@@ -36,10 +40,13 @@ export class WebhookService {
     private readonly customerService: CustomerService,
     private readonly notificationProvider: NotificationProvider,
     private readonly userService: UserService,
-    private readonly walletService: WalletService
-  ) { }
+    private readonly walletService: WalletService,
+  ) {}
 
-  private validateWebhookSignature(signature: string, webhookResponse: WebhookResponse) {
+  private validateWebhookSignature(
+    signature: string,
+    webhookResponse: WebhookResponse,
+  ) {
     const secretKey = this.configService.get<string>('PAYSTACK_SECRET_KEY');
     if (!secretKey) {
       throw new Error('Paystack secret key not configured');
@@ -105,20 +112,28 @@ export class WebhookService {
 
     const metadata = attempt.metadata as OrderMetadata;
 
-    const orders = await this.orderProvider.createOrder({
-      ...metadata
-    }, attempt.user.id);
+    const orders = await this.orderProvider.createOrder(
+      {
+        ...metadata,
+      },
+      attempt.user.id,
+    );
 
-    const customer: CustomerDocument = await this.customerService.getCustomer({ user: attempt.user._id })
+    const customer: CustomerDocument = await this.customerService.getCustomer({
+      user: attempt.user._id,
+    });
 
     const user = await this.userService.getUser({ _id: attempt.user._id });
 
     if (user && !user.notificationsDisabled) {
-      await this.notificationProvider.createNotification({
-        message: `Your payment to process the order ORD-${orders.data?.[0].groupId.toUpperCase()} was successful.`,
-        type: 'payment_successful',
-        relatedOrderGroupId: orders.data?.[0].groupId,
-      }, customer.user._id.toString());
+      await this.notificationProvider.createNotification(
+        {
+          message: `Your payment to process the order ORD-${orders.data?.[0].groupId.toUpperCase()} was successful.`,
+          type: 'payment_successful',
+          relatedOrderGroupId: orders.data?.[0].groupId,
+        },
+        customer.user._id.toString(),
+      );
     }
 
     await this.mailService.sendMail({
@@ -134,12 +149,18 @@ export class WebhookService {
     });
 
     for (const order of orders.data) {
-      await this.walletService.processPayment(order.merchant._id, order.price, attempt.reference, attempt.metadata, order._id);
+      await this.walletService.processPayment(
+        order.merchant._id,
+        order.price,
+        attempt.reference,
+        attempt.metadata,
+        order._id,
+      );
     }
 
     await this.paymentService.updatePaymentAttempt(
       { reference: chargeResponse.reference },
-      { ordersCreated: true }
+      { ordersCreated: true },
     );
 
     return orders;
@@ -153,8 +174,9 @@ export class WebhookService {
 
     if (!attempt) throw new NotFoundException('Payment not found');
 
-    const customer: CustomerDocument = await this.customerService.getCustomer({ user: attempt.user._id })
-
+    const customer: CustomerDocument = await this.customerService.getCustomer({
+      user: attempt.user._id,
+    });
 
     await this.mailService.sendMail({
       to: customer.user.email,
@@ -170,16 +192,28 @@ export class WebhookService {
   }
 
   async handleSuccessfulTransfer(chargeResponse: ChargeResponse) {
-    await this.transactionModel.findOneAndUpdate({ reference: chargeResponse.reference }, { status: TransactionStatus.SUCCESSFUL })
+    await this.transactionModel.findOneAndUpdate(
+      { reference: chargeResponse.reference },
+      { status: TransactionStatus.SUCCESSFUL },
+    );
   }
 
   async handleFailedOrReversedTransfer(chargeResponse: ChargeResponse) {
-    const transaction = await this.transactionModel.findOne({ reference: chargeResponse.reference }).populate('wallet');
+    const transaction = await this.transactionModel
+      .findOne({ reference: chargeResponse.reference })
+      .populate('wallet');
 
     if (transaction) {
-      await this.walletService.processPayment((transaction.wallet as WalletDocument).merchant._id, transaction.amount, transaction.reference);
+      await this.walletService.processPayment(
+        (transaction.wallet as WalletDocument).merchant._id,
+        transaction.amount,
+        transaction.reference,
+      );
 
-      await this.transactionModel.updateOne({ reference: chargeResponse.reference }, { status: TransactionStatus.FAILED });
+      await this.transactionModel.updateOne(
+        { reference: chargeResponse.reference },
+        { status: TransactionStatus.FAILED },
+      );
     }
   }
 }

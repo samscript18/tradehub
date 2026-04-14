@@ -1,33 +1,31 @@
-'use client';
-import Button from '@/components/common/button';
-import { categories } from '@/lib/data';
-import { avatar1, homeBgImg } from '@/public/images';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import { FaStore } from 'react-icons/fa';
-import { FaTruck } from 'react-icons/fa6';
-import { IoIosArrowForward } from 'react-icons/io';
-import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
-import { getMerchants, getProducts } from '@/lib/services/customer.service';
-import Product from '../ui/product';
-import Loader from '@/components/common/loaders';
+"use client";
+import Button from "@/components/common/button";
+import { categories } from "@/lib/data";
+import { avatar1, homeBgImg } from "@/public/images";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { FaStore } from "react-icons/fa";
+import { FaTruck } from "react-icons/fa6";
+import { IoIosArrowForward } from "react-icons/io";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { getMerchants, getProducts } from "@/lib/services/customer.service";
+import Product from "../ui/product";
+import Loader from "@/components/common/loaders";
 
 const HomeDashboard = () => {
 	const { data, isPending } = useQuery({
 		queryFn: () => getProducts({ page: Number(1), limit: Number(10) }),
-		queryKey: ['get-products'],
+		queryKey: ["get-products"],
 	});
 
 	const { data: merchantsResponse, isPending: isPendingMerchants } = useQuery({
 		queryFn: () => getMerchants({ page: Number(1), limit: Number(8) }),
-		queryKey: ['get-merchants-preview'],
+		queryKey: ["get-merchants-preview"],
 	});
 	return (
 		<section>
-			<div
-				className="py-16 bg-cover bg-center bg-no-repeat bg-background/65"
-				style={{ backgroundImage: `url(${homeBgImg.src})`, backgroundBlendMode: 'overlay' }}>
+			<div className="py-16 bg-cover bg-center bg-no-repeat bg-background/65" style={{ backgroundImage: `url(${homeBgImg.src})`, backgroundBlendMode: "overlay" }}>
 				<div className="flex flex-col justify-center items-center space-y-4">
 					<motion.h2
 						className="text-3xl font-bold mx-auto text-center"
@@ -38,7 +36,8 @@ const HomeDashboard = () => {
 						variants={{
 							hidden: { opacity: 0, y: 30 },
 							visible: { opacity: 1, y: 0 },
-						}}>
+						}}
+					>
 						Support Your Local Businesses
 					</motion.h2>
 					<motion.p
@@ -50,7 +49,8 @@ const HomeDashboard = () => {
 						variants={{
 							hidden: { opacity: 0, y: 30 },
 							visible: { opacity: 1, y: 0 },
-						}}>
+						}}
+					>
 						Discover unique products from merchants in your community.
 					</motion.p>
 				</div>
@@ -65,7 +65,8 @@ const HomeDashboard = () => {
 					variants={{
 						hidden: { opacity: 0, y: 30 },
 						visible: { opacity: 1, y: 0 },
-					}}>
+					}}
+				>
 					Browse Categories
 				</motion.h2>
 				<motion.div
@@ -73,7 +74,8 @@ const HomeDashboard = () => {
 					initial="hidden"
 					whileInView="visible"
 					viewport={{ once: true, amount: 0.5 }}
-					transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
+					transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}
+				>
 					{categories.map((category) => {
 						return (
 							<motion.div
@@ -91,7 +93,8 @@ const HomeDashboard = () => {
 											duration: 0.8,
 										},
 									},
-								}}>
+								}}
+							>
 								<div>{category.icon}</div>
 								<h3 className="text-xs">{category.name}</h3>
 							</motion.div>
@@ -108,10 +111,11 @@ const HomeDashboard = () => {
 						variants={{
 							hidden: { opacity: 0, y: 30 },
 							visible: { opacity: 1, y: 0 },
-						}}>
+						}}
+					>
 						Top Local Merchants
 					</motion.h2>
-					<Link href={'/customer/merchant'}>
+					<Link href={"/customer/merchant"}>
 						<motion.p
 							className="text-xs text-primary cursor-pointer"
 							initial="hidden"
@@ -121,8 +125,9 @@ const HomeDashboard = () => {
 							variants={{
 								hidden: { opacity: 0, y: 30 },
 								visible: { opacity: 1, y: 0 },
-							}}>
-							View All{' '}
+							}}
+						>
+							View All{" "}
 							<span className="inline-block ">
 								<IoIosArrowForward className="text-primary" />
 							</span>
@@ -132,16 +137,8 @@ const HomeDashboard = () => {
 				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
 					{merchantsResponse?.data?.map((merchant) => {
 						return (
-							<div
-								className="flex flex-col min-w-[155px] sm:min-w-[170px] md:w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md"
-								key={merchant._id}>
-								<Image
-									src={merchant.storeLogo || avatar1}
-									alt={merchant.storeName}
-									width={350}
-									height={180}
-									className="w-full h-full rounded-t-xl object-cover"
-								/>
+							<div className="flex flex-col min-w-[155px] sm:min-w-[170px] md:w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md" key={merchant._id}>
+								<Image src={merchant.storeLogo || avatar1} alt={merchant.storeName} width={350} height={180} className="w-full h-full rounded-t-xl object-cover" />
 								<div className="bg-[#1E2A3B] p-2 space-y-2 shadow-md rounded-b-xl">
 									<h3 className="text-sm font-bold">{merchant.storeName}</h3>
 									<motion.div
@@ -149,7 +146,8 @@ const HomeDashboard = () => {
 										initial="hidden"
 										whileInView="visible"
 										viewport={{ once: true, amount: 0.5 }}
-										transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
+										transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}
+									>
 										{merchant.storeCategory?.slice(0, 2)?.map((category) => {
 											return (
 												<motion.div
@@ -167,7 +165,8 @@ const HomeDashboard = () => {
 																duration: 0.8,
 															},
 														},
-													}}>
+													}}
+												>
 													<p className="text-[10px] text-primary">{category}</p>
 												</motion.div>
 											);
@@ -204,10 +203,11 @@ const HomeDashboard = () => {
 						variants={{
 							hidden: { opacity: 0, y: 30 },
 							visible: { opacity: 1, y: 0 },
-						}}>
+						}}
+					>
 						New Arrivals
 					</motion.h2>
-					<Link href={'/customer/products'}>
+					<Link href={"/customer/products"}>
 						<motion.p
 							className="text-xs text-primary cursor-pointer"
 							initial="hidden"
@@ -217,8 +217,9 @@ const HomeDashboard = () => {
 							variants={{
 								hidden: { opacity: 0, y: 30 },
 								visible: { opacity: 1, y: 0 },
-							}}>
-							View All{' '}
+							}}
+						>
+							View All{" "}
 							<span className="inline-block ">
 								<IoIosArrowForward className="text-primary" />
 							</span>
@@ -236,7 +237,8 @@ const HomeDashboard = () => {
 						initial="hidden"
 						whileInView="visible"
 						viewport={{ once: true, amount: 0.5 }}
-						transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}>
+						transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}
+					>
 						{data?.data?.map((product) => {
 							return <Product key={product._id} {...product} />;
 						})}
@@ -254,7 +256,8 @@ const HomeDashboard = () => {
 								variants={{
 									hidden: { opacity: 0, y: 30 },
 									visible: { opacity: 1, y: 0 },
-								}}>
+								}}
+							>
 								Fast Delivery on Orders.
 							</motion.h2>
 							<motion.p
@@ -266,7 +269,8 @@ const HomeDashboard = () => {
 								variants={{
 									hidden: { opacity: 0, y: 30 },
 									visible: { opacity: 1, y: 0 },
-								}}>
+								}}
+							>
 								Accelerated speeds on deliveries.
 							</motion.p>
 							<motion.div
@@ -277,10 +281,9 @@ const HomeDashboard = () => {
 								variants={{
 									hidden: { opacity: 0, y: 30 },
 									visible: { opacity: 1, y: 0 },
-								}}>
-								<Button
-									variant="filled"
-									className="bg-white border border-white text-primary hover:text-white px-4 py-2 text-xs">
+								}}
+							>
+								<Button variant="filled" className="bg-white border border-white text-primary hover:text-white px-4 py-2 text-xs">
 									Shop Now
 								</Button>
 							</motion.div>
@@ -300,7 +303,8 @@ const HomeDashboard = () => {
 								variants={{
 									hidden: { opacity: 0, y: 30 },
 									visible: { opacity: 1, y: 0 },
-								}}>
+								}}
+							>
 								Local Business Week.
 							</motion.h2>
 							<motion.p
@@ -312,7 +316,8 @@ const HomeDashboard = () => {
 								variants={{
 									hidden: { opacity: 0, y: 30 },
 									visible: { opacity: 1, y: 0 },
-								}}>
+								}}
+							>
 								Special deals and discounts.
 							</motion.p>
 							<motion.div
@@ -323,10 +328,9 @@ const HomeDashboard = () => {
 								variants={{
 									hidden: { opacity: 0, y: 30 },
 									visible: { opacity: 1, y: 0 },
-								}}>
-								<Button
-									variant="filled"
-									className="bg-white border border-white text-primary hover:text-white px-4 py-2 text-xs">
+								}}
+							>
+								<Button variant="filled" className="bg-white border border-white text-primary hover:text-white px-4 py-2 text-xs">
 									Learn More
 								</Button>
 							</motion.div>

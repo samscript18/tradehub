@@ -59,13 +59,7 @@ const MerchantStoreDetailsPage = ({ merchantId }: Props) => {
 	return (
 		<section className="px-4 md:px-6 py-5 space-y-6">
 			<div className="dashboard-panel rounded-2xl overflow-hidden">
-				<Image
-					src={merchant.storeLogo || avatar1}
-					alt={merchant.storeName}
-					width={1200}
-					height={300}
-					className="w-full h-48 md:h-64 object-cover"
-				/>
+				<Image src={merchant.storeLogo || avatar1} alt={merchant.storeName} width={1200} height={300} className="w-full h-48 md:h-64 object-cover" />
 				<div className="p-5 md:p-7 space-y-3">
 					<h1 className="text-2xl md:text-3xl font-bold text-white">{merchant.storeName}</h1>
 					<p className="text-sm text-slate-300 max-w-3xl">{merchant.storeDescription || "This store has no description yet."}</p>
@@ -100,13 +94,7 @@ const MerchantStoreDetailsPage = ({ merchantId }: Props) => {
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 						{products.map((product) => (
 							<div key={product._id} className="dashboard-panel rounded-2xl overflow-hidden">
-								<Image
-									src={product.images[0] || avatar1}
-									alt={product.name}
-									width={500}
-									height={250}
-									className="w-full h-44 object-cover"
-								/>
+								<Image src={product.images[0] || avatar1} alt={product.name} width={500} height={250} className="w-full h-44 object-cover" />
 								<div className="p-4 space-y-3">
 									<h3 className="text-sm md:text-base font-semibold text-white">{product.name}</h3>
 									<p className="text-xs text-slate-300 line-clamp-2">{product.description}</p>
