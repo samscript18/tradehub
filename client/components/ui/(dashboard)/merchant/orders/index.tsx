@@ -3,7 +3,6 @@
 import Button from "@/components/common/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, ChevronRight, ChevronLeft } from "lucide-react";
 import Image from "next/image";
