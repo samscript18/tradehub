@@ -99,31 +99,36 @@ export class WebhookService {
   }
 
   async handleSuccessfulOrderPayment(chargeResponse: ChargeResponse) {
-    const attempt = await this.paymentService.updatePaymentAttempt(
-      { reference: chargeResponse.reference },
-      { status: PaymentStatus.SUCCESSFUL },
-    );
-
+    const attempt = await this.paymentService.getPaymentAttempt({ reference: chargeResponse.reference });
     if (!attempt) throw new NotFoundException('Payment not found');
 
-    if (attempt.status === PaymentStatus.SUCCESSFUL && attempt.ordersCreated) {
+    if (attempt.status === PaymentStatus.SUCCESSFUL) {
       return;
     }
 
-    const metadata = attempt.metadata as OrderMetadata;
+    const updatedAttempt = await this.paymentService.updatePaymentAttempt(
+      { reference: chargeResponse.reference, status: PaymentStatus.PENDING },
+      { status: PaymentStatus.SUCCESSFUL },
+    );
+
+    if (!updatedAttempt) {
+      return;
+    }
+
+    const metadata = updatedAttempt.metadata as OrderMetadata;
 
     const orders = await this.orderProvider.createOrder(
       {
         ...metadata,
       },
-      attempt.user.id,
+      updatedAttempt.user.id,
     );
 
     const customer: CustomerDocument = await this.customerService.getCustomer({
-      user: attempt.user._id,
+      user: updatedAttempt.user._id,
     });
 
-    const user = await this.userService.getUser({ _id: attempt.user._id });
+    const user = await this.userService.getUser({ _id: updatedAttempt.user._id });
 
     if (user && !user.notificationsDisabled) {
       await this.notificationProvider.createNotification(
@@ -143,8 +148,8 @@ export class WebhookService {
       context: {
         customerName: customer.firstName,
         orderId: orders.data?.[0].groupId.toUpperCase(),
-        amount: (attempt.metadata as OrderMetadata).price,
-        transactionRef: attempt.reference,
+        amount: (updatedAttempt.metadata as OrderMetadata).price,
+        transactionRef: updatedAttempt.reference,
       },
     });
 
@@ -152,8 +157,8 @@ export class WebhookService {
       await this.walletService.processPayment(
         order.merchant._id,
         order.price,
-        attempt.reference,
-        attempt.metadata,
+        updatedAttempt.reference,
+        updatedAttempt.metadata,
         order._id,
       );
     }
