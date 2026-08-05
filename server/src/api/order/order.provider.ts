@@ -122,6 +122,7 @@ export class OrderProvider {
       };
     } catch (error) {
       console.log(error);
+      throw error;
     }
   }
 
