@@ -55,9 +55,8 @@ export const getProducts = async (query?: GetProductsQueryDto) => {
 			params: {
 				// ...query,
 				category: query?.category,
-				priceRangeMin: query?.priceRange?.min,
-
-				priceRangeMax: query?.priceRange?.max !== null && query?.priceRange?.max,
+				priceRangeMin: query?.priceRange?.min ?? undefined,
+				priceRangeMax: query?.priceRange?.max ?? undefined,
 				page: Number(query?.page),
 				limit: Number(query?.limit),
 			},

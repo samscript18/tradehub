@@ -57,7 +57,7 @@ export class AuthGuard implements CanActivate {
             throw new UnauthorizedException('Unauthorized!');
          }
 
-         const jwtToken = await this._jwtModel.find({
+         const jwtToken = await this._jwtModel.findOne({
             token,
             type: JwtType.access,
          });

@@ -79,7 +79,7 @@ export class WalletService {
     try {
       const wallet = await this._walletModel.findOne({ merchant: merchantId }).session(session);
 
-      if (wallet.balance > amount + 50) {
+      if (wallet.balance < amount + 50) {
         throw new BadRequestException('Insufficient wallet balance');
       }
 
