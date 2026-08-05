@@ -39,7 +39,9 @@ const Product = (product: IProduct) => {
 						<h4 className="text-sm font-bold text-primary">{formatNaira(product.variants[0].price)}</h4>
 						<div className="max-lg:hidden">
 							<Button
-								onClick={() => {
+								onClick={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
 									addItem(product, 1);
 								}}
 								variant="filled"
@@ -51,7 +53,9 @@ const Product = (product: IProduct) => {
 						</div>
 						<div className="lg:hidden w-full">
 							<Button
-								onClick={() => {
+								onClick={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
 									addItem(product, 1);
 								}}
 								fullWidth

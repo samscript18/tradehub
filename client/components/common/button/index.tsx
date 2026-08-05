@@ -37,7 +37,7 @@ type Props = {
 	fullWidth?: boolean;
 	loading?: boolean;
 	loaderSize?: boolean;
-	onClick?: () => void;
+	onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 } & Omit<HTMLMotionProps<'button'>, 'onClick'>;
 
 const Button: FC<Props> = (props) => {

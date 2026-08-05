@@ -19,8 +19,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaGoogle, FaStore } from 'react-icons/fa';
-// import { FaXTwitter } from 'react-icons/fa6';
 import { MdShoppingBag } from 'react-icons/md';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const SignUpPage = () => {
 	const router = useRouter();
@@ -134,424 +134,437 @@ const SignUpPage = () => {
 	useEffect(() => {
 		if (defaultRole) {
 			setValue('role', defaultRole);
-			setCurrentIndex(1);
+			setCurrentIndex(defaultRole === RoleNames.Merchant ? 1 : 0);
 		}
 	}, [defaultRole, setValue]);
 
 	return (
 		<AuthLayout>
-			<>
-				<Logo />
-				<h1 className="text-xl md:text-3xl my-4 font-bold">
-					Welcome to TradeHub <WavingHand />
-				</h1>
-				<p className="text-sm text-gray-400">
-					Create your TradeHub account to enjoy full, personalized access to features, content, and tools
-					tailored just for you.
-				</p>
+			<motion.div
+				initial={{ opacity: 0, y: 15 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.5 }}
+				className="w-full max-w-xl mx-auto p-6 md:p-8 bg-white/[0.02] backdrop-blur-md border border-white/[0.06] rounded-3xl shadow-2xl relative overflow-hidden"
+			>
+				{/* Top subtle glow */}
+				<div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
-				<div className="hidden md:flex justify-between items-center bg-[#111827] p-1 rounded-full mt-6 transition-all duration-1000">
+				<div className="flex flex-col items-center text-center">
+					<Logo />
+					<h2 className="text-xl md:text-2xl font-bold text-white mt-6 mb-2 flex items-center gap-2">
+						Welcome to TradeHub <WavingHand />
+					</h2>
+					<p className="text-xs md:text-sm text-slate-400 leading-relaxed max-w-sm">
+						Create your TradeHub account to enjoy full, personalized access to tools tailored just for you.
+					</p>
+				</div>
+
+				{/* Role Tabs */}
+				<div className="relative flex justify-between items-center bg-slate-900/60 border border-slate-800/80 p-1.5 rounded-2xl mt-8">
 					{['Shop as Customer', 'Sell as Merchant'].map((item, index) => {
+						const isActive = currentIndex === index;
 						return (
-							<div
+							<button
+								type="button"
 								onClick={() => setCurrentIndex(index)}
 								key={item}
-								className={`w-full flex justify-center gap-2 items-center p-2.5 text-xs md:text-sm font-medium cursor-pointer ${
-									currentIndex === index && 'bg-primary rounded-full shadow-xl'
-								}`}>
-								{index === 0 ? <MdShoppingBag size={21} /> : <FaStore size={21} />}
+								className={`relative w-full flex justify-center gap-2 items-center py-2.5 px-4 text-xs md:text-sm font-semibold cursor-pointer z-10 rounded-xl transition-all duration-300 ${
+									isActive ? 'text-white bg-primary shadow-lg shadow-primary/20' : 'text-slate-400 hover:text-slate-200'
+								}`}
+							>
+								{index === 0 ? <MdShoppingBag size={18} /> : <FaStore size={18} />}
 								{item}
-							</div>
+							</button>
 						);
 					})}
 				</div>
 
-				<div className="flex md:hidden justify-between items-center bg-[#111827] p-1 rounded-full mt-6 transition-all duration-1000">
-					{['Customer', 'Merchant'].map((item: string, index) => {
-						return (
-							<div
-								onClick={() => setCurrentIndex(index)}
-								key={item}
-								className={`w-full flex justify-center gap-2 items-center p-2.5 text-xs md:text-sm font-medium cursor-pointer ${
-									currentIndex === index && 'bg-primary rounded-full shadow-xl'
-								}`}>
-								{index === 0 ? <MdShoppingBag size={21} /> : <FaStore size={21} />}
-								{item}
-							</div>
-						);
-					})}
-				</div>
+				<form onSubmit={handleSubmit(submit)} className="mt-8 space-y-6">
+					<AnimatePresence mode="wait">
+						<motion.div
+							key={currentIndex}
+							initial={{ opacity: 0, x: currentIndex === 0 ? -15 : 15 }}
+							animate={{ opacity: 1, x: 0 }}
+							exit={{ opacity: 0, x: currentIndex === 0 ? 15 : -15 }}
+							transition={{ duration: 0.3 }}
+							className="space-y-5"
+						>
+							{role === RoleNames.Customer ? (
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<TextField
+										label="First Name"
+										InputProps={{
+											placeholder: 'e.g. John',
+											...register('firstName', {
+												required: {
+													value: true,
+													message: 'This field is required',
+												},
+											}),
+											className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+										}}
+										helperText={errors?.firstName?.message}
+									/>
 
-				<form onSubmit={handleSubmit(submit)} className="mt-8 space-y-8 grid grid-cols-1  gap-6">
-					{role === RoleNames.Customer ? (
-						<>
-							<TextField
-								label="First Name"
-								className="col-span-2"
-								InputProps={{
-									placeholder: 'e.g John',
-									...register('firstName', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.firstName?.message}
-							/>
+									<TextField
+										label="Last Name"
+										InputProps={{
+											placeholder: 'e.g. Doe',
+											...register('lastName', {
+												required: {
+													value: true,
+													message: 'This field is required',
+												},
+											}),
+											className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+										}}
+										helperText={errors?.lastName?.message}
+									/>
 
-							<TextField
-								label="Last Name"
-								className="col-span-2"
-								InputProps={{
-									placeholder: 'e.g Doe',
-									...register('lastName', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.lastName?.message}
-							/>
+									<div className="md:col-span-2">
+										<TextField
+											label="Email Address"
+											InputProps={{
+												placeholder: 'e.g. johndoe@gmail.com',
+												type: 'email',
+												...register('email', {
+													required: {
+														value: true,
+														message: 'This field is required',
+													},
+													pattern: {
+														value: REGEX.EMAIL,
+														message: 'Enter a valid email address',
+													},
+												}),
+												className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+											}}
+											helperText={errors?.email?.message}
+										/>
+									</div>
 
-							<TextField
-								label="Email Address"
-								className="col-span-2"
-								InputProps={{
-									placeholder: 'e.g johndoe@gmail.com',
-									type: 'email',
-									...register('email', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-										pattern: {
-											value: REGEX.EMAIL,
-											message: 'Enter a valid email address',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.email?.message}
-							/>
+									<div className="md:col-span-2">
+										<TextField
+											label="Phone number"
+											InputProps={{
+												placeholder: 'e.g. 08012642233',
+												type: 'tel',
+												...register('phoneNumber', {
+													required: {
+														value: true,
+														message: 'This field is required',
+													},
+													pattern: {
+														value: REGEX.PHONE_NUMBER,
+														message: 'Enter a valid phone number',
+													},
+												}),
+												className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+											}}
+											helperText={errors?.phoneNumber?.message}
+										/>
+									</div>
 
-							<TextField
-								label="Phone number"
-								className="col-span-2"
-								InputProps={{
-									placeholder: 'e.g 08012642233',
-									type: 'tel',
-									...register('phoneNumber', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-										pattern: {
-											value: REGEX.PHONE_NUMBER,
-											message: 'Enter a valid phone number',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.phoneNumber?.message}
-							/>
+									<PasswordTextField
+										label="Password"
+										InputProps={{
+											...register('password', {
+												required: {
+													value: true,
+													message: 'This field is required',
+												},
+												minLength: {
+													value: 8,
+													message: 'Password must not be less than 8 characters',
+												},
+												pattern: {
+													value: REGEX.PASSWORD,
+													message: 'Enter a valid password',
+												},
+											}),
+											className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+										}}
+										helperText={errors?.password?.message}
+									/>
 
-							<PasswordTextField
-								className="col-span-2"
-								label="Password"
-								InputProps={{
-									...register('password', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-										minLength: {
-											value: 8,
-											message: 'Password must not be less than 8 characters',
-										},
-										pattern: {
-											value: REGEX.PASSWORD,
-											message: 'Enter a valid password',
-										},
-									}),
-								}}
-								helperText={errors?.password?.message}
-							/>
+									<PasswordTextField
+										label="Confirm Password"
+										InputProps={{
+											onChange(e) {
+												setConfirmPassword(e.target.value);
+											},
+											className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+										}}
+										helperText={password && password !== confirmPassword ? 'Passwords do not match' : undefined}
+									/>
 
-							<PasswordTextField
-								className="col-span-2"
-								label="Confirm Password"
-								InputProps={{
-									onChange(e) {
-										setConfirmPassword(e.target.value);
-									},
-								}}
-								helperText={password && password !== confirmPassword ? 'Passwords do not match' : undefined}
-							/>
+									<div className="md:col-span-2">
+										<TextField
+											label="Street Address"
+											InputProps={{
+												placeholder: 'e.g. your street address',
+												...register('address.street', {
+													required: {
+														value: true,
+														message: 'This field is required',
+													},
+												}),
+												className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+											}}
+											helperText={errors?.address?.street?.message}
+										/>
+									</div>
 
-							<TextField
-								label="Street Address"
-								className="col-span-2"
-								InputProps={{
-									placeholder: 'e.g your street address',
-									...register('address.street', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.address?.street?.message}
-							/>
+									<div className="md:col-span-2">
+										<SelectCountry
+											onLocationSelect={(location) => {
+												setValue('address.country', location.country);
+												setValue('address.state', location.state);
+												setValue('address.city', location.city);
+											}}
+										/>
+									</div>
 
-							<SelectCountry
-								onLocationSelect={(location) => {
-									setValue('address.country', location.country);
-									setValue('address.state', location.state);
-									setValue('address.city', location.city);
-								}}
-								className="col-span-2"
-							/>
+									<div className="md:col-span-2">
+										<TextField
+											label="Postal Code"
+											InputProps={{
+												type: 'tel',
+												placeholder: 'e.g. 100001',
+												...register('address.postalcode', {
+													required: {
+														value: true,
+														message: 'This field is required',
+													},
+												}),
+												className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+											}}
+											helperText={errors?.address?.postalcode?.message}
+										/>
+									</div>
+								</div>
+							) : (
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+									<div className="md:col-span-2">
+										<TextField
+											label="Store Name"
+											InputProps={{
+												placeholder: 'e.g. T&D Store',
+												...register('storeName', {
+													required: {
+														value: true,
+														message: 'This field is required',
+													},
+												}),
+												className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+											}}
+											helperText={errors?.storeName?.message}
+										/>
+									</div>
 
-							<TextField
-								label="Postal Code"
-								className="col-span-2"
-								InputProps={{
-									type: 'tel',
-									placeholder: 'e.g your address postalcode',
-									...register('address.postalcode', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.address?.postalcode?.message}
-							/>
-						</>
-					) : (
-						<>
-							<TextField
-								label="Store Name"
-								className="col-span-2"
-								InputProps={{
-									placeholder: 'e.g T&D Store',
-									...register('storeName', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.storeName?.message}
-							/>
+									<div className="md:col-span-2">
+										<TextField
+											label="Store Description"
+											InputProps={{
+												placeholder: 'e.g. your store description',
+												...register('storeDescription', {
+													required: {
+														value: true,
+														message: 'This field is required',
+													},
+												}),
+												className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl transition-all duration-300',
+											}}
+											helperText={errors?.storeDescription?.message}
+											multiline
+										/>
+									</div>
 
-							<TextField
-								label="Store Description"
-								className="col-span-2"
-								InputProps={{
-									placeholder: 'e.g your store description',
-									...register('storeDescription', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.storeDescription?.message}
-								multiline
-							/>
+									<div className="md:col-span-2">
+										<TextField
+											label="Street Address"
+											InputProps={{
+												placeholder: 'e.g. your street address',
+												...register('address.street', {
+													required: {
+														value: true,
+														message: 'This field is required',
+													},
+												}),
+												className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+											}}
+											helperText={errors?.address?.street?.message}
+										/>
+									</div>
 
-							<TextField
-								label="Street Address"
-								className="col-span-2"
-								InputProps={{
-									placeholder: 'e.g your street address',
-									...register('address.street', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.address?.street?.message}
-							/>
+									<div className="md:col-span-2">
+										<SelectCountry
+											onLocationSelect={(location) => {
+												setValue('address.country', location.country);
+												setValue('address.state', location.state);
+												setValue('address.city', location.city);
+											}}
+										/>
+									</div>
 
-							<SelectCountry
-								onLocationSelect={(location) => {
-									setValue('address.country', location.country);
-									setValue('address.state', location.state);
-									setValue('address.city', location.city);
-								}}
-								className="col-span-2"
-							/>
+									<div className="md:col-span-2">
+										<TextField
+											label="Postal Code"
+											InputProps={{
+												type: 'tel',
+												placeholder: 'e.g. 100001',
+												...register('address.postalcode', {
+													required: {
+														value: true,
+														message: 'This field is required',
+													},
+												}),
+												className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+											}}
+											helperText={errors?.address?.postalcode?.message}
+										/>
+									</div>
 
-							<TextField
-								label="Postal Code"
-								className="col-span-2"
-								InputProps={{
-									type: 'tel',
-									placeholder: 'e.g your store address',
-									...register('address.postalcode', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.address?.postalcode?.message}
-							/>
+									<div className="md:col-span-2">
+										<MultiSelectField
+											label="Store Categories"
+											placeholder="e.g. Arts and Crafts"
+											data={storeCategories}
+											value={selectedCategories}
+											onSelect={(categories: Option[]) => {
+												setSelectedCategories(categories.map((category) => category.value as string));
+											}}
+											maxSelections={5}
+											onSearch={(search: string) => {
+												return storeCategories.filter((category) =>
+													category.label.toLowerCase().includes(search.toLowerCase())
+												);
+											}}
+										/>
+									</div>
 
-							<div className="space-y-4 col-span-2">
-								<MultiSelectField
-									label="Store Categories"
-									placeholder="e.g, arts and crafts"
-									data={storeCategories}
-									value={selectedCategories}
-									onSelect={(categories: Option[]) => {
-										setSelectedCategories(categories.map((category) => category.value as string));
-									}}
-									maxSelections={5}
-									onSearch={(search: string) => {
-										return storeCategories.filter((category) =>
-											category.label.toLowerCase().includes(search.toLowerCase())
-										);
-									}}
-								/>
-							</div>
+									<div className="md:col-span-2">
+										<TextField
+											label="Email Address"
+											InputProps={{
+												placeholder: 'e.g. merchant@gmail.com',
+												type: 'email',
+												...register('email', {
+													required: {
+														value: true,
+														message: 'This field is required',
+													},
+													pattern: {
+														value: REGEX.EMAIL,
+														message: 'Enter a valid email address',
+													},
+												}),
+												className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+											}}
+											helperText={errors?.email?.message}
+										/>
+									</div>
 
-							<TextField
-								label="Email Address"
-								className="col-span-2"
-								InputProps={{
-									placeholder: 'e.g johndoe@gmail.com',
-									type: 'email',
-									...register('email', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-										pattern: {
-											value: REGEX.EMAIL,
-											message: 'Enter a valid email address',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.email?.message}
-							/>
+									<div className="md:col-span-2">
+										<TextField
+											label="Phone number"
+											InputProps={{
+												placeholder: 'e.g. 08012642233',
+												type: 'tel',
+												...register('phoneNumber', {
+													required: {
+														value: true,
+														message: 'This field is required',
+													},
+													pattern: {
+														value: REGEX.PHONE_NUMBER,
+														message: 'Enter a valid phone number',
+													},
+												}),
+												className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+											}}
+											helperText={errors?.phoneNumber?.message}
+										/>
+									</div>
 
-							<TextField
-								label="Phone number"
-								className="col-span-2"
-								InputProps={{
-									placeholder: 'e.g 08012642233',
-									type: 'tel',
-									...register('phoneNumber', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-										pattern: {
-											value: REGEX.PHONE_NUMBER,
-											message: 'Enter a valid phone number',
-										},
-									}),
-									className: 'text-sm',
-								}}
-								helperText={errors?.phoneNumber?.message}
-							/>
+									<PasswordTextField
+										label="Password"
+										InputProps={{
+											...register('password', {
+												required: {
+													value: true,
+													message: 'This field is required',
+												},
+												minLength: {
+													value: 8,
+													message: 'Password must not be less than 8 characters',
+												},
+												pattern: {
+													value: REGEX.PASSWORD,
+													message: 'Enter a valid password',
+												},
+											}),
+											className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+										}}
+										helperText={errors?.password?.message}
+									/>
 
-							<PasswordTextField
-								className="col-span-2"
-								label="Password"
-								InputProps={{
-									...register('password', {
-										required: {
-											value: true,
-											message: 'This field is required',
-										},
-										minLength: {
-											value: 8,
-											message: 'Password must not be less than 8 characters',
-										},
-										pattern: {
-											value: REGEX.PASSWORD,
-											message: 'Enter a valid password',
-										},
-									}),
-								}}
-								helperText={errors?.password?.message}
-							/>
-
-							<PasswordTextField
-								className="col-span-2"
-								label="Confirm Password"
-								InputProps={{
-									onChange(e) {
-										setConfirmPassword(e.target.value);
-									},
-								}}
-								helperText={password && password !== confirmPassword ? 'Passwords do not match' : undefined}
-							/>
-						</>
-					)}
+									<PasswordTextField
+										label="Confirm Password"
+										InputProps={{
+											onChange(e) {
+												setConfirmPassword(e.target.value);
+											},
+											className: 'text-sm bg-slate-950/40 border-slate-700/60 focus:border-primary text-white rounded-xl h-11 transition-all duration-300',
+										}}
+										helperText={password && password !== confirmPassword ? 'Passwords do not match' : undefined}
+									/>
+								</div>
+							)}
+						</motion.div>
+					</AnimatePresence>
 
 					<Button
 						fullWidth
 						variant="filled"
 						size="medium"
-						className="col-span-2"
-						loading={_customerSignUpPending || _merchantSignUpPending}>
+						className="mt-6 bg-primary hover:bg-primary/95 text-white py-3 rounded-xl font-semibold shadow-lg shadow-primary/25 hover:shadow-primary/35 transition-all duration-300"
+						loading={_customerSignUpPending || _merchantSignUpPending}
+					>
 						Sign Up
 					</Button>
 				</form>
 
-				<div className="flex flex-col justify-center items-center">
-					<p className="text-sm text-gray-400 mt-3">or</p>
-					{/* <div className="w-full flex gap-12 justify-center items-center mt-3"> */}
-					<Button
-						onClick={() => {
-							setIsPending(true);
-							_googleSignIn(role);
-							setIsPending(false);
-						}}
-						fullWidth
-						variant="outline"
-						icon={<FaGoogle />}
-						iconPosition="left"
-						loading={isPending}
-						loaderSize
-						className="flex justify-center items-center mt-3">
-						Google
-					</Button>
-					{/* <Button
-							fullWidth
-							variant="outline"
-							icon={<FaXTwitter />}
-							iconPosition="left"
-							className="flex justify-center items-center">
-							X
-						</Button> */}
-					{/* </div> */}
+				<div className="relative flex py-4 items-center">
+					<div className="flex-grow border-t border-slate-800"></div>
+					<span className="flex-shrink mx-4 text-slate-500 text-xs uppercase tracking-wider font-semibold">or</span>
+					<div className="flex-grow border-t border-slate-800"></div>
 				</div>
 
-				<p className="max-w-fit mx-auto text-[.9rem] mt-6">
-					Alright have an account?{' '}
-					<Link href="/login" className="text-primary">
+				<Button
+					onClick={() => {
+						setIsPending(true);
+						_googleSignIn(role);
+						setIsPending(false);
+					}}
+					fullWidth
+					variant="outline"
+					icon={<FaGoogle className="w-4 h-4 mr-2" />}
+					iconPosition="left"
+					loading={isPending}
+					loaderSize
+					className="flex justify-center items-center py-2.5 rounded-xl border-slate-700/80 hover:border-slate-600 text-slate-300 hover:text-white hover:bg-slate-900/40 transition-all duration-300"
+				>
+					Continue with Google
+				</Button>
+
+				<p className="text-center text-xs md:text-sm text-slate-400 mt-6">
+					Already have an account?{' '}
+					<Link href="/login" className="text-primary font-medium hover:underline transition-colors">
 						Log in
 					</Link>
 				</p>
-			</>
+			</motion.div>
 		</AuthLayout>
 	);
 };

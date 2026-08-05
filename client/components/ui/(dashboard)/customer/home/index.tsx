@@ -70,33 +70,34 @@ const HomeDashboard = () => {
 					Browse Categories
 				</motion.h2>
 				<motion.div
-					className="max-md:w-full flex max-lg:overflow-x-scroll gap-3 md:gap-8"
+					className="max-md:w-full flex max-lg:overflow-x-scroll gap-3 md:gap-6 py-2"
 					initial="hidden"
 					whileInView="visible"
-					viewport={{ once: true, amount: 0.5 }}
-					transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}
+					viewport={{ once: true, amount: 0.2 }}
+					transition={{ staggerChildren: 0.05 }}
 				>
 					{categories.map((category) => {
 						return (
 							<motion.div
-								className="flex flex-col justify-center items-center min-w-[130px] md:w-[130px] bg-[#1E2A3B] py-3 px-1 rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md space-y-2.5"
+								className="flex flex-col justify-center items-center min-w-[130px] md:w-[130px] bg-white/[0.03] backdrop-blur-md border border-white/[0.08] hover:border-primary/40 hover:bg-white/[0.08] hover:shadow-[0_8px_30px_rgba(45,107,239,0.15)] py-4 px-1 rounded-2xl transition-all duration-300 cursor-pointer space-y-2.5 hover:-translate-y-1"
 								key={category.id}
 								variants={{
 									hidden: {
 										opacity: 0,
-										y: 30,
+										y: 20,
 									},
 									visible: {
 										opacity: 1,
 										y: 0,
 										transition: {
-											duration: 0.8,
+											duration: 0.5,
+											ease: "easeOut"
 										},
 									},
 								}}
 							>
-								<div>{category.icon}</div>
-								<h3 className="text-xs">{category.name}</h3>
+								<div className="text-primary text-xl">{category.icon}</div>
+								<h3 className="text-xs font-medium text-slate-200">{category.name}</h3>
 							</motion.div>
 						);
 					})}
@@ -134,54 +135,52 @@ const HomeDashboard = () => {
 						</motion.p>
 					</Link>
 				</div>
-				<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
+				<motion.div
+					className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+					initial="hidden"
+					whileInView="visible"
+					viewport={{ once: true, amount: 0.1 }}
+					transition={{ staggerChildren: 0.05 }}
+				>
 					{merchantsResponse?.data?.map((merchant) => {
 						return (
-							<div className="flex flex-col min-w-[155px] sm:min-w-[170px] md:w-[230px] rounded-md hover:scale-[1.02] transition-all duration-300 cursor-pointer shadow-md" key={merchant._id}>
-								<Image src={merchant.storeLogo || avatar1} alt={merchant.storeName} width={350} height={180} className="w-full h-full rounded-t-xl object-cover" />
-								<div className="bg-[#1E2A3B] p-2 space-y-2 shadow-md rounded-b-xl">
-									<h3 className="text-sm font-bold">{merchant.storeName}</h3>
-									<motion.div
-										className="flex gap-4 flex-wrap"
-										initial="hidden"
-										whileInView="visible"
-										viewport={{ once: true, amount: 0.5 }}
-										transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}
-									>
-										{merchant.storeCategory?.slice(0, 2)?.map((category) => {
-											return (
-												<motion.div
-													className="bg-primary/15 p-1.5 rounded-full shadow-md cursor-pointer flex justify-center items-center"
-													key={category}
-													variants={{
-														hidden: {
-															opacity: 0,
-															y: 30,
-														},
-														visible: {
-															opacity: 1,
-															y: 0,
-															transition: {
-																duration: 0.8,
-															},
-														},
-													}}
-												>
-													<p className="text-[10px] text-primary">{category}</p>
-												</motion.div>
-											);
-										})}
-									</motion.div>
-									<Link href={`/customer/merchant/${merchant._id}`}>
-										<Button fullWidth variant="filled" className="px-4 py-1.5 w-full font-normal mt-1 text-xs">
+							<motion.div
+								className="dashboard-panel dashboard-glow-hover flex flex-col rounded-2xl overflow-hidden border border-white/[0.05] shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 cursor-pointer h-full"
+								key={merchant._id}
+								variants={{
+									hidden: { opacity: 0, y: 20 },
+									visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+								}}
+							>
+								<div className="relative w-full h-40">
+									<Image src={merchant.storeLogo || avatar1} alt={merchant.storeName} fill className="object-cover" />
+								</div>
+								<div className="p-3.5 flex flex-col flex-1 justify-between space-y-3">
+									<div className="space-y-2">
+										<h3 className="text-sm font-semibold text-slate-100 line-clamp-1">{merchant.storeName}</h3>
+										<div className="flex gap-2 flex-wrap">
+											{merchant.storeCategory?.slice(0, 2)?.map((category) => {
+												return (
+													<span
+														className="bg-primary/10 px-2.5 py-0.5 rounded-full text-[10px] text-primary font-medium"
+														key={category}
+													>
+														{category}
+													</span>
+												);
+											})}
+										</div>
+									</div>
+									<Link href={`/customer/merchant/${merchant._id}`} className="w-full">
+										<Button fullWidth variant="filled" className="px-4 py-1.5 w-full font-medium mt-1 text-xs rounded-xl">
 											View Store
 										</Button>
 									</Link>
 								</div>
-							</div>
+							</motion.div>
 						);
 					})}
-				</div>
+				</motion.div>
 				{!isPendingMerchants && !merchantsResponse?.data?.length && (
 					<div className="dashboard-panel rounded-2xl p-8 text-center">
 						<p className="font-semibold text-white">No stores available right now</p>
@@ -233,11 +232,11 @@ const HomeDashboard = () => {
 					</div>
 				) : (
 					<motion.div
-						className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6"
+						className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
 						initial="hidden"
 						whileInView="visible"
-						viewport={{ once: true, amount: 0.5 }}
-						transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}
+						viewport={{ once: true, amount: 0.1 }}
+						transition={{ staggerChildren: 0.05 }}
 					>
 						{data?.data?.map((product) => {
 							return <Product key={product._id} {...product} />;

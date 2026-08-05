@@ -22,7 +22,7 @@ async function bootstrap() {
    app.disable('x-powered-by');
    app.use(helmet());
 
-   const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+   const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',');
    app.enableCors({
       origin: allowedOrigins,
       credentials: true,
